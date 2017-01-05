@@ -1,0 +1,122 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd ">
+
+	<bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:properties/futures.properties</value>
+				<value>classpath:properties/jdbc.properties</value>
+			</list>
+		</property>
+		<property name="ignoreUnresolvablePlaceholders" value="true" />
+	</bean>
+	
+	<!-- Startup -->
+    <bean id="startupManager" class="com.ltc.base.utils.StartupManager">
+    	<property name="startupItems">
+    		<list>
+    			<ref bean="futureMonitor"/>
+    			<ref bean="futurePersistance"/>
+    			<ref bean="tortoiseRunner"/>
+    			<ref bean="ruleExecutor"/>
+    		</list>
+    	</property>
+    </bean>
+    
+    <!-- update full futures from network and insert into local Holder. runs every (0.5) second.
+    	 use thread pool to trigger the network call for each contract.
+    	 the process is:
+    	 1. at the start of every bar, pickup the contract list that need to monitor, 
+    	 	reset the contract list of the contract holder.
+    	 2. during every round (sleep 0.5 seconds), use a thread pool to refresh the current bar list. 
+     -->
+    <bean id="futureMonitor" class="com.ltc.base.utils.FutureMonitor">
+    	<property name="contractHolder" ref="contractHolder"/>
+    	<property name="marketAdapterManager" ref="marketAdapterManager"/>
+    	<property name="timeManager" ref="timeManager"/>
+    </bean>
+    
+    <!-- save strategy status every (10) mins. after bar close, save the bar into history DB. -->
+    <bean id="futurePersistance" class="com.ltc.base.utils.FuturePersistance">
+    	<property name="strategy" ref="tortoiseRunner"/>
+    	<property name="gapMinutes">
+    		<value>10</value>
+    	</property>
+    	<property name="timeManager" ref="timeManager"/>
+    </bean>
+    
+    <!-- 	strategy executor will monitor all the rules set by strategy runner. 
+    		the rules are inited by Strategy runner daily. once rules triggered, strategy runner will be notified. 
+    		the process will be: 
+    		1. picked up the rules that inserted into the rules pool. 
+    		2. iterator the rules, once triggered, notify the strategy.
+    -->
+    <bean id="ruleExecutor" class="com.ltc.base.utils.RuleExecutor">
+    	<property name="ruleHolder" ref="ruleHolder" />
+    	<property name="timeManager" ref="timeManager" />
+    	<property name="strategy" ref="tortoiseRunner" />
+    	<property name="contractHolder" ref="contractHolder" />
+    	<property name="commandManager" ref="commandManager" />
+    </bean>
+    
+    <bean id="ruleHolder" class="com.ltc.base.manager.impl.RuleHolderImpl">
+    	<property name="timeManager" ref="timeManager" />
+    </bean>
+    
+    <!-- implemented object of command manager -->
+    <bean id="commandManager" class="com.ltc.base.manager.impl.CommandManagerImpl"/>
+    
+    <!-- implemented object of Strategy runner -->
+    <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.TortoiseRunner"/>
+    
+    <bean id="contractHolder" class="com.ltc.base.manager.impl.ContractHolderImpl">
+    	<property name="contractService" ref="contractService"/>
+    	<property name="timeManager" ref="timeManager"/>
+    </bean>
+    
+    <bean id="marketAdapterManager" class="com.ltc.base.manager.impl.MarketAdapterManagerImpl">
+    	<property name="threadCount">
+    		<value>30</value>
+    	</property>
+    	<property name="contractAdapter" ref="ctpAdapter"/>
+    </bean>
+    
+    <bean id="timeManager" class="com.ltc.base.manager.impl.TimeManagerImpl">
+    	<property name="sleepMillis">
+    		<value>200</value>
+    	</property>
+    	<property name="barOpenTime">
+    		<bean class="org.joda.time.LocalTime">
+    			<constructor-arg index="0">
+    				<value>21</value>
+    			</constructor-arg>
+    			<constructor-arg index="1">
+    				<value>0</value>
+    			</constructor-arg>
+    		</bean>
+    	</property>
+    	<property name="barCloseTime">
+    		<bean class="org.joda.time.LocalTime">
+    			<constructor-arg index="0">
+    				<value>15</value>
+    			</constructor-arg>
+    			<constructor-arg index="1">
+    				<value>0</value>
+    			</constructor-arg>
+    		</bean>
+    	</property>
+    </bean>
+    
+    <!-- TODO: To be implmented. -->
+    <bean id="ctpAdapter" class="com.ltc.base.gateway.impl.CtpAdapterImpl"/>
+    <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl"/>
+    <bean id="contractService" class="com.ltc.base.service.impl.ContractServiceImpl"/>
+
+</beans>
