@@ -4,6 +4,15 @@ public class RuleVO {
 
 	private ConditionVO condition;
 	private CommandVO command;
+	private ContractVO contract;
+
+	public ContractVO getContract() {
+		return contract;
+	}
+
+	public void setContract(ContractVO contract) {
+		this.contract = contract;
+	}
 
 	public CommandVO getCommand() {
 		return command;

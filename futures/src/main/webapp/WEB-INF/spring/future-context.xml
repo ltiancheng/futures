@@ -71,7 +71,9 @@
     </bean>
     
     <!-- implemented object of command manager -->
-    <bean id="commandManager" class="com.ltc.base.manager.impl.CommandManagerImpl"/>
+    <bean id="commandManager" class="com.ltc.base.manager.impl.CommandManagerImpl">
+    	<property name="commandAdapter" ref="mockCommandAdapter" />
+    </bean>
     
     <!-- implemented object of Strategy runner -->
     <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.TortoiseRunner"/>
@@ -118,5 +120,6 @@
     <bean id="ctpAdapter" class="com.ltc.base.gateway.impl.CtpAdapterImpl"/>
     <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl"/>
     <bean id="contractService" class="com.ltc.base.service.impl.ContractServiceImpl"/>
+    <bean id="mockCommandAdapter" class="com.ltc.base.gateway.impl.MockCommandAdapterImpl"/>
 
 </beans>

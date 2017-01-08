@@ -1,5 +1,54 @@
 package com.ltc.base.vo;
 
 public class ContractMetaVO {
-
+	private long id;
+	private String description;
+	private String symbol;
+	private int handValue;
+	private float levelRate;
+	private int pointValue;
+	private float atr250;
+	
+	public float getAtr250() {
+		return atr250;
+	}
+	public void setAtr250(float atr250) {
+		this.atr250 = atr250;
+	}
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public String getDescription() {
+		return description;
+	}
+	public void setDescription(String description) {
+		this.description = description;
+	}
+	public String getSymbol() {
+		return symbol;
+	}
+	public void setSymbol(String symbol) {
+		this.symbol = symbol;
+	}
+	public int getHandValue() {
+		return handValue;
+	}
+	public void setHandValue(int handValue) {
+		this.handValue = handValue;
+	}
+	public float getLevelRate() {
+		return levelRate;
+	}
+	public void setLevelRate(float levelRate) {
+		this.levelRate = levelRate;
+	}
+	public int getPointValue() {
+		return pointValue;
+	}
+	public void setPointValue(int pointValue) {
+		this.pointValue = pointValue;
+	}
 }
