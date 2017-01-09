@@ -7,13 +7,13 @@ public class ContractMetaVO {
 	private int handValue;
 	private float levelRate;
 	private int pointValue;
-	private float atr250;
+	private float atr;	//ATR 250
 	
-	public float getAtr250() {
-		return atr250;
+	public float getAtr() {
+		return atr;
 	}
-	public void setAtr250(float atr250) {
-		this.atr250 = atr250;
+	public void setAtr(float atr) {
+		this.atr = atr;
 	}
 	public long getId() {
 		return id;
