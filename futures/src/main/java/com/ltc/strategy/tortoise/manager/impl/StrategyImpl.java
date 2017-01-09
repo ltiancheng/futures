@@ -4,6 +4,7 @@ import com.ltc.base.manager.Strategy;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.base.vo.RuleVO;
+import com.ltc.strategy.tortoise.manager.PortfolioHolder;
 
 public class StrategyImpl implements Strategy {
 
@@ -20,22 +21,27 @@ public class StrategyImpl implements Strategy {
 	 * 10.(optional)自动切换主力合约 
 	 */
 	
+	private PortfolioHolder portfolioHolder;
+	
+	public void setPortfolioHolder(PortfolioHolder portfolioHolder) {
+		this.portfolioHolder = portfolioHolder;
+	}
+
 	@Override
 	public void saveStatus() {
-		// TODO Auto-generated method stub
-
+		portfolioHolder.saveCurrentStatus();
 	}
 
 	@Override
 	public void initRules() {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override
 	public void ruleTriggered(RuleVO rule) {
 		// TODO Auto-generated method stub
-
+		
 	}
 
 	@Override

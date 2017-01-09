@@ -12,4 +12,35 @@ public class PositionVO {
 	private int unitCount;
 	private float lastInPrice;
 	
+	public ContractVO getContract() {
+		return contract;
+	}
+	public void setContract(ContractVO contract) {
+		this.contract = contract;
+	}
+	public String getDirection() {
+		return direction;
+	}
+	public void setDirection(String direction) {
+		this.direction = direction;
+	}
+	public int getHandPerUnit() {
+		return handPerUnit;
+	}
+	public void setHandPerUnit(int handPerUnit) {
+		this.handPerUnit = handPerUnit;
+	}
+	public int getUnitCount() {
+		return unitCount;
+	}
+	public void setUnitCount(int unitCount) {
+		this.unitCount = unitCount;
+	}
+	public float getLastInPrice() {
+		return lastInPrice;
+	}
+	public void setLastInPrice(float lastInPrice) {
+		this.lastInPrice = lastInPrice;
+	}
+	
 }
