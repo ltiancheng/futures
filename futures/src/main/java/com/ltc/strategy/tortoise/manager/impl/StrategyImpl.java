@@ -71,7 +71,6 @@ public class StrategyImpl implements Strategy {
 
 	@Override
 	public void ruleTriggered(RuleVO rule) {
-		// TODO Auto-generated method stub
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
 		PositionVO position = portfolioHolder.getPositionByContract(rule.getContract());
 		this.updatePosition(position, portfolio, rule.getCommand());
