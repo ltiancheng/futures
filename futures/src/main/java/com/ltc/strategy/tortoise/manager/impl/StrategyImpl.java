@@ -2,6 +2,9 @@ package com.ltc.strategy.tortoise.manager.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.LoggerFactory;
+
 import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.RuleHolder;
 import com.ltc.base.manager.Strategy;
@@ -12,8 +15,12 @@ import com.ltc.strategy.tortoise.manager.PortfolioHolder;
 import com.ltc.strategy.tortoise.vo.PortfolioVO;
 import com.ltc.strategy.tortoise.vo.PositionVO;
 
+import org.slf4j.Logger;
+
 public class StrategyImpl implements Strategy {
 
+	private static Logger logger = LoggerFactory.getLogger(StrategyImpl.class);
+	
 	/**
 	 * Strategy Content:
 	 * 1. ATR是主力连续合约250天的ATR值。由人工更新：(1月1日，4月1日，7月1日，10月1日)各更新一次
@@ -82,13 +89,61 @@ public class StrategyImpl implements Strategy {
 	}
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, CommandVO command) {
-		// TODO Auto-generated method stub
-		if(command.getDealPrice())
+		//TODO: Update Cash info;
+		if(StringUtils.isEmpty(position.getDirection())){
+			if(CommandVO.OPEN_LONG.equals(command.getInstruction())){
+				position.setDirection(PositionVO.LONG);
+			} else if(CommandVO.OPEN_SHORT.equals(command.getInstruction())){
+				position.setDirection(PositionVO.SHORT);
+			}
+			position.setUnitCount(command.getUnits());
+			position.setHandPerUnit(command.getHandPerUnit());
+			if(command.isDone()){
+				position.setLastInPrice(command.getDealPrice().floatValue());
+			}
+		} else if(inSameDirection(position.getDirection(), command.getInstruction())){
+			if(position.getHandPerUnit() == command.getHandPerUnit()){
+				position.setUnitCount(position.getUnitCount()+command.getUnits());
+				if(command.isDone()){
+					position.setLastInPrice(command.getDealPrice().floatValue());
+				}
+			} else {
+				logger.error("different hand per unit, position.handPerUnit="+position.getHandPerUnit()
+					+", command.handPerUnit="+command.getHandPerUnit()); 
+			}
+		} else {
+			if(position.getHandPerUnit() == command.getHandPerUnit()){
+				position.setUnitCount(position.getUnitCount()-command.getUnits());
+				if(position.getUnitCount() == 0){
+					position.setDirection("");
+					position.setLastInPrice(0);
+				}
+			} else {
+				logger.error("different hand per unit, position.handPerUnit="+position.getHandPerUnit()
+					+", command.handPerUnit="+command.getHandPerUnit()); 
+			}
+		}
+	}
+
+	private boolean inSameDirection(String direction, String instruction) {
+		if(StringUtils.equals(direction, PositionVO.LONG) && StringUtils.equals(instruction, CommandVO.OPEN_LONG)){
+			return true;
+		}
+		if(StringUtils.equals(direction, PositionVO.SHORT) && StringUtils.equals(instruction, CommandVO.OPEN_SHORT)){
+			return true;
+		}
+		return false;
 	}
 
 	@Override
 	public void onCommand(ContractVO contract, CommandVO command) {
-		// do nothing, it's done on rule triggered;
+		PositionVO position = portfolioHolder.getPositionByContract(contract);
+		if(StringUtils.equals(command.getInstruction(), CommandVO.OPEN_LONG) 
+				|| StringUtils.equals(command.getInstruction(), CommandVO.OPEN_SHORT)){
+			if(command.isDone()){
+				position.setLastInPrice(command.getDealPrice().floatValue());
+			}
+		}
 	}
 
 }

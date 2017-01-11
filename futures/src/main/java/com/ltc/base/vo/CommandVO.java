@@ -14,10 +14,23 @@ public class CommandVO {
 	private String instruction;
 	private String priceStyle;
 	private BigDecimal price; // only meaningful when price style is LIMIT;
-	private int volumn;
+	private int units;
+	private int handPerUnit;
 	private boolean done;
 	private BigDecimal dealPrice;
 	
+	public int getHandPerUnit() {
+		return handPerUnit;
+	}
+	public void setHandPerUnit(int handPerUnit) {
+		this.handPerUnit = handPerUnit;
+	}
+	public int getUnits() {
+		return units;
+	}
+	public void setUnits(int units) {
+		this.units = units;
+	}
 	public String getInstruction() {
 		return instruction;
 	}
@@ -35,12 +48,6 @@ public class CommandVO {
 	}
 	public void setPrice(BigDecimal price) {
 		this.price = price;
-	}
-	public int getVolumn() {
-		return volumn;
-	}
-	public void setVolumn(int volumn) {
-		this.volumn = volumn;
 	}
 	public boolean isDone() {
 		return done;
