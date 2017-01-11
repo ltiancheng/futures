@@ -5,7 +5,7 @@ public class ContractMetaVO {
 	private String description;
 	private String symbol;
 	private int handValue;
-	private float levelRate;
+	private float levelRate;	//levelRate is default to 10%
 	private int pointValue;
 	private float atr;	//ATR 250
 	

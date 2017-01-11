@@ -3,15 +3,15 @@ package com.ltc.strategy.tortoise.vo;
 import java.util.List;
 
 public class PortfolioVO {
-	private double initEquity;
+	private double cash;
 	private double stopLossEquity;
 	private List<PositionVO> positionList;
 	
-	public double getInitEquity() {
-		return initEquity;
+	public double getCash() {
+		return cash;
 	}
-	public void setInitEquity(double initEquity) {
-		this.initEquity = initEquity;
+	public void setCash(double cash) {
+		this.cash = cash;
 	}
 	public double getStopLossEquity() {
 		return stopLossEquity;

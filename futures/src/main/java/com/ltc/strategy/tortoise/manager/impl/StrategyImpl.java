@@ -83,7 +83,7 @@ public class StrategyImpl implements Strategy {
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, CommandVO command) {
 		// TODO Auto-generated method stub
-		
+		if(command.getDealPrice())
 	}
 
 	@Override
