@@ -89,7 +89,6 @@ public class StrategyImpl implements Strategy {
 	}
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, CommandVO command) {
-		//TODO: Update Cash info;
 		if(StringUtils.isEmpty(position.getDirection())){
 			if(CommandVO.OPEN_LONG.equals(command.getInstruction())){
 				position.setDirection(PositionVO.LONG);
@@ -100,13 +99,20 @@ public class StrategyImpl implements Strategy {
 			position.setHandPerUnit(command.getHandPerUnit());
 			if(command.isDone()){
 				position.setLastInPrice(command.getDealPrice().floatValue());
+			} else {
+				position.setLastInPrice(command.getPrice().floatValue());
 			}
+			position.setAveragePrice(position.getLastInPrice());
 		} else if(inSameDirection(position.getDirection(), command.getInstruction())){
 			if(position.getHandPerUnit() == command.getHandPerUnit()){
-				position.setUnitCount(position.getUnitCount()+command.getUnits());
 				if(command.isDone()){
 					position.setLastInPrice(command.getDealPrice().floatValue());
+				} else {
+					position.setLastInPrice(command.getPrice().floatValue());
 				}
+				position.setAveragePrice((position.getLastInPrice()*command.getUnits()+
+						position.getAveragePrice()*position.getUnitCount())/(position.getUnitCount()+command.getUnits()));
+				position.setUnitCount(position.getUnitCount()+command.getUnits());
 			} else {
 				logger.error("different hand per unit, position.handPerUnit="+position.getHandPerUnit()
 					+", command.handPerUnit="+command.getHandPerUnit()); 
@@ -115,13 +121,33 @@ public class StrategyImpl implements Strategy {
 			if(position.getHandPerUnit() == command.getHandPerUnit()){
 				position.setUnitCount(position.getUnitCount()-command.getUnits());
 				if(position.getUnitCount() == 0){
+					//fresh total cash(including margin)
+					this.updateCashWhenEmpty(portfolio, position, command);
+					
 					position.setDirection("");
 					position.setLastInPrice(0);
+					position.setAveragePrice(0);
+				} else {
+					logger.error("behaviour not expected during SL, position.unitCount= "+position.getUnitCount());
 				}
 			} else {
 				logger.error("different hand per unit, position.handPerUnit="+position.getHandPerUnit()
 					+", command.handPerUnit="+command.getHandPerUnit()); 
 			}
+		}
+	}
+
+	private void updateCashWhenEmpty(PortfolioVO portfolio, PositionVO position, CommandVO command) {
+		float dealPrice = command.getDealPrice().floatValue();
+		if(command.getDealPrice() == null || command.getDealPrice().equals(0)){
+			dealPrice = command.getPrice().floatValue();
+		}
+		double cashAmount = (dealPrice - position.getAveragePrice()) * command.getUnits() * 
+				command.getHandPerUnit() * position.getContract().getContractMeta().getPointValue();
+		if(StringUtils.equals(position.getDirection(), PositionVO.LONG)){
+			portfolio.setCash(portfolio.getCash() + cashAmount);
+		} else {
+			portfolio.setCash(portfolio.getCash() - cashAmount);
 		}
 	}
 
@@ -137,13 +163,7 @@ public class StrategyImpl implements Strategy {
 
 	@Override
 	public void onCommand(ContractVO contract, CommandVO command) {
-		PositionVO position = portfolioHolder.getPositionByContract(contract);
-		if(StringUtils.equals(command.getInstruction(), CommandVO.OPEN_LONG) 
-				|| StringUtils.equals(command.getInstruction(), CommandVO.OPEN_SHORT)){
-			if(command.isDone()){
-				position.setLastInPrice(command.getDealPrice().floatValue());
-			}
-		}
+		//do nothing.
 	}
 
 }

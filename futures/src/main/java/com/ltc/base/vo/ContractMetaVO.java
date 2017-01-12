@@ -5,10 +5,16 @@ public class ContractMetaVO {
 	private String description;
 	private String symbol;
 	private int handValue;
-	private float levelRate;	//levelRate is default to 10%
+	private float leverage = 0.1f;	//levelRate is default to 10%
 	private int pointValue;
 	private float atr;	//ATR 250
 	
+	public float getLeverage() {
+		return leverage;
+	}
+	public void setLeverage(float leverage) {
+		this.leverage = leverage;
+	}
 	public float getAtr() {
 		return atr;
 	}
@@ -38,12 +44,6 @@ public class ContractMetaVO {
 	}
 	public void setHandValue(int handValue) {
 		this.handValue = handValue;
-	}
-	public float getLevelRate() {
-		return levelRate;
-	}
-	public void setLevelRate(float levelRate) {
-		this.levelRate = levelRate;
 	}
 	public int getPointValue() {
 		return pointValue;

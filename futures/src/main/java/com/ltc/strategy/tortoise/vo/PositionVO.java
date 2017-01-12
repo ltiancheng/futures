@@ -13,8 +13,15 @@ public class PositionVO {
 	private int handPerUnit;
 	private int unitCount;
 	private float lastInPrice;
+	private float averagePrice;
 	private String status;
 	
+	public float getAveragePrice() {
+		return averagePrice;
+	}
+	public void setAveragePrice(float averagePrice) {
+		this.averagePrice = averagePrice;
+	}
 	public String getStatus() {
 		return status;
 	}
