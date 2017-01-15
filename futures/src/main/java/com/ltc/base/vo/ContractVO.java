@@ -39,7 +39,6 @@ public class ContractVO {
 	}
 
 	public String getKey() {
-		// TODO Auto-generated method stub
-		return null;
+		return (this.contractMeta.getSymbol() + this.getPrid());
 	}
 }

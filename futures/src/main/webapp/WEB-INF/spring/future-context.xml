@@ -45,7 +45,7 @@
     
     <!-- save strategy status every (10) mins. after bar close, save the bar into history DB. -->
     <bean id="futurePersistance" class="com.ltc.base.utils.FuturePersistance">
-    	<property name="strategy" ref="tortoiseRunner"/>
+    	<property name="strategy" ref="tortoise"/>
     	<property name="gapMinutes">
     		<value>10</value>
     	</property>
@@ -61,9 +61,27 @@
     <bean id="ruleExecutor" class="com.ltc.base.utils.RuleExecutor">
     	<property name="ruleHolder" ref="ruleHolder" />
     	<property name="timeManager" ref="timeManager" />
-    	<property name="strategy" ref="tortoiseRunner" />
+    	<property name="strategy" ref="tortoise" />
     	<property name="contractHolder" ref="contractHolder" />
     	<property name="commandManager" ref="commandManager" />
+    </bean>
+    
+    <bean id="tortoise" class="com.ltc.strategy.tortoise.manager.impl.StrategyImpl">
+    	<property name="portfolioHolder" ref="portfolioHolder" />
+    	<property name="contractHolder" ref="contractHolder" />
+    	<property name="ruleHolder" ref="ruleHolder" />
+    </bean>
+    
+    <bean id="portfolioHolder" class="com.ltc.strategy.tortoise.manager.impl.PortfolioHolderImpl">
+    	<property name="portfolioService" ref="portfolioService"/>
+    </bean>
+    
+    <bean id="portfolioService" class="com.ltc.strategy.tortoise.service.impl.PortfolioServiceImpl">
+    	<property name="portfolioDAO" ref="portfolioDAO"/>
+    </bean>
+    
+    <bean id="portfolioDAO" class="com.ltc.strategy.tortoise.dao.impl.PortfolioDAOImpl">
+    
     </bean>
     
     <bean id="ruleHolder" class="com.ltc.base.manager.impl.RuleHolderImpl">
@@ -81,6 +99,7 @@
     <bean id="contractHolder" class="com.ltc.base.manager.impl.ContractHolderImpl">
     	<property name="contractService" ref="contractService"/>
     	<property name="timeManager" ref="timeManager"/>
+    	<property name="contractAdapter" ref="hexunAdapter"/> 
     </bean>
     
     <bean id="marketAdapterManager" class="com.ltc.base.manager.impl.MarketAdapterManagerImpl">

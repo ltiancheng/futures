@@ -16,6 +16,11 @@ import com.ltc.base.manager.MarketAdapterManager;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.ContractVO;
 
+/**
+ * this one is used to update current bar info;
+ * @author Guilin
+ *
+ */
 public class MarketAdapterManagerImpl implements MarketAdapterManager {
 
 	private static final int DEFAULT_THREAD_COUNT = 20;
