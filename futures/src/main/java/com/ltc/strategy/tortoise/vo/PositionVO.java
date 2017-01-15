@@ -1,8 +1,12 @@
 package com.ltc.strategy.tortoise.vo;
 
+import java.io.Serializable;
+
 import com.ltc.base.vo.ContractVO;
 
-public class PositionVO {
+public class PositionVO implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	public static final String LONG = "L";
 	public static final String SHORT = "S";
 	public static final String ACTIVE = "A";

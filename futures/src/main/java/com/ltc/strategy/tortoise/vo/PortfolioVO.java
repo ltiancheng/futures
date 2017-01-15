@@ -1,8 +1,11 @@
 package com.ltc.strategy.tortoise.vo;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class PortfolioVO {
+public class PortfolioVO implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private double cash;
 	private double stopLossEquity;
 	private List<PositionVO> positionList;

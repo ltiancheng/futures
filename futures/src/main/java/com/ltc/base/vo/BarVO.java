@@ -1,8 +1,11 @@
 package com.ltc.base.vo;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class BarVO {
+public class BarVO implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private ContractVO contract;
 	private long id;
 	private float closePrice;

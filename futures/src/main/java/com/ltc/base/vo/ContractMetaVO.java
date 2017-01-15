@@ -1,6 +1,9 @@
 package com.ltc.base.vo;
 
-public class ContractMetaVO {
+import java.io.Serializable;
+
+public class ContractMetaVO implements Serializable {
+	private static final long serialVersionUID = 1L;
 	private long id;
 	private String description;
 	private String symbol;
