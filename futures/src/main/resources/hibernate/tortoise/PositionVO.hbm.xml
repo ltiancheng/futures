@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.ltc.strategy.tortoise.vo.PositionVO" table="POSITION" catalog="TORTOISE">
+        <id name="id" type="java.lang.Long">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="direction" type="string">
+            <column name="DIRECTION" length="5" />
+        </property>
+        <property name="handPerUnit" type="int">
+            <column name="HAND_PER_UNIT"/>
+        </property>
+        <property name="unitCount" type="int">
+            <column name="UNIT_COUNT"/>
+        </property>
+        <property name="lastInPrice" type="float">
+            <column name="LAST_IN_PRICE"/>
+        </property>
+        <property name="averagePrice" type="float">
+            <column name="AVERAGE_PRICE"/>
+        </property>
+        <property name="status" type="string">
+            <column name="STATUS" length="3"/>
+        </property>
+        <!-- TODO: to be tested in real DB -->
+        <many-to-one name="contract" class="com.ltc.base.vo.ContractVO" fetch="select">
+            <column name="CONTRACT_SYMBOL" not-null="true" />
+            <column name="CONTRACT_PRID" not-null="true" />
+        </many-to-one>
+        <many-to-one name="portfolio" class="com.ltc.strategy.tortoise.vo.PortfolioVO" fetch="select" property-ref="code">
+            <column name="PORTFOLIO_CODE" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

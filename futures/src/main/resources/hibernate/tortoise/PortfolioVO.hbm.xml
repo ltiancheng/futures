@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.ltc.strategy.tortoise.vo.PortfolioVO" table="PORTFOLIO" catalog="TORTOISE">
+        <id name="code" type="java.lang.String">
+            <column name="CODE" length="5" not-null="true" unique="true"  />
+            <generator class="assigned" />
+        </id>
+        <property name="cash" type="double">
+            <column name="CASH"/>
+        </property>
+        <property name="stopLossEquity" type="double">
+            <column name="STOP_LOSS_EQUITY" />
+        </property>
+        <set name="positionList" table="POSITION"
+				inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="CODE" not-null="true" />
+            </key>
+            <one-to-many class="com.ltc.strategy.tortoise.vo.PositionVO" />
+        </set>
+    </class>
+</hibernate-mapping>

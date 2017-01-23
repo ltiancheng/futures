@@ -1,6 +1,7 @@
 package com.ltc.strategy.tortoise.utils;
 
 import java.util.List;
+import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +43,9 @@ public class StrategyUtils {
 	}
 
 	public static boolean isFullPortfolio(PortfolioVO portfolio) {
-		List<PositionVO> pList = portfolio.getPositionList();
+		Set<PositionVO> pSet = portfolio.getPositionSet();
 		double totalLoss = 0;
-		for(PositionVO p : pList){
+		for(PositionVO p : pSet){
 			totalLoss += p.getHandPerUnit()*p.getUnitCount()*p.getContract().getContractMeta().getAtr()
 				*p.getContract().getContractMeta().getPointValue();
 		}

@@ -19,7 +19,21 @@ public class PositionVO implements Serializable {
 	private float lastInPrice;
 	private float averagePrice;
 	private String status;
+	private PortfolioVO portfolio;
+	private long id;
 	
+	public long getId() {
+		return id;
+	}
+	public void setId(long id) {
+		this.id = id;
+	}
+	public PortfolioVO getPortfolio() {
+		return portfolio;
+	}
+	public void setPortfolio(PortfolioVO portfolio) {
+		this.portfolio = portfolio;
+	}
 	public float getAveragePrice() {
 		return averagePrice;
 	}

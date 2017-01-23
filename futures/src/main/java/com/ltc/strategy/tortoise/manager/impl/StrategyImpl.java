@@ -3,6 +3,7 @@ package com.ltc.strategy.tortoise.manager.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -70,7 +71,7 @@ public class StrategyImpl implements Strategy {
 		List<ContractVO> untrackedContracts = portfolioHolder.getUntrackedContracts(contractList);
 		portfolioHolder.addPositions(untrackedContracts);
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
-		List<PositionVO> positions = portfolio.getPositionList();
+		Set<PositionVO> positions = portfolio.getPositionSet();
 		for(PositionVO p : positions){
 			List<RuleVO> rules = generateRulesOnContract(p, portfolio);
 			for(RuleVO r : rules){

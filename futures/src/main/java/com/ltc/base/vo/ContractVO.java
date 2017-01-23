@@ -9,7 +9,16 @@ public class ContractVO implements Serializable {
 	private BarVO currentBar;
 	private long id;
 	private String prid;
+	private String status;
 	
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
 	public long getId() {
 		return id;
 	}

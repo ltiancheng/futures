@@ -14,14 +14,12 @@ public class PortfolioServiceImpl implements PortfolioService {
 
 	@Override
 	public PortfolioVO getPortfolio() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.portfolioDAO.getPortfolio();
 	}
 
 	@Override
 	public void savePortfolio(PortfolioVO portfolio) {
-		// TODO Auto-generated method stub
-		
+		this.portfolioDAO.save(portfolio);
 	}
 
 }

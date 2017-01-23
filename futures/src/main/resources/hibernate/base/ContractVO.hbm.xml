@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.ltc.base.vo.ContractVO" table="CONTRACT" catalog="BASE">
+        <id name="id" type="java.lang.Long">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="prid" type="string">
+            <column name="PRID" length="5" not-null="true" />
+        </property>
+        <property name="status" type="string">
+            <column name="STATUS" length="3"/>
+        </property>
+        <many-to-one name="contractMeta" class="com.ltc.base.vo.ContractMetaVO" fetch="select" property-ref="symbol">
+            <column name="SYMBOL" not-null="true" />
+        </many-to-one>
+    </class>
+</hibernate-mapping>

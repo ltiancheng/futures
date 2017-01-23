@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
@@ -45,7 +46,7 @@ public class PortfolioHolderImpl implements PortfolioHolder {
 		List<ContractVO> untrackedContracts = new ArrayList<ContractVO>();
 		Collections.copy(untrackedContracts, contractList);
 		List<String> contractKeyList = new ArrayList<String>();
-		for(PositionVO p: this.getPortfolio().getPositionList()){
+		for(PositionVO p: this.getPortfolio().getPositionSet()){
 			contractKeyList.add(p.getContract().getKey());
 		}
 		Iterator<ContractVO> iter = untrackedContracts.iterator();
@@ -65,14 +66,14 @@ public class PortfolioHolderImpl implements PortfolioHolder {
 				PositionVO p = new PositionVO();
 				p.setContract(c);
 				p.setStatus(PositionVO.ACTIVE);
-				this.getPortfolio().getPositionList().add(p);
+				this.getPortfolio().getPositionSet().add(p);
 			}
 		}
 	}
 
 	@Override
 	public PositionVO getPositionByContract(ContractVO contract) {
-		List<PositionVO> positions = this.getPortfolio().getPositionList();
+		Set<PositionVO> positions = this.getPortfolio().getPositionSet();
 		for(PositionVO p: positions){
 			if(StringUtils.equals(p.getContract().getKey(), contract.getKey())){
 				return p;
