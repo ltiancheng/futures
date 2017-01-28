@@ -15,7 +15,7 @@ public class CtpAdapterImpl implements ContractAdapter {
 	}
 
 	@Override
-	public List<BarVO> getBarHist(String key, int barSize) {
+	public List<BarVO> getBarHist(ContractVO c, int barSize) {
 		// TODO Auto-generated method stub
 		return null;
 	}

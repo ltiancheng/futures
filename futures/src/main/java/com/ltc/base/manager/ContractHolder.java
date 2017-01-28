@@ -11,6 +11,6 @@ public interface ContractHolder {
 
 	ContractVO getContractByKey(String contractKey);
 
-	List<BarVO> getBarHist(String key, int openBarSize);
+	List<BarVO> getBarHist(ContractVO c, int openBarSize);
 
 }

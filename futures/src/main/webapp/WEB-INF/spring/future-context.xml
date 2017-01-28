@@ -137,7 +137,9 @@
     
     <!-- TODO: To be implmented. -->
     <bean id="ctpAdapter" class="com.ltc.base.gateway.impl.CtpAdapterImpl"/>
-    <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl"/>
+    <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl">
+    	<property name="timeManager" ref="timeManager"/>
+    </bean>
     <bean id="contractService" class="com.ltc.base.service.impl.ContractServiceImpl"/>
     <bean id="mockCommandAdapter" class="com.ltc.base.gateway.impl.MockCommandAdapterImpl"/>
 

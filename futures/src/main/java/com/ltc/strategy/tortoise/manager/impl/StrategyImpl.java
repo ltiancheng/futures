@@ -82,7 +82,7 @@ public class StrategyImpl implements Strategy {
 
 	private List<RuleVO> generateRulesOnContract(PositionVO p, PortfolioVO portfolio) {
 		ContractVO contract = p.getContract();
-		List<BarVO> barList = contractHolder.getBarHist(contract.getKey(), OPEN_BAR_SIZE);
+		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
 		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList);
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		if(!StrategyUtils.isFullPortfolio(portfolio)){

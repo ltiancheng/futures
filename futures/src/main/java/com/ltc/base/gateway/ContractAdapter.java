@@ -9,6 +9,6 @@ public interface ContractAdapter {
 
 	BarVO getCurrentBar(ContractVO c);
 
-	List<BarVO> getBarHist(String key, int barSize);
+	List<BarVO> getBarHist(ContractVO c, int barSize);
 
 }

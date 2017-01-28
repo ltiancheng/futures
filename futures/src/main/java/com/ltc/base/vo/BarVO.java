@@ -12,9 +12,16 @@ public class BarVO implements Serializable {
 	private float openPrice;
 	private float highPrice;
 	private float lowPrice;
-	private long volume;
+	private long volume;	//成交量
 	private Date barDate;
+	private long amount;	//成交额
 	
+	public long getAmount() {
+		return amount;
+	}
+	public void setAmount(long amount) {
+		this.amount = amount;
+	}
 	public ContractVO getContract() {
 		return contract;
 	}
