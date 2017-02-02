@@ -50,7 +50,7 @@ public class HexunAdapterImpl implements ContractAdapter {
 		} else {
 			bar.setBarDate(barDate.getTime());
 		}
-		if(prices.length >= 6){
+		if(prices != null && prices.length >= 6){
 			int priceWeight = prices[4];
 			bar.setClosePrice((float)prices[0]/priceWeight);
 			bar.setOpenPrice((float)prices[1]/priceWeight);
@@ -101,7 +101,7 @@ public class HexunAdapterImpl implements ContractAdapter {
 			br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String line = br.readLine();
 			if(line != null){
-				String[] arr = line.substring(line.lastIndexOf("[[[")+1, line.indexOf("]]")).split("],[");
+				String[] arr = line.substring(line.lastIndexOf("[[[")+"[[[".length(), line.indexOf("]]")).split("\\],\\[");
 				int priceWeight = Integer.valueOf(line.substring(line.lastIndexOf(",")+1, line.lastIndexOf("]")));
 				List<HexunBarVO> hxBarList = new LinkedList<HexunBarVO>();
 				for(String content : arr){
@@ -187,12 +187,14 @@ public class HexunAdapterImpl implements ContractAdapter {
 						contract.getKey()+"&column=Price,Open,High,Low,PriceWeight"+(withVolumn ? ",Volume" : "");
 			}
 			URL site = new URL(urlStr);
+			logger.debug("[Hexun Adapter] query string"+urlStr);
 			URLConnection connection = site.openConnection();
 			br = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 			String line = br.readLine();
+			logger.debug("[Hexun Adapter] return string"+line);
 			if(line != null){
 				String[] arr = line.substring(line.lastIndexOf("[")+1, line.indexOf("]")).split(",");
-				if(arr != null && (arr.length==4 || arr.length==5)){
+				if(arr != null && (arr.length==5 || arr.length==6)){
 					int[] priceArray = new int[arr.length];
 					for(int i = 0 ; i<arr.length ; i++){
 						priceArray[i] = Integer.valueOf(arr[i]);

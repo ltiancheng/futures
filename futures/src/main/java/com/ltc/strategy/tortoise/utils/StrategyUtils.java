@@ -24,14 +24,14 @@ public class StrategyUtils {
 		float openShortPoint = barList.get(0).getLowPrice();
 		float closeLongPoint = barList.get(0).getLowPrice();
 		float closeShortPoint = barList.get(0).getHighPrice();
-		
-		for(int i = 0 ; i<barList.size() ; i++){
+		int fetchSize = Math.min(StrategyImpl.OPEN_BAR_SIZE, barList.size());
+		for(int i = 0 ; i<fetchSize ; i++){
 			if(i < StrategyImpl.CLOSE_BAR_SIZE){
 				closeLongPoint = Math.min(closeLongPoint, barList.get(i).getLowPrice());
 				closeShortPoint = Math.max(closeShortPoint, barList.get(i).getHighPrice());
 			}
 			openLongPoint = Math.max(openLongPoint, barList.get(i).getHighPrice());
-			openShortPoint = Math.max(openShortPoint, barList.get(i).getLowPrice());
+			openShortPoint = Math.min(openShortPoint, barList.get(i).getLowPrice());
 		}
 		
 		StrategyPricePointVO ssp = new StrategyPricePointVO();

@@ -1,11 +1,15 @@
 package com.ltc.base.manager.impl;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
 import com.ltc.base.gateway.ContractAdapter;
@@ -26,6 +30,8 @@ public class ContractHolderImpl implements ContractHolder {
 	private Map<String, List<BarVO>> barHistMap = new HashMap<String, List<BarVO>>();
 	private Date barHistRefreshTime;
 
+	private static final Logger logger = LoggerFactory.getLogger(ContractHolderImpl.class);
+	
 	public void setContractAdapter(ContractAdapter contractAdapter) {
 		this.contractAdapter = contractAdapter;
 	}
@@ -42,6 +48,8 @@ public class ContractHolderImpl implements ContractHolder {
 	public List<ContractVO> getActiveContractList() {
 		if(CollectionUtils.isEmpty(activeContractList) || needRefreshActiveContract()){
 			this.activeContractList = contractService.getActiveContractList();
+			logger.debug("[ContractHolderImpl] get fresh active contract list: "
+					+Arrays.toString(this.activeContractList.toArray(new ContractVO[0])));
 			this.activeContractRefreshTime = new Date();
 			return this.activeContractList;
 		} else {

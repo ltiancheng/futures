@@ -43,8 +43,10 @@ public class PortfolioHolderImpl implements PortfolioHolder {
 
 	@Override
 	public List<ContractVO> getUntrackedContracts(List<ContractVO> contractList) {
-		List<ContractVO> untrackedContracts = new ArrayList<ContractVO>();
-		Collections.copy(untrackedContracts, contractList);
+		List<ContractVO> untrackedContracts = new ArrayList<ContractVO>(contractList.size());
+		for(ContractVO c: contractList){
+			untrackedContracts.add(c);
+		}
 		List<String> contractKeyList = new ArrayList<String>();
 		for(PositionVO p: this.getPortfolio().getPositionSet()){
 			contractKeyList.add(p.getContract().getKey());
@@ -66,6 +68,7 @@ public class PortfolioHolderImpl implements PortfolioHolder {
 				PositionVO p = new PositionVO();
 				p.setContract(c);
 				p.setStatus(PositionVO.ACTIVE);
+				p.setPortfolio(this.getPortfolio());
 				this.getPortfolio().getPositionSet().add(p);
 			}
 		}

@@ -9,7 +9,7 @@ import com.ltc.base.vo.ContractVO;
 
 public class MockCommandAdapterImpl implements CommandAdapter {
 
-	private static Logger logger = LoggerFactory.getLogger(MockCommandAdapterImpl.class);
+	private static Logger logger = LoggerFactory.getLogger("CommandAppender");
 	
 	@Override
 	public void executeCommand(ContractVO contract, CommandVO command) {

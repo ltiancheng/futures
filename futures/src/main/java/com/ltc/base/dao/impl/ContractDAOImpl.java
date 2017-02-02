@@ -1,5 +1,6 @@
 package com.ltc.base.dao.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -14,9 +15,11 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ContractVO> getActiveContractList() {
-		String hql = "From ContractVO where status = :status";
+		String hql = "From ContractVO where status=:status";
 		List<ContractVO> contractList = this.getSession().createQuery(hql)
 				.setParameter("status", BaseConstant.ACTIVE).list();
+		logger.debug("[ContractDAOImpl] get fresh active contract list: "
+				+Arrays.toString(contractList.toArray(new ContractVO[0])));
 		return contractList;
 	}
 

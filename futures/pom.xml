@@ -67,6 +67,21 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+	    <groupId>org.springframework</groupId>
+		    <artifactId>spring-tx</artifactId>
+		    <version>4.1.1.RELEASE</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjrt</artifactId>
+		    <version>1.7.3</version>    
+		</dependency>
+		<dependency>
+		    <groupId>org.aspectj</groupId>
+		    <artifactId>aspectjweaver</artifactId>
+		    <version>1.7.3</version>
+		</dependency>
 		
 		<dependency>
 			<groupId>javax</groupId>
@@ -79,6 +94,12 @@
 		    <groupId>joda-time</groupId>
 		    <artifactId>joda-time</artifactId>
 		    <version>${joda-time.version}</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>org.glassfish</groupId>
+			<artifactId>javax.faces</artifactId>
+			<version>2.2.9</version>
 		</dependency>
 
 		<!-- jstl -->
@@ -171,6 +192,8 @@
 				<artifactId>tomcat7-maven-plugin</artifactId>
 				<version>2.2</version>
 				<configuration>
+					<url>http://localhost:8080/manager/text</url>
+					<server>TomcatServer</server>
 					<path>/futures</path>
 				</configuration>
 			</plugin>

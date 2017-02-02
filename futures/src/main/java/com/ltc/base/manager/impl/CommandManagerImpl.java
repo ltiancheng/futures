@@ -33,7 +33,7 @@ public class CommandManagerImpl implements CommandManager {
 	
 	@Override
 	public void executeCommand(final ContractVO contract, final CommandVO command, final Strategy callbackStrategy) {
-		threadPool.execute(new Runnable(){
+		this.getThreadPool().execute(new Runnable(){
 
 			@Override
 			public void run() {

@@ -4,7 +4,7 @@
 	<contextName>Futures</contextName>
 	
 	<property name="global.logger.dir" value="${global.logger.dir}/futures/" />
-	<property name="global.logger.level" value="debug" />
+	<property name="global.logger.level" value="INFO" />
 
 	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
 	    <layout class="ch.qos.logback.classic.PatternLayout">
@@ -14,7 +14,10 @@
 	    </layout>
 	</appender>
 	
-	<appender name="DailyAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
+	<!-- <appender name="DailyAppender" class="ch.qos.logback.classic.sift.SiftingAppender">
+		<discriminator class="ch.qos.logback.classic.sift.JNDIBasedContextDiscriminator">
+	    	<defaultValue>general</defaultValue>
+	    </discriminator>
 		<sift>
 			<appender name="fu-app"
 				class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -25,6 +28,46 @@
 				</rollingPolicy>
 			</appender>
 		</sift>
+	</appender> -->
+	
+	<appender name="DailyAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${global.logger.dir}/application.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${global.logger.dir}/application.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
+	
+	<appender name="CommandAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${global.logger.dir}/command.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${global.logger.dir}/command.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
 	</appender>
 
 	<logger name="com.ltc" level="${global.logger.level}"
@@ -32,7 +75,7 @@
 		<appender-ref ref="DailyAppender" />
 	</logger>
 
-	<root level="WARN">
+	<root level="INFO">
 		<appender-ref ref="STDOUT" />
 	</root>
 

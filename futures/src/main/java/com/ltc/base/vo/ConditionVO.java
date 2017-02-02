@@ -3,8 +3,17 @@ package com.ltc.base.vo;
 import java.math.BigDecimal;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ConditionVO {
+	
+	@Override
+	public String toString() {
+		return "IF "+type+" IS "+(aboveCondition?"above":"lower")+" than "+triggerValue.toString();
+	}
+
+	private static Logger logger = LoggerFactory.getLogger(ConditionVO.class);
 	
 	public static final String PRICE_TYPE="P";
 	public static final String VOL_TYPE="V";
@@ -38,6 +47,10 @@ public class ConditionVO {
 	}
 
 	public boolean meet(ContractVO contract) {
+		if(contract.getCurrentBar() == null){
+			logger.warn("[ConditionVO] current bar of contract: "+contract.getKey()+" is null!");
+			return false;
+		}
 		BigDecimal compareField;
 		if(StringUtils.equals(this.getType(), PRICE_TYPE)){
 			compareField = new BigDecimal(contract.getCurrentBar().getClosePrice());

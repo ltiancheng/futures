@@ -1,14 +1,18 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:context="http://www.springframework.org/schema/context"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"  
+    xmlns:tx="http://www.springframework.org/schema/tx"  
 	xmlns:mvc="http://www.springframework.org/schema/mvc"
 	xsi:schemaLocation="
         http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
-        http://www.springframework.org/schema/context/spring-context.xsd ">
+        http://www.springframework.org/schema/context/spring-context.xsd 
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd  
+        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd">
 	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
-	    <property name="jndiName" value="java:comp/env/jdbc/Futures"/>
+	    <property name="jndiName" value="java:comp/env/jdbc/Futures" />
 	</bean>
 	
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
@@ -23,10 +27,40 @@
 	    </property>
 	    <property name="mappingResources">
 			<list>
-		      <value>/hibernate/base/*.hbm.xml</value>
-		      <value>/hibernate/tortoise/*.hbm.xml</value>
+		      <value>/hibernate/base/ContractMetaVO.hbm.xml</value>
+		      <value>/hibernate/base/ContractVO.hbm.xml</value>
+		      <value>/hibernate/tortoise/PortfolioVO.hbm.xml</value>
+		      <value>/hibernate/tortoise/PositionVO.hbm.xml</value>
 			</list>
 	    </property>
     </bean>
+    
+    <bean id="transactionManager"
+        class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+	  <property name="dataSource" ref="dataSource" />
+	  <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    
+    <tx:advice id="txAdvice" transaction-manager="transactionManager">
+	    <tx:attributes>
+	        <!-- all methods starting with 'get' are read-only -->
+	        <tx:method name="get*" read-only="true" />
+	        <!-- other methods use the default transaction settings (see below) -->
+	        <tx:method name="*" propagation="REQUIRED" />
+	    </tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+	    <aop:pointcut id="allDaoMethods"
+	        expression="execution(* com.ltc.**.dao.**.*(..))" />
+	    <aop:pointcut id="allManageMethods"
+	        expression="execution(* com.ltc.**.manager.**.*(..))" />
+	    <aop:pointcut id="allServiceMethods"
+	        expression="execution(* com.ltc.**.service.**.*(..))" />
+	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allDaoMethods" />
+	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allManageMethods" />
+	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allServiceMethods" />
+	    
+	</aop:config>
 
 </beans>

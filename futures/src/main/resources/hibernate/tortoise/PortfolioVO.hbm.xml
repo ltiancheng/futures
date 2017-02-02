@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.ltc.strategy.tortoise.vo.PortfolioVO" table="PORTFOLIO" catalog="TORTOISE">
+    <class name="com.ltc.strategy.tortoise.vo.PortfolioVO" table="TORTOISE_PORTFOLIO">
         <id name="code" type="java.lang.String">
             <column name="CODE" length="5" not-null="true" unique="true"  />
             <generator class="assigned" />
@@ -14,10 +14,10 @@
         <property name="stopLossEquity" type="double">
             <column name="STOP_LOSS_EQUITY" />
         </property>
-        <set name="positionList" table="POSITION"
-				inverse="true" lazy="true" fetch="select">
+        <set name="positionSet" table="POSITION"
+				inverse="true" lazy="true" cascade="save-update" fetch="select">
             <key>
-                <column name="CODE" not-null="true" />
+                <column name="PORTFOLIO_CODE" not-null="true" />
             </key>
             <one-to-many class="com.ltc.strategy.tortoise.vo.PositionVO" />
         </set>

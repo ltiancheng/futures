@@ -3,7 +3,7 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.ltc.strategy.tortoise.vo.PositionVO" table="POSITION" catalog="TORTOISE">
+    <class name="com.ltc.strategy.tortoise.vo.PositionVO" table="TORTOISE_POSITION">
         <id name="id" type="java.lang.Long">
             <column name="ID" />
             <generator class="native" />
@@ -28,10 +28,10 @@
         </property>
         <!-- TODO: to be tested in real DB -->
         <many-to-one name="contract" class="com.ltc.base.vo.ContractVO" fetch="select">
-            <column name="CONTRACT_SYMBOL" not-null="true" />
             <column name="CONTRACT_PRID" not-null="true" />
+            <column name="CONTRACT_SYMBOL" not-null="true" />
         </many-to-one>
-        <many-to-one name="portfolio" class="com.ltc.strategy.tortoise.vo.PortfolioVO" fetch="select" property-ref="code">
+        <many-to-one name="portfolio" class="com.ltc.strategy.tortoise.vo.PortfolioVO" fetch="select">
             <column name="PORTFOLIO_CODE" not-null="true" />
         </many-to-one>
     </class>

@@ -62,6 +62,7 @@ public class StrategyImpl implements Strategy {
 	@Override
 	public void saveStatus() {
 		portfolioHolder.saveCurrentStatus();
+		logger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
 	}
 
 	@Override
@@ -78,6 +79,7 @@ public class StrategyImpl implements Strategy {
 				ruleHolder.addRule(p.getContract().getKey(), r);
 			}
 		}
+		logger.info("[StrategyImpl] portfolio initiated: "+portfolio.toString());
 	}
 
 	private List<RuleVO> generateRulesOnContract(PositionVO p, PortfolioVO portfolio) {
@@ -91,16 +93,29 @@ public class StrategyImpl implements Strategy {
 		ruleList.addAll(generateCloseRules(p, spp));
 		return ruleList;
 	}
+	
+	@Override
+	public List<RuleVO> generateRulesOnContract(ContractVO contract) {
+		try{
+			PortfolioVO portfolio = this.portfolioHolder.getPortfolio();
+			PositionVO p = this.portfolioHolder.getPositionByContract(contract);
+			return this.generateRulesOnContract(p, portfolio);
+		} catch (Exception e){
+			logger.error("[StrategyImpl] exception during generating rules on contracts ", e);
+			return new ArrayList<RuleVO>();
+		}
+	}
 
 	private List<RuleVO> generateCloseRules(PositionVO p, StrategyPricePointVO spp) {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
-		if(p.getUnitCount() == 0){
+		BarVO currentBar = p.getContract().getCurrentBar();
+		if(p.getUnitCount() == 0 || currentBar == null){
 			return ruleList;
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
 			double clp = spp.getCloseLongPoint();
 			double slp = p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2;
 			double stp = slp;
-			if((p.getContract().getCurrentBar().getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+			if((currentBar.getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
 				stp = Math.max(clp, slp);
 			}
 			ConditionVO condition = new ConditionVO();
@@ -122,7 +137,7 @@ public class StrategyImpl implements Strategy {
 			double csp = spp.getCloseShortPoint();
 			double slp = p.getLastInPrice() + p.getContract().getContractMeta().getAtr() * 2;
 			double stp = slp;
-			if((p.getLastInPrice() - p.getContract().getCurrentBar().getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+			if((p.getLastInPrice() - currentBar.getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
 				stp = Math.min(csp, slp);
 			}
 			ConditionVO condition = new ConditionVO();
@@ -150,41 +165,43 @@ public class StrategyImpl implements Strategy {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		if(p.getUnitCount() == 0){
 			StrategyUtils.updateHandPerUnit(p, portfolioHolder.getPortfolio());
-			//open long rule;
-			{
-				ConditionVO condition = new ConditionVO();
-				condition.setAboveCondition(true);
-				condition.setTriggerValue(new BigDecimal(spp.getOpenLongPoint()));
-				condition.setType(ConditionVO.PRICE_TYPE);
-				CommandVO command = new CommandVO();
-				command.setHandPerUnit(p.getHandPerUnit());
-				command.setInstruction(CommandVO.OPEN_LONG);
-				command.setPrice(new BigDecimal(spp.getOpenLongPoint()));
-				command.setPriceStyle(CommandVO.MARKET);
-				command.setUnits(1);
-				RuleVO rule = new RuleVO();
-				rule.setCommand(command);
-				rule.setCondition(condition);
-				rule.setContract(p.getContract());
-				ruleList.add(rule);
-			}
-			//open short rule;
-			{
-				ConditionVO condition = new ConditionVO();
-				condition.setAboveCondition(false);
-				condition.setTriggerValue(new BigDecimal(spp.getOpenShortPoint()));
-				condition.setType(ConditionVO.PRICE_TYPE);
-				CommandVO command = new CommandVO();
-				command.setHandPerUnit(p.getHandPerUnit());
-				command.setInstruction(CommandVO.OPEN_SHORT);
-				command.setPrice(new BigDecimal(spp.getOpenShortPoint()));
-				command.setPriceStyle(CommandVO.MARKET);
-				command.setUnits(1);
-				RuleVO rule = new RuleVO();
-				rule.setCommand(command);
-				rule.setCondition(condition);
-				rule.setContract(p.getContract());
-				ruleList.add(rule);
+			if(p.getHandPerUnit() != 0){
+				//open long rule;
+				{
+					ConditionVO condition = new ConditionVO();
+					condition.setAboveCondition(true);
+					condition.setTriggerValue(new BigDecimal(spp.getOpenLongPoint()));
+					condition.setType(ConditionVO.PRICE_TYPE);
+					CommandVO command = new CommandVO();
+					command.setHandPerUnit(p.getHandPerUnit());
+					command.setInstruction(CommandVO.OPEN_LONG);
+					command.setPrice(new BigDecimal(spp.getOpenLongPoint()));
+					command.setPriceStyle(CommandVO.MARKET);
+					command.setUnits(1);
+					RuleVO rule = new RuleVO();
+					rule.setCommand(command);
+					rule.setCondition(condition);
+					rule.setContract(p.getContract());
+					ruleList.add(rule);
+				}
+				//open short rule;
+				{
+					ConditionVO condition = new ConditionVO();
+					condition.setAboveCondition(false);
+					condition.setTriggerValue(new BigDecimal(spp.getOpenShortPoint()));
+					condition.setType(ConditionVO.PRICE_TYPE);
+					CommandVO command = new CommandVO();
+					command.setHandPerUnit(p.getHandPerUnit());
+					command.setInstruction(CommandVO.OPEN_SHORT);
+					command.setPrice(new BigDecimal(spp.getOpenShortPoint()));
+					command.setPriceStyle(CommandVO.MARKET);
+					command.setUnits(1);
+					RuleVO rule = new RuleVO();
+					rule.setCommand(command);
+					rule.setCondition(condition);
+					rule.setContract(p.getContract());
+					ruleList.add(rule);
+				}
 			}
 		} else if(p.getUnitCount() == 1){
 			if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){

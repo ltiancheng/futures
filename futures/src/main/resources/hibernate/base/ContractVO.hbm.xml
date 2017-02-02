@@ -3,19 +3,13 @@
 "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping>
-    <class name="com.ltc.base.vo.ContractVO" table="CONTRACT" catalog="BASE">
-        <id name="id" type="java.lang.Long">
-            <column name="ID" />
-            <generator class="native" />
-        </id>
-        <property name="prid" type="string">
-            <column name="PRID" length="5" not-null="true" />
-        </property>
+    <class name="com.ltc.base.vo.ContractVO" table="BASE_CONTRACT">
+        <composite-id>
+            <key-property name="prid" type="string" column="PRID"/>
+            <key-many-to-one name="contractMeta" class="com.ltc.base.vo.ContractMetaVO" column="SYMBOL" lazy="false"/>
+        </composite-id>
         <property name="status" type="string">
-            <column name="STATUS" length="3"/>
+            <column name="STATUS" />
         </property>
-        <many-to-one name="contractMeta" class="com.ltc.base.vo.ContractMetaVO" fetch="select" property-ref="symbol">
-            <column name="SYMBOL" not-null="true" />
-        </many-to-one>
     </class>
 </hibernate-mapping>

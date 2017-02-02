@@ -77,7 +77,10 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 				if(lock.tryLock()){
 					try{
 						BarVO cb = adapter.getCurrentBar(c);
-						c.setCurrentBar(cb);
+						if(cb != null){
+							logger.debug("[MarketAdapterManagerImpl] setting current bar of contract: "+c.getKey());
+							c.setCurrentBar(cb);
+						}
 					} catch (Exception e){
 						logger.error("error happens while getting bar of contract "+c.getKey(), e);
 					} finally {

@@ -58,6 +58,7 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 	//3. rule pool is HashMap of ContractKey to rule list. 
 	@Override
 	public void run() {
+		logger.info("[RuleExecutor] started");
 		while(true){
 			try {
 				timeManager.waitTillNextRound();
@@ -69,11 +70,15 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 						ContractVO contract = this.contractHolder.getContractByKey(contractKey);
 						if(contract != null){
 							List<RuleVO> rules = entry.getValue();
-							for(RuleVO rule : rules){
-								if(meetCondition(rule.getCondition(), contract)){
-									commandManager.executeCommand(contract, rule.getCommand(), strategy);
-									triggeredRules.add(rule);
-									break;
+							if(CollectionUtils.isEmpty(rules)){
+								rules.addAll(strategy.generateRulesOnContract(contract));
+							} else {
+								for(RuleVO rule : rules){
+									if(meetCondition(rule.getCondition(), contract)){
+										commandManager.executeCommand(contract, rule.getCommand(), strategy);
+										triggeredRules.add(rule);
+										break;
+									}
 								}
 							}
 						}

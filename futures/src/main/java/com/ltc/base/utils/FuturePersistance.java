@@ -35,6 +35,7 @@ public class FuturePersistance extends BaseStartupItem implements Runnable {
 	//save the strategy status every {10} minutes;
 	@Override
 	public void run() {
+		logger.info("[FuturePersistance] started");
 		while(true){
 			try {
 				timeManager.waitTillNextRound();

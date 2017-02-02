@@ -2,6 +2,11 @@ package com.ltc.base.vo;
 
 public class RuleVO {
 
+	@Override
+	public String toString() {
+		return this.condition.toString()+"/ THEN: "+command.toString();
+	}
+
 	private ConditionVO condition;
 	private CommandVO command;
 	private ContractVO contract;

@@ -19,12 +19,12 @@
 	</bean>
 	
 	<!-- Startup -->
-    <bean id="startupManager" class="com.ltc.base.utils.StartupManager">
+    <bean id="startupManager" class="com.ltc.base.utils.StartupManager" init-method="run">
     	<property name="startupItems">
     		<list>
     			<ref bean="futureMonitor"/>
     			<ref bean="futurePersistance"/>
-    			<ref bean="tortoiseRunner"/>
+    			<!-- <ref bean="tortoiseRunner"/> -->
     			<ref bean="ruleExecutor"/>
     		</list>
     	</property>
@@ -81,7 +81,12 @@
     </bean>
     
     <bean id="portfolioDAO" class="com.ltc.strategy.tortoise.dao.impl.PortfolioDAOImpl">
+    	<property name="sessionFactory" ref="sessionFactory"/>
+    	<property name="portfolioCode" value="${portfolio.code}" />
+    </bean>
     
+    <bean id="contractDAO" class="com.ltc.base.dao.impl.ContractDAOImpl">
+    	<property name="sessionFactory" ref="sessionFactory"/>
     </bean>
     
     <bean id="ruleHolder" class="com.ltc.base.manager.impl.RuleHolderImpl">
@@ -94,7 +99,7 @@
     </bean>
     
     <!-- implemented object of Strategy runner -->
-    <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.TortoiseRunner"/>
+    <!-- <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.TortoiseRunner"/> -->
     
     <bean id="contractHolder" class="com.ltc.base.manager.impl.ContractHolderImpl">
     	<property name="contractService" ref="contractService"/>
@@ -106,17 +111,17 @@
     	<property name="threadCount">
     		<value>30</value>
     	</property>
-    	<property name="contractAdapter" ref="ctpAdapter"/>
+    	<property name="contractAdapter" ref="hexunAdapter"/>
     </bean>
     
     <bean id="timeManager" class="com.ltc.base.manager.impl.TimeManagerImpl">
     	<property name="sleepMillis">
-    		<value>200</value>
+    		<value>5000</value>
     	</property>
     	<property name="barOpenTime">
     		<bean class="org.joda.time.LocalTime">
     			<constructor-arg index="0">
-    				<value>21</value>
+    				<value>16</value>
     			</constructor-arg>
     			<constructor-arg index="1">
     				<value>0</value>
@@ -140,7 +145,9 @@
     <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl">
     	<property name="timeManager" ref="timeManager"/>
     </bean>
-    <bean id="contractService" class="com.ltc.base.service.impl.ContractServiceImpl"/>
+    <bean id="contractService" class="com.ltc.base.service.impl.ContractServiceImpl">
+    	<property name="contractDAO" ref="contractDAO"/>
+    </bean>
     <bean id="mockCommandAdapter" class="com.ltc.base.gateway.impl.MockCommandAdapterImpl"/>
 
 </beans>

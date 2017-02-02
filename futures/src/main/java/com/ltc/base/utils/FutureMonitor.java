@@ -48,6 +48,7 @@ public class FutureMonitor extends BaseStartupItem implements Runnable {
 //	 	2. during every round (sleep 0.5 seconds), use a thread pool to refresh the current bar list.
 	@Override
 	public void run() {
+		logger.info("[FutureMonitor] started");
 		while(true){
 			try {
 				timeManager.waitTillNextRound();

@@ -3,6 +3,10 @@ package com.ltc.base.vo;
 import java.math.BigDecimal;
 
 public class CommandVO {
+	@Override
+	public String toString() {
+		return instruction+" "+handPerUnit+" * "+units+" at "+price.toString();
+	}
 	public static final String OPEN_LONG = "OL";
 	public static final String OPEN_SHORT = "OS";
 	public static final String CLOSE_LONG = "CL";

@@ -9,6 +9,15 @@
 		<servlet-class>
 			org.springframework.web.servlet.DispatcherServlet
 		</servlet-class>
+		<init-param>
+        	<param-name>contextConfigLocation</param-name>
+          	<param-value>
+				/WEB-INF/spring/*-context.xml,
+				/WEB-INF/spring/*-dao.xml,
+				/WEB-INF/spring/*-web.xml,
+				/WEB-INF/spring/*-config.xml	
+			</param-value>
+        </init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 
@@ -17,12 +26,13 @@
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
 
-	<context-param>
+	<!-- <context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			/WEB-INF/*-context.xml,
-			/WEB-INF/*-dao.xml,
-			/WEB-INF/*-web.xml
+			/WEB-INF/spring/*-context.xml,
+			/WEB-INF/spring/*-dao.xml,
+			/WEB-INF/spring/*-web.xml,
+			/WEB-INF/spring/*-config.xml
 		</param-value>
 	</context-param>
 
@@ -30,5 +40,5 @@
 		<listener-class>
 			org.springframework.web.context.ContextLoaderListener
 		</listener-class>
-	</listener>
+	</listener> -->
 </web-app>

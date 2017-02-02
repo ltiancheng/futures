@@ -5,6 +5,11 @@ import java.io.Serializable;
 import com.ltc.base.vo.ContractVO;
 
 public class PositionVO implements Serializable {
+	@Override
+	public String toString() {
+		return contract.getKey()+" "+(direction==null?"E":direction)+" "+unitCount+" * "+handPerUnit+" lastInPrice: "+
+				lastInPrice+" averagePrice:"+averagePrice;
+	}
 	private static final long serialVersionUID = 1L;
 	
 	public static final String LONG = "L";
@@ -13,7 +18,7 @@ public class PositionVO implements Serializable {
 	public static final String EXPIRE = "E";
 	
 	private ContractVO contract;
-	private String direction;		//"L" for Long; "S" for Short
+	private String direction = "";		//"L" for Long; "S" for Short
 	private int handPerUnit;
 	private int unitCount;
 	private float lastInPrice;
