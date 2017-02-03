@@ -84,6 +84,10 @@ public class StrategyImpl implements Strategy {
 
 	private List<RuleVO> generateRulesOnContract(PositionVO p, PortfolioVO portfolio) {
 		ContractVO contract = p.getContract();
+		if(contract.getCurrentBar() == null){
+			logger.warn("[StrategyImpl] return empty rule list due to the null current bar of "+contract.getKey());
+			return new ArrayList<RuleVO>();
+		}
 		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
 		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList);
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
@@ -109,14 +113,18 @@ public class StrategyImpl implements Strategy {
 	private List<RuleVO> generateCloseRules(PositionVO p, StrategyPricePointVO spp) {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		BarVO currentBar = p.getContract().getCurrentBar();
-		if(p.getUnitCount() == 0 || currentBar == null){
+		if(p.getUnitCount() == 0){
 			return ruleList;
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
 			double clp = spp.getCloseLongPoint();
 			double slp = p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2;
 			double stp = slp;
-			if((currentBar.getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
-				stp = Math.max(clp, slp);
+			if(currentBar == null){
+				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
+			} else {
+				if((currentBar.getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+					stp = Math.max(clp, slp);
+				}
 			}
 			ConditionVO condition = new ConditionVO();
 			condition.setAboveCondition(false);
@@ -137,8 +145,12 @@ public class StrategyImpl implements Strategy {
 			double csp = spp.getCloseShortPoint();
 			double slp = p.getLastInPrice() + p.getContract().getContractMeta().getAtr() * 2;
 			double stp = slp;
-			if((p.getLastInPrice() - currentBar.getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
-				stp = Math.min(csp, slp);
+			if(currentBar == null){
+				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
+			} else {
+				if((p.getLastInPrice() - currentBar.getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+					stp = Math.min(csp, slp);
+				}
 			}
 			ConditionVO condition = new ConditionVO();
 			condition.setAboveCondition(true);

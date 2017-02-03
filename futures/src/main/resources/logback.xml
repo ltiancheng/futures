@@ -74,6 +74,11 @@
 		additivity="false">
 		<appender-ref ref="DailyAppender" />
 	</logger>
+	
+	<logger name="COMMAND" level="${global.logger.level}"
+		additivity="false">
+		<appender-ref ref="CommandAppender" />
+	</logger>
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
