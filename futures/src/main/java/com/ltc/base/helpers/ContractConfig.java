@@ -6,7 +6,7 @@ import java.util.Map;
 public class ContractConfig {
 	private static Map<String, String> PREFIX_MAP = new HashMap<String, String>();
 	static {
-		//DCE
+		//DCE   大连
 		PREFIX_MAP.put("A", "DCE");
 		PREFIX_MAP.put("BB", "DCE");
 		PREFIX_MAP.put("C", "DCE");
@@ -23,7 +23,7 @@ public class ContractConfig {
 		PREFIX_MAP.put("V", "DCE");
 		PREFIX_MAP.put("Y", "DCE");
 		
-		//CZCE
+		//CZCE   郑州
 		PREFIX_MAP.put("CF", "CZCE");
 		PREFIX_MAP.put("FG", "CZCE");
 		PREFIX_MAP.put("MA", "CZCE");
@@ -39,8 +39,9 @@ public class ContractConfig {
 		PREFIX_MAP.put("LR", "CZCE");
 		PREFIX_MAP.put("JR", "CZCE");
 		PREFIX_MAP.put("RI", "CZCE");
+		PREFIX_MAP.put("ZC", "CZCE");
 		
-		//SHFE
+		//SHFE    上海
 		PREFIX_MAP.put("AG", "SHFE2");
 		PREFIX_MAP.put("AL", "SHFE3");
 		PREFIX_MAP.put("NI", "SHFE3");
@@ -54,7 +55,7 @@ public class ContractConfig {
 		PREFIX_MAP.put("ZN", "SHFE3");
 		PREFIX_MAP.put("SN", "SHFE3");
 		
-		//CFFEX
+		//CFFEX   中金
 		PREFIX_MAP.put("IC", "CFFEX");
 		PREFIX_MAP.put("IF", "CFFEX");
 		PREFIX_MAP.put("IH", "CFFEX");

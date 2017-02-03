@@ -52,7 +52,7 @@ public class TimeManagerImpl implements TimeManager {
 			LocalTime lt = LocalTime.fromCalendarFields(now);
 			if(lt.isBefore(barOpenTime) && lt.isAfter(barCloseTime)){
 				// market closed;
-				long millis = barOpenTime.minusMinutes(1).getMillisOfDay() - lt.getMillisOfDay();
+				long millis = Math.abs(barOpenTime.minusMinutes(1).getMillisOfDay() - lt.getMillisOfDay());
 				Thread.sleep(millis);
 			} else {
 				// market opening;
