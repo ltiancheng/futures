@@ -11,4 +11,10 @@ public interface ContractDAO {
 
 	List<ContractMetaVO> getContractMetaList();
 
+	ContractVO getNextMainContract(ContractVO c);
+
+	void saveContract(ContractVO nmc);
+
+	void mainSwitch(ContractVO c, ContractVO nmc);
+
 }

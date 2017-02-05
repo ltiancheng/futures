@@ -29,4 +29,37 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 		return this.getSession().createCriteria(ContractMetaVO.class).list();
 	}
 
+	@Override
+	public ContractVO getNextMainContract(ContractVO c) {
+		String hql = "From ContractVO where contractMeta=:contractMeta and status=:status";
+		ContractVO nmc = (ContractVO) this.getSession().createQuery(hql)
+				.setParameter("contractMeta", c.getContractMeta())
+				.setParameter("status", BaseConstant.NEXT_MAIN)
+				.uniqueResult();
+		return nmc;
+	}
+
+	@Override
+	public void saveContract(ContractVO nmc) {
+		this.getSession().saveOrUpdate(nmc);
+	}
+
+	@Override
+	public void mainSwitch(ContractVO currentC, ContractVO newC) {
+		ContractVO dbContract = (ContractVO) this.getSession().load(ContractVO.class, currentC);
+		ContractVO dbNewContract = (ContractVO) this.getSession().load(ContractVO.class, newC);
+		if(dbContract != null){
+			dbContract.setStatus(currentC.getStatus());
+			this.getSession().saveOrUpdate(dbContract);
+		} else {
+			this.getSession().saveOrUpdate(currentC);
+		}
+		if(dbNewContract != null){
+			dbNewContract.setStatus(newC.getStatus());
+			this.getSession().saveOrUpdate(dbNewContract);
+		} else {
+			this.getSession().saveOrUpdate(newC);
+		}
+	}
+
 }

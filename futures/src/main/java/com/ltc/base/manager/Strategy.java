@@ -17,4 +17,6 @@ public interface Strategy {
 	void onCommand(ContractVO contract, CommandVO command);
 	
 	List<RuleVO> generateRulesOnContract(ContractVO contract);
+
+	void mainSwitch(ContractVO c, ContractVO nmc);
 }

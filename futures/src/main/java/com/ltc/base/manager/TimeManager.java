@@ -16,4 +16,6 @@ public interface TimeManager {
 	
 	LocalTime getBarCloseTime();
 
+	void waitTillNextWorkingDay(LocalTime runTime) throws InterruptedException;
+
 }

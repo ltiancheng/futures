@@ -97,4 +97,33 @@ public class TimeManagerImpl implements TimeManager {
 		}
 	}
 
+	@Override
+	public void waitTillNextWorkingDay(LocalTime runTime) throws InterruptedException {
+		Calendar currentDate = Calendar.getInstance();
+		Calendar nextRun = Calendar.getInstance();
+		nextRun.set(Calendar.HOUR_OF_DAY, runTime.getHourOfDay());
+		nextRun.set(Calendar.MINUTE, runTime.getMinuteOfHour());
+		nextRun.set(Calendar.SECOND, runTime.getSecondOfMinute());
+		
+		LocalTime now = LocalTime.fromCalendarFields(currentDate);
+		int weekDay = currentDate.get(Calendar.DAY_OF_WEEK);
+		if(runTime.isBefore(now)){
+			if(weekDay == Calendar.FRIDAY){
+				nextRun.add(Calendar.DATE, 3);
+			} else if(weekDay == Calendar.SATURDAY) {
+				nextRun.add(Calendar.DATE, 2);
+			} else {
+				nextRun.add(Calendar.DATE, 1);
+			}
+		} else {
+			if(weekDay == Calendar.SATURDAY){
+				nextRun.add(Calendar.DATE, 2);
+			} else if(weekDay == Calendar.SUNDAY){
+				nextRun.add(Calendar.DATE, 1);
+			}
+		}
+		long millis = nextRun.getTimeInMillis() - currentDate.getTimeInMillis();
+		Thread.sleep(millis);
+	}
+	
 }

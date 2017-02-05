@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.RuleHolder;
 import com.ltc.base.manager.Strategy;
+import com.ltc.base.service.ContractService;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ConditionVO;
@@ -46,7 +47,7 @@ public class StrategyImpl implements Strategy {
 	private PortfolioHolder portfolioHolder;
 	private RuleHolder ruleHolder;
 	private ContractHolder contractHolder;
-	
+
 	public void setContractHolder(ContractHolder contractHolder) {
 		this.contractHolder = contractHolder;
 	}
@@ -83,7 +84,7 @@ public class StrategyImpl implements Strategy {
 	}
 
 	private List<RuleVO> generateRulesOnContract(PositionVO p, PortfolioVO portfolio) {
-		ContractVO contract = p.getContract();
+		ContractVO contract = contractHolder.getContractByKey(p.getContract().getKey());
 		if(contract.getCurrentBar() == null){
 			logger.warn("[StrategyImpl] return empty rule list due to the null current bar of "+contract.getKey());
 			return new ArrayList<RuleVO>();
@@ -112,7 +113,7 @@ public class StrategyImpl implements Strategy {
 
 	private List<RuleVO> generateCloseRules(PositionVO p, StrategyPricePointVO spp) {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
-		BarVO currentBar = p.getContract().getCurrentBar();
+		BarVO currentBar = contractHolder.getContractByKey(p.getContract().getKey()).getCurrentBar();
 		if(p.getUnitCount() == 0){
 			return ruleList;
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
@@ -317,9 +318,11 @@ public class StrategyImpl implements Strategy {
 	}
 
 	private void updateCashWhenEmpty(PortfolioVO portfolio, PositionVO position, CommandVO command) {
-		float dealPrice = command.getDealPrice().floatValue();
+		float dealPrice=0;
 		if(command.getDealPrice() == null || command.getDealPrice().equals(0)){
 			dealPrice = command.getPrice().floatValue();
+		} else {
+			dealPrice = command.getDealPrice().floatValue();
 		}
 		double cashAmount = (dealPrice - position.getAveragePrice()) * command.getUnits() * 
 				command.getHandPerUnit() * position.getContract().getContractMeta().getPointValue();
@@ -343,6 +346,16 @@ public class StrategyImpl implements Strategy {
 	@Override
 	public void onCommand(ContractVO contract, CommandVO command) {
 		//do nothing.
+	}
+
+	@Override
+	public void mainSwitch(ContractVO c, ContractVO nmc) {
+		PositionVO position = this.portfolioHolder.getPositionByContract(c);
+		if(StringUtils.isEmpty(position.getDirection())){
+			position.setContract(nmc);
+			this.portfolioHolder.saveCurrentStatus();
+			contractHolder.mainSwitch(c, nmc);
+		}
 	}
 
 }

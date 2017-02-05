@@ -1,6 +1,7 @@
 package com.ltc.base.manager.impl;
 
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -102,6 +103,23 @@ public class ContractHolderImpl implements ContractHolder {
 			return this.barHistMap;
 		} else {
 			return this.barHistMap;
+		}
+	}
+
+	@Override
+	public void mainSwitch(ContractVO c, ContractVO nmc) {
+		this.contractService.mainSwitch(c, nmc);
+		Calendar cal = Calendar.getInstance();
+		if(this.activeContractRefreshTime != null){
+			cal.setTime(this.activeContractRefreshTime);
+			cal.add(Calendar.WEEK_OF_MONTH, -1);
+			this.activeContractRefreshTime = cal.getTime();
+		}
+		cal = Calendar.getInstance();
+		if(this.barHistRefreshTime != null){
+			cal.setTime(this.barHistRefreshTime);
+			cal.add(Calendar.WEEK_OF_MONTH, -1);
+			this.barHistRefreshTime = cal.getTime();
 		}
 	}
 	

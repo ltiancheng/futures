@@ -13,4 +13,6 @@ public interface ContractHolder {
 
 	List<BarVO> getBarHist(ContractVO c, int openBarSize);
 
+	void mainSwitch(ContractVO c, ContractVO nmc);
+
 }

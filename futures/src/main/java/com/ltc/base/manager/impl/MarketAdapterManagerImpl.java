@@ -1,12 +1,21 @@
 package com.ltc.base.manager.impl;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,6 +101,42 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 				}
 			}
 		});
+	}
+
+	@Override
+	public ContractVO getTopVolContract(ContractVO currentContract) throws ParseException {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyMM");
+		Date d = sdf.parse(currentContract.getPrid());
+		Calendar c = Calendar.getInstance();
+		c.setTime(d);
+		List<ContractVO> contractList = new ArrayList<ContractVO>();
+		ContractVO cc = getContractOnline(currentContract.getContractMeta(), currentContract.getPrid());
+		currentContract.setCurrentBar(cc.getCurrentBar());
+		for(int i = 0 ; i<=5 ; i++){
+			c.add(Calendar.MONTH, 1);
+			ContractVO nmc = getContractOnline(currentContract.getContractMeta(), sdf.format(c.getTime()));
+			contractList.add(nmc);
+		}
+		ContractVO topc = cc;
+		if(CollectionUtils.isNotEmpty(contractList)){
+			for(ContractVO cvo : contractList){
+				if(cvo.getCurrentBar() != null && topc.getCurrentBar() != null){
+					if(cvo.getCurrentBar().getVolume() > topc.getCurrentBar().getVolume()){
+						topc = cvo;
+					}
+				}
+			}
+		}
+		return topc;
+	}
+
+	private ContractVO getContractOnline(com.ltc.base.vo.ContractMetaVO contractMeta, String prid) {
+		ContractVO c = new ContractVO();
+		c.setContractMeta(contractMeta);
+		c.setPrid(prid);
+		BarVO bar = contractAdapter.getCurrentBar(c);
+		c.setCurrentBar(bar);
+		return c;
 	}
 	
 }

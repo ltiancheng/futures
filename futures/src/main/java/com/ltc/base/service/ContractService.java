@@ -9,4 +9,7 @@ public interface ContractService {
 
 	List<ContractVO> getActiveContractList();
 	List<ContractMetaVO> getContractMetaList();
+	ContractVO getNextMainContract(ContractVO c);
+	void saveNextMainContract(ContractVO nmc);
+	void mainSwitch(ContractVO c, ContractVO nmc);
 }
