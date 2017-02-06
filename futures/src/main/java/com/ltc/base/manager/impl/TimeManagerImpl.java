@@ -87,7 +87,7 @@ public class TimeManagerImpl implements TimeManager {
 		LocalTime lt = LocalTime.fromCalendarFields(now);
 		if(lt.isBefore(this.barOpenTime) && lt.isAfter(this.barCloseTime)){
 			//market is closed;
-			if(lastRefreshTime.after(new LocalDate().toDate())){
+			if(lastRefreshTime != null && lastRefreshTime.after(new LocalDate().toDate())){
 				return false;
 			} else {
 				return true;
