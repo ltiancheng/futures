@@ -135,7 +135,7 @@
     
     <bean id="timeManager" class="com.ltc.base.manager.impl.TimeManagerImpl">
     	<property name="sleepMillis">
-    		<value>5000</value>
+    		<value>10000</value>
     	</property>
     	<property name="barOpenTime">
     		<bean class="org.joda.time.LocalTime">

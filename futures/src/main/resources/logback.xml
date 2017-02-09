@@ -59,8 +59,8 @@
 		</encoder>
 
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<!-- rollover daily -->
-			<fileNamePattern>${global.logger.dir}/command.%d{yyyy-MM-dd}.%i.log
+			<!-- rollover monthly -->
+			<fileNamePattern>${global.logger.dir}/command.%d{yyyy-MM}.%i.log
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

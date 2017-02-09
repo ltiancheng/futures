@@ -51,6 +51,10 @@ public class ConditionVO {
 			logger.warn("[ConditionVO] current bar of contract: "+contract.getKey()+" is null!");
 			return false;
 		}
+		if(contract.getCurrentBar().getClosePrice() <=1){
+			logger.warn("[ConditionVO] current bar is abnormal: "+contract.getKey());
+			return false;
+		}
 		BigDecimal compareField;
 		if(StringUtils.equals(this.getType(), PRICE_TYPE)){
 			compareField = new BigDecimal(contract.getCurrentBar().getClosePrice());
