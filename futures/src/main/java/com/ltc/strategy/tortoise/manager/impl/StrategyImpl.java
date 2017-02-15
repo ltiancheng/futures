@@ -63,37 +63,21 @@ public class StrategyImpl implements Strategy {
 	@Override
 	public void saveStatus() {
 		try{
-//			refreshPortfolio(portfolioHolder.getPortfolio());
+			refreshCurrentEquity(portfolioHolder.getPortfolio());
 		} catch (Exception e){
 			logger.warn("refreshPortoflio failed!", e);
 		}
 		portfolioHolder.saveCurrentStatus();
 		logger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
 	}
-
-	//refresh current equity & stop loss equity
-	private void refreshPortfolio(PortfolioVO portfolio) {
+	
+	//refresh stop loss equity
+	private void refreshStopLossEquity(PortfolioVO portfolio){
 		Set<PositionVO> positionSet = portfolio.getPositionSet();
-		double currentEquity = portfolio.getCash();
 		double stopLossEquity = portfolio.getCash();
 		Map<String, List<RuleVO>> ruleMap = ruleHolder.getRuleMap();
 		for(PositionVO p: positionSet){
 			if(StringUtils.isNotBlank(p.getDirection())){
-				//fresh current equity
-				if(p.getContract().getCurrentBar() != null){
-					float currentPrice = p.getContract().getCurrentBar().getClosePrice();
-					if(currentPrice > 0){
-						double cashAmount = (currentPrice - p.getAveragePrice()) * p.getUnitCount() * 
-								p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
-						if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
-							currentEquity = currentEquity + cashAmount;
-						} else {
-							currentEquity = currentEquity - cashAmount;
-						}
-					}
-				} else {
-					logger.warn("current bar is null: "+p.getContract().getKey());
-				}
 				//fresh close equity
 				List<RuleVO> rules = ruleMap.get(p.getContract().getKey());
 				float closePrice = 0;
@@ -115,8 +99,35 @@ public class StrategyImpl implements Strategy {
 				}
 			}
 		}
-		portfolio.setCurrentEquity(currentEquity);
 		portfolio.setStopLossEquity(stopLossEquity);
+	}
+
+	//refresh current equity
+	private void refreshCurrentEquity(PortfolioVO portfolio) {
+		Set<PositionVO> positionSet = portfolio.getPositionSet();
+		double currentEquity = portfolio.getCash();
+		for(PositionVO p: positionSet){
+			if(StringUtils.isNotBlank(p.getDirection())){
+				//fresh current equity
+				BarVO bar = contractHolder.getContractByKey(p.getContract().getKey()).getCurrentBar();
+				if(bar != null){
+					float currentPrice = bar.getClosePrice();
+					if(currentPrice > 0){
+						double cashAmount = (currentPrice - p.getAveragePrice()) * p.getUnitCount() * 
+								p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
+						if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
+							currentEquity = currentEquity + cashAmount;
+						} else {
+							currentEquity = currentEquity - cashAmount;
+						}
+					}
+				} else {
+					logger.warn("current bar is null: "+p.getContract().getKey());
+				}
+				
+			}
+		}
+		portfolio.setCurrentEquity(currentEquity);
 	}
 
 	@Override
