@@ -6,15 +6,22 @@ import java.util.Set;
 public class PortfolioVO implements Serializable {
 	@Override
 	public String toString() {
-		return "cash: "+cash+" stopLossEquity: "+stopLossEquity+" positions: "+positionSet;
+		return "cash: "+cash+" currentEquity: "+currentEquity+" stopLossEquity: "+stopLossEquity+" positions: "+positionSet;
 	}
 	private static final long serialVersionUID = 1L;
 	
 	private double cash;
 	private double stopLossEquity;
+	private double currentEquity;
 	private Set<PositionVO> positionSet;
 	private String code;
 	
+	public double getCurrentEquity() {
+		return currentEquity;
+	}
+	public void setCurrentEquity(double currentEquity) {
+		this.currentEquity = currentEquity;
+	}
 	public Set<PositionVO> getPositionSet() {
 		return positionSet;
 	}

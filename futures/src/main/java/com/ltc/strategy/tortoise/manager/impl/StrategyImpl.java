@@ -3,6 +3,7 @@ package com.ltc.strategy.tortoise.manager.impl;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
@@ -12,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.RuleHolder;
 import com.ltc.base.manager.Strategy;
-import com.ltc.base.service.ContractService;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ConditionVO;
@@ -62,8 +62,61 @@ public class StrategyImpl implements Strategy {
 
 	@Override
 	public void saveStatus() {
+		try{
+//			refreshPortfolio(portfolioHolder.getPortfolio());
+		} catch (Exception e){
+			logger.warn("refreshPortoflio failed!", e);
+		}
 		portfolioHolder.saveCurrentStatus();
 		logger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
+	}
+
+	//refresh current equity & stop loss equity
+	private void refreshPortfolio(PortfolioVO portfolio) {
+		Set<PositionVO> positionSet = portfolio.getPositionSet();
+		double currentEquity = portfolio.getCash();
+		double stopLossEquity = portfolio.getCash();
+		Map<String, List<RuleVO>> ruleMap = ruleHolder.getRuleMap();
+		for(PositionVO p: positionSet){
+			if(StringUtils.isNotBlank(p.getDirection())){
+				//fresh current equity
+				if(p.getContract().getCurrentBar() != null){
+					float currentPrice = p.getContract().getCurrentBar().getClosePrice();
+					if(currentPrice > 0){
+						double cashAmount = (currentPrice - p.getAveragePrice()) * p.getUnitCount() * 
+								p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
+						if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
+							currentEquity = currentEquity + cashAmount;
+						} else {
+							currentEquity = currentEquity - cashAmount;
+						}
+					}
+				} else {
+					logger.warn("current bar is null: "+p.getContract().getKey());
+				}
+				//fresh close equity
+				List<RuleVO> rules = ruleMap.get(p.getContract().getKey());
+				float closePrice = 0;
+				for(RuleVO r : rules){
+					String instruction = r.getCommand().getInstruction();
+					if(StringUtils.equals(CommandVO.CLOSE_LONG, instruction) || StringUtils.equals(CommandVO.CLOSE_SHORT, instruction)){
+						closePrice = r.getCommand().getPrice().floatValue();
+						break;
+					}
+				}
+				if(closePrice > 0){
+					double cashAmount = (closePrice - p.getAveragePrice()) * p.getUnitCount() * 
+							p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
+					if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
+						stopLossEquity = stopLossEquity + cashAmount;
+					} else {
+						stopLossEquity = stopLossEquity - cashAmount;
+					}
+				}
+			}
+		}
+		portfolio.setCurrentEquity(currentEquity);
+		portfolio.setStopLossEquity(stopLossEquity);
 	}
 
 	@Override
