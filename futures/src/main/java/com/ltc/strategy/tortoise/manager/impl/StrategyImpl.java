@@ -72,7 +72,8 @@ public class StrategyImpl implements Strategy {
 	}
 	
 	//refresh stop loss equity
-	private void refreshStopLossEquity(PortfolioVO portfolio){
+	public void refreshStopLossEquity(){
+		PortfolioVO portfolio = portfolioHolder.getPortfolio();
 		Set<PositionVO> positionSet = portfolio.getPositionSet();
 		double stopLossEquity = portfolio.getCash();
 		Map<String, List<RuleVO>> ruleMap = ruleHolder.getRuleMap();

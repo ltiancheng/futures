@@ -24,7 +24,7 @@
     		<list>
     			<ref bean="futureMonitor"/>
     			<ref bean="futurePersistance"/>
-    			<!-- <ref bean="tortoiseRunner"/> -->
+    			<ref bean="tortoiseRunner"/>
     			<ref bean="ruleExecutor"/>
     			<ref bean="mainSwitcher"/>
     		</list>
@@ -118,7 +118,20 @@
     </bean>
     
     <!-- implemented object of Strategy runner -->
-    <!-- <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.TortoiseRunner"/> -->
+    <bean id="tortoiseRunner" class="com.ltc.strategy.tortoise.utils.StrategyRunner">
+    	<property name="strategy" ref="tortoise"/>
+    	<property name="timeManager" ref="timeManager"/>
+    	<property name="runTime">
+    		<bean class="org.joda.time.LocalTime">
+    			<constructor-arg index="0">
+    				<value>15</value>
+    			</constructor-arg>
+    			<constructor-arg index="1">
+    				<value>10</value>
+    			</constructor-arg>
+    		</bean>
+    	</property>
+    </bean>
     
     <bean id="contractHolder" class="com.ltc.base.manager.impl.ContractHolderImpl">
     	<property name="contractService" ref="contractService"/>

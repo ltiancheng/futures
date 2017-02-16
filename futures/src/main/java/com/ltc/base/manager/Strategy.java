@@ -19,4 +19,6 @@ public interface Strategy {
 	List<RuleVO> generateRulesOnContract(ContractVO contract);
 
 	void mainSwitch(ContractVO c, ContractVO nmc);
+	
+	void refreshStopLossEquity();
 }
