@@ -69,6 +69,26 @@
 		</rollingPolicy>
 
 	</appender>
+	
+	<appender name="PortfolioAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${global.logger.dir}/portfolio.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover daily -->
+			<fileNamePattern>${global.logger.dir}/portfolio.%d{yyyy-MM-dd}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
 
 	<logger name="com.ltc" level="${global.logger.level}"
 		additivity="false">
@@ -78,6 +98,11 @@
 	<logger name="COMMAND" level="${global.logger.level}"
 		additivity="false">
 		<appender-ref ref="CommandAppender" />
+	</logger>
+	
+	<logger name="Portfolio" level="${global.logger.level}"
+		additivity="false">
+		<appender-ref ref="PortfolioAppender" />
 	</logger>
 
 	<root level="INFO">

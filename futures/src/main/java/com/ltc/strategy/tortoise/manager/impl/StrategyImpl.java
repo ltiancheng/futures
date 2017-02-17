@@ -27,6 +27,7 @@ import com.ltc.strategy.tortoise.vo.StrategyPricePointVO;
 public class StrategyImpl implements Strategy {
 
 	private static Logger logger = LoggerFactory.getLogger(StrategyImpl.class);
+	private static Logger portfolioLogger = LoggerFactory.getLogger("Portfolio");
 	
 	/**
 	 * Strategy Content:
@@ -68,7 +69,7 @@ public class StrategyImpl implements Strategy {
 			logger.warn("refreshPortoflio failed!", e);
 		}
 		portfolioHolder.saveCurrentStatus();
-		logger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
+		portfolioLogger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
 	}
 	
 	//refresh stop loss equity
@@ -116,11 +117,15 @@ public class StrategyImpl implements Strategy {
 					if(currentPrice > 0){
 						double cashAmount = (currentPrice - p.getAveragePrice()) * p.getUnitCount() * 
 								p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
+						portfolioLogger.info("Position: "+p);
 						if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
 							currentEquity = currentEquity + cashAmount;
+							portfolioLogger.info("profit: " + Double.toString(cashAmount));
 						} else {
 							currentEquity = currentEquity - cashAmount;
+							portfolioLogger.info("profit: " + Double.toString(-cashAmount));
 						}
+						portfolioLogger.info("================================================================"); 
 					}
 				} else {
 					logger.warn("current bar is null: "+p.getContract().getKey());
