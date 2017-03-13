@@ -192,7 +192,7 @@ public class StrategyImpl implements Strategy {
 			double stp = slp;
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
-			} else {
+			} else if(currentBar.getClosePrice() >= p.getContract().getContractMeta().getAtr() * 2 + p.getLastInPrice()) {
 				if((currentBar.getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
 					stp = Math.max(clp, slp);
 				}
@@ -218,7 +218,7 @@ public class StrategyImpl implements Strategy {
 			double stp = slp;
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
-			} else {
+			} else if(currentBar.getClosePrice() <= p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2) {
 				if((p.getLastInPrice() - currentBar.getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
 					stp = Math.min(csp, slp);
 				}
