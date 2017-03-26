@@ -62,4 +62,13 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public List<ContractVO> getNextMainContractList() {
+		String hql = "From ContractVO where status=:status";
+		List<ContractVO> nmc = (List<ContractVO>) this.getSession().createQuery(hql)
+				.setParameter("status", BaseConstant.NEXT_MAIN).list();
+		return nmc;
+	}
+
 }

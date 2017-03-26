@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ltc.base.gateway.ContractAdapter;
+import com.ltc.base.helpers.BaseConstant;
 import com.ltc.base.manager.MarketAdapterManager;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.ContractVO;
@@ -105,7 +106,7 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 
 	@Override
 	public ContractVO getTopVolContract(ContractVO currentContract) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyMM");
+		SimpleDateFormat sdf = new SimpleDateFormat(BaseConstant.PRID_FORMAT);
 		Date d = sdf.parse(currentContract.getPrid());
 		Calendar c = Calendar.getInstance();
 		c.setTime(d);

@@ -12,4 +12,5 @@ public interface ContractService {
 	ContractVO getNextMainContract(ContractVO c);
 	void saveNextMainContract(ContractVO nmc);
 	void mainSwitch(ContractVO c, ContractVO nmc);
+	List<ContractVO> getNextMainContractList();
 }

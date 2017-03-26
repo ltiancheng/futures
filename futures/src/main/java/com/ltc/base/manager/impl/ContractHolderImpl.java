@@ -1,5 +1,6 @@
 package com.ltc.base.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -26,11 +27,24 @@ public class ContractHolderImpl implements ContractHolder {
 	private ContractService contractService;
 	private TimeManager timeManager;
 	private List<ContractVO> activeContractList;
-	private Date activeContractRefreshTime;
+	private List<ContractVO> nextMainContractList;
+	private Date contractRefreshTime;
 	private ContractAdapter contractAdapter;
 	private Map<String, List<BarVO>> barHistMap = new HashMap<String, List<BarVO>>();
 	private Date barHistRefreshTime;
 
+
+	public void setNextMainContractList(List<ContractVO> nextMainContractList) {
+		this.nextMainContractList = nextMainContractList;
+	}
+
+	public Date getBarHistRefreshTime() {
+		return barHistRefreshTime;
+	}
+
+	public void setBarHistRefreshTime(Date barHistRefreshTime) {
+		this.barHistRefreshTime = barHistRefreshTime;
+	}
 	private static final Logger logger = LoggerFactory.getLogger(ContractHolderImpl.class);
 	
 	public void setContractAdapter(ContractAdapter contractAdapter) {
@@ -47,19 +61,30 @@ public class ContractHolderImpl implements ContractHolder {
 
 	@Override
 	public List<ContractVO> getActiveContractList() {
-		if(CollectionUtils.isEmpty(activeContractList) || needRefreshActiveContract()){
+		this.refreshContractList();
+		return this.activeContractList;
+	}
+	
+	public void refreshContractList(){
+		if(needRefreshContract() || (!CollectionUtils.isEmpty(this.activeContractList) || !CollectionUtils.isEmpty(this.nextMainContractList))){
 			this.activeContractList = contractService.getActiveContractList();
+			this.nextMainContractList = contractService.getNextMainContractList();
 			logger.debug("[ContractHolderImpl] get fresh active contract list: "
 					+Arrays.toString(this.activeContractList.toArray(new ContractVO[0])));
-			this.activeContractRefreshTime = new Date();
-			return this.activeContractList;
-		} else {
-			return this.activeContractList;
+			logger.debug("[ContractHolderImpl] get fresh next main contract list: "
+					+Arrays.toString(this.nextMainContractList.toArray(new ContractVO[0])));
+			this.contractRefreshTime = new Date();
 		}
 	}
+	
+	@Override
+	public List<ContractVO> getNextMainContractList() {
+		this.refreshContractList();
+		return this.nextMainContractList;
+	}
 
-	private boolean needRefreshActiveContract() {
-		return this.timeManager.needRefreshBeforeOpen(this.activeContractRefreshTime);
+	private boolean needRefreshContract() {
+		return this.timeManager.needRefreshBeforeOpen(this.contractRefreshTime);
 	}
 	
 	private boolean needRefreshBarHist() {
@@ -71,6 +96,17 @@ public class ContractHolderImpl implements ContractHolder {
 		List<ContractVO> contracts = this.getActiveContractList();
 		for(ContractVO c: contracts){
 			if(StringUtils.equals(c.getKey(), contractKey)){
+				return c;
+			}
+		}
+		return null;
+	}
+	
+	@Override
+	public ContractVO getNextMainContract(String symbol) {
+		List<ContractVO> nextMainContracts = this.getNextMainContractList();
+		for(ContractVO c : nextMainContracts){
+			if(StringUtils.equals(symbol, c.getContractMeta().getSymbol())){
 				return c;
 			}
 		}
@@ -90,11 +126,18 @@ public class ContractHolderImpl implements ContractHolder {
 		}
 		return barList;
 	}
+	
+	@Override
+	public BarVO getBarFromGw(ContractVO c){
+		return this.contractAdapter.getCurrentBar(c);
+	}
 
 	private Map<String, List<BarVO>> getBarHistMap() {
 		if(CollectionUtils.isEmpty(this.barHistMap) || needRefreshBarHist()){
-			List<ContractVO> contractList = this.getActiveContractList();
-			for(ContractVO c : contractList){
+			List<ContractVO> allContracts = new ArrayList<ContractVO>();
+			allContracts.addAll(this.getActiveContractList());
+			allContracts.addAll(this.getNextMainContractList());
+			for(ContractVO c : allContracts){
 				String key = c.getKey();
 				List<BarVO> barHist = this.contractAdapter.getBarHist(c, DEFAULT_BAR_SIZE);
 				this.barHistMap.put(key, barHist);
@@ -110,10 +153,10 @@ public class ContractHolderImpl implements ContractHolder {
 	public void mainSwitch(ContractVO c, ContractVO nmc) {
 		this.contractService.mainSwitch(c, nmc);
 		Calendar cal = Calendar.getInstance();
-		if(this.activeContractRefreshTime != null){
-			cal.setTime(this.activeContractRefreshTime);
+		if(this.contractRefreshTime != null){
+			cal.setTime(this.contractRefreshTime);
 			cal.add(Calendar.WEEK_OF_MONTH, -1);
-			this.activeContractRefreshTime = cal.getTime();
+			this.contractRefreshTime = cal.getTime();
 		}
 		cal = Calendar.getInstance();
 		if(this.barHistRefreshTime != null){
@@ -122,6 +165,4 @@ public class ContractHolderImpl implements ContractHolder {
 			this.barHistRefreshTime = cal.getTime();
 		}
 	}
-	
-	
 }

@@ -43,6 +43,7 @@ public class StrategyRunner extends BaseStartupItem implements Runnable {
 				logger.error("sleep interrupted!", e);
 			}
 			this.strategy.refreshStopLossEquity();
+			this.strategy.updateTopPrice();
 			this.strategy.saveStatus();
 		}
 	}

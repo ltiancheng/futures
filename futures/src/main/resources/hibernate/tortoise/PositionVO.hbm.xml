@@ -23,6 +23,9 @@
         <property name="averagePrice" type="float">
             <column name="AVERAGE_PRICE"/>
         </property>
+        <property name="topPrice" type="float">
+            <column name="TOP_PRICE"/>
+        </property>
         <property name="status" type="string">
             <column name="STATUS" length="3"/>
         </property>

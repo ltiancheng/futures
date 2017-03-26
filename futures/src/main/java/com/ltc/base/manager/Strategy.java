@@ -21,4 +21,6 @@ public interface Strategy {
 	void mainSwitch(ContractVO c, ContractVO nmc);
 	
 	void refreshStopLossEquity();
+
+	void updateTopPrice();
 }

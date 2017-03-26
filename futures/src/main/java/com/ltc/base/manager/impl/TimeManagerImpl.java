@@ -97,6 +97,7 @@ public class TimeManagerImpl implements TimeManager {
 		}
 	}
 
+	//wait on next working day till the time input.
 	@Override
 	public void waitTillNextWorkingDay(LocalTime runTime) throws InterruptedException {
 		Calendar currentDate = Calendar.getInstance();

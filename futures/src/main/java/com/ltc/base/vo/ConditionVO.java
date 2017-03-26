@@ -8,6 +8,14 @@ import org.slf4j.LoggerFactory;
 
 public class ConditionVO {
 	
+	public ConditionVO(BigDecimal triggerValue, String type, boolean aboveCondition) {
+		super();
+		this.triggerValue = triggerValue;
+		this.type = type;
+		this.aboveCondition = aboveCondition;
+	}
+	public ConditionVO(){}
+
 	@Override
 	public String toString() {
 		return "IF "+type+" IS "+(aboveCondition?"above":"lower")+" than "+triggerValue.toString();
@@ -21,6 +29,8 @@ public class ConditionVO {
 	private BigDecimal triggerValue; 
 	private String type;
 	private boolean aboveCondition;
+	
+	public static final ConditionVO TRUE_CONDITION = new ConditionVO(BigDecimal.ZERO, PRICE_TYPE, true);
 
 	public BigDecimal getTriggerValue() {
 		return triggerValue;

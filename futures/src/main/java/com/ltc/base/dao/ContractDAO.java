@@ -17,4 +17,6 @@ public interface ContractDAO {
 
 	void mainSwitch(ContractVO c, ContractVO nmc);
 
+	List<ContractVO> getNextMainContractList();
+
 }

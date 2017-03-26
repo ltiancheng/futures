@@ -16,6 +16,7 @@ public class PositionVO implements Serializable {
 	public static final String SHORT = "S";
 	public static final String ACTIVE = "A";
 	public static final String EXPIRE = "E";
+	public static final String REFRESH = "R";
 	
 	private ContractVO contract;
 	private String direction = "";		//"L" for Long; "S" for Short
@@ -23,10 +24,17 @@ public class PositionVO implements Serializable {
 	private int unitCount;
 	private float lastInPrice;
 	private float averagePrice;
+	private float topPrice;
 	private String status;
 	private PortfolioVO portfolio;
 	private long id;
 	
+	public float getTopPrice() {
+		return topPrice;
+	}
+	public void setTopPrice(float topPrice) {
+		this.topPrice = topPrice;
+	}
 	public long getId() {
 		return id;
 	}

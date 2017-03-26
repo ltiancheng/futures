@@ -46,4 +46,9 @@ public class ContractServiceImpl implements ContractService {
 		contractDAO.mainSwitch(c, nmc);
 	}
 
+	@Override
+	public List<ContractVO> getNextMainContractList() {
+		return contractDAO.getNextMainContractList();
+	}
+
 }

@@ -15,4 +15,10 @@ public interface ContractHolder {
 
 	void mainSwitch(ContractVO c, ContractVO nmc);
 
+	ContractVO getNextMainContract(String symbol);
+
+	List<ContractVO> getNextMainContractList();
+
+	BarVO getBarFromGw(ContractVO c);
+
 }
