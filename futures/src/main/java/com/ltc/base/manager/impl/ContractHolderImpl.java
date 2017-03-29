@@ -27,7 +27,7 @@ public class ContractHolderImpl implements ContractHolder {
 	private ContractService contractService;
 	private TimeManager timeManager;
 	private List<ContractVO> activeContractList;
-	private List<ContractVO> nextMainContractList;
+	private List<ContractVO> nextMainContractList = new ArrayList<ContractVO>();
 	private Date contractRefreshTime;
 	private ContractAdapter contractAdapter;
 	private Map<String, List<BarVO>> barHistMap = new HashMap<String, List<BarVO>>();
@@ -66,7 +66,7 @@ public class ContractHolderImpl implements ContractHolder {
 	}
 	
 	public void refreshContractList(){
-		if(needRefreshContract() || (!CollectionUtils.isEmpty(this.activeContractList) || !CollectionUtils.isEmpty(this.nextMainContractList))){
+		if(needRefreshContract() || CollectionUtils.isEmpty(this.activeContractList)){
 			this.activeContractList = contractService.getActiveContractList();
 			this.nextMainContractList = contractService.getNextMainContractList();
 			logger.debug("[ContractHolderImpl] get fresh active contract list: "

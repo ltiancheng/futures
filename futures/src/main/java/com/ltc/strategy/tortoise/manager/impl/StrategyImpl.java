@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +51,7 @@ public class StrategyImpl implements Strategy {
 	
 	public static final int OPEN_BAR_SIZE = 20;
 	public static final int CLOSE_BAR_SIZE = 10;
-	private static final int FORCE_SWITCH_DATE = 10;
+	private static final int FORCE_SWITCH_DATE = 25;
 	
 	private PortfolioHolder portfolioHolder;
 	private RuleHolder ruleHolder;
@@ -89,21 +90,23 @@ public class StrategyImpl implements Strategy {
 			if(StringUtils.isNotBlank(p.getDirection())){
 				//fresh close equity
 				List<RuleVO> rules = ruleMap.get(p.getContract().getKey());
-				float closePrice = 0;
-				for(RuleVO r : rules){
-					String instruction = r.getCommand().getInstruction();
-					if(StringUtils.equals(CommandVO.CLOSE_LONG, instruction) || StringUtils.equals(CommandVO.CLOSE_SHORT, instruction)){
-						closePrice = r.getCommand().getPrice().floatValue();
-						break;
+				if(!CollectionUtils.isEmpty(rules)){
+					float closePrice = 0;
+					for(RuleVO r : rules){
+						String instruction = r.getCommand().getInstruction();
+						if(StringUtils.equals(CommandVO.CLOSE_LONG, instruction) || StringUtils.equals(CommandVO.CLOSE_SHORT, instruction)){
+							closePrice = r.getCommand().getPrice().floatValue();
+							break;
+						}
 					}
-				}
-				if(closePrice > 0){
-					double cashAmount = (closePrice - p.getAveragePrice()) * p.getUnitCount() * 
-							p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
-					if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
-						stopLossEquity = stopLossEquity + cashAmount;
-					} else {
-						stopLossEquity = stopLossEquity - cashAmount;
+					if(closePrice > 0){
+						double cashAmount = (closePrice - p.getAveragePrice()) * p.getUnitCount() * 
+								p.getHandPerUnit() * p.getContract().getContractMeta().getPointValue();
+						if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
+							stopLossEquity = stopLossEquity + cashAmount;
+						} else {
+							stopLossEquity = stopLossEquity - cashAmount;
+						}
 					}
 				}
 			}
@@ -184,7 +187,7 @@ public class StrategyImpl implements Strategy {
 			p.setAveragePrice(p.getAveragePrice()+priceGap);
 			p.setLastInPrice(p.getLastInPrice()+priceGap);
 			p.setTopPrice(0);
-			p.setContract(nextMainContract);
+//			p.setContract(nextMainContract);
 			// issue rules to open new position.
 			return openNewPosition(p, contract);
 		}
@@ -451,7 +454,7 @@ public class StrategyImpl implements Strategy {
 	public void ruleTriggered(RuleVO rule) {
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
 		PositionVO position = portfolioHolder.getPositionByContract(rule.getContract());
-		this.updatePosition(position, portfolio, rule.getCommand());
+		this.updatePosition(position, portfolio, rule);
 		ruleHolder.clearContractRule(rule.getContract().getKey());
 		List<RuleVO> rules = this.generateRulesOnContract(position, portfolio);
 		for(RuleVO r: rules){
@@ -459,13 +462,16 @@ public class StrategyImpl implements Strategy {
 		}
 	}
 
-	private void updatePosition(PositionVO position, PortfolioVO portfolio, CommandVO command) {
+	private void updatePosition(PositionVO position, PortfolioVO portfolio, RuleVO rule) {
+		CommandVO command = rule.getCommand();
 		if(StringUtils.equals(position.getStatus(), PositionVO.EXPIRE)){
 			//Update position only update the status when force switch, generate rules will cover all the prices & contracts.
 			position.setStatus(PositionVO.REFRESH);
+			this.portfolioHolder.saveCurrentStatus();
 		} else if(StringUtils.equals(position.getStatus(), PositionVO.REFRESH)) {
 			//Update position only update the status when force switch, generate rules will cover all the prices & contracts.
 			position.setStatus(PositionVO.ACTIVE);
+			this.doMainSwitch(position, position.getContract(), rule.getContract());
 		} else if(StringUtils.isEmpty(position.getDirection())){
 			if(CommandVO.OPEN_LONG.equals(command.getInstruction())){
 				position.setDirection(PositionVO.LONG);
@@ -550,10 +556,14 @@ public class StrategyImpl implements Strategy {
 	public void mainSwitch(ContractVO c, ContractVO nmc) {
 		PositionVO position = this.portfolioHolder.getPositionByContract(c);
 		if(StringUtils.isEmpty(position.getDirection())){
-			position.setContract(nmc);
-			this.portfolioHolder.saveCurrentStatus();
-			contractHolder.mainSwitch(c, nmc);
+			this.doMainSwitch(position, c, nmc);
 		}
+	}
+	
+	private void doMainSwitch(PositionVO position, ContractVO oldC, ContractVO nmc){
+		position.setContract(nmc);
+		this.portfolioHolder.saveCurrentStatus();
+		contractHolder.mainSwitch(oldC, nmc);
 	}
 
 	//update the highest/lowest close price daily
@@ -564,11 +574,12 @@ public class StrategyImpl implements Strategy {
 		for(PositionVO p: positionSet){
 			if(StringUtils.isNotBlank(p.getDirection())){
 				//fresh close equity
-				if(p.getContract().getCurrentBar() == null){
-					logger.warn("[StrategyImpl] current bar of " + p.getContract().getKey()+" is null, aborting of update top price.");
-					continue;
+				BarVO currentBar = p.getContract().getCurrentBar();
+				if(currentBar == null){
+					logger.warn("[StrategyImpl] current bar of " + p.getContract().getKey()+" is null, refecthing.");
+					currentBar = this.contractHolder.getBarFromGw(p.getContract());
 				}
-				float closePrice = p.getContract().getCurrentBar().getClosePrice();
+				float closePrice = currentBar.getClosePrice();
 				if(closePrice > 0){
 					if(p.getTopPrice() <= 0.1){
 						p.setTopPrice(closePrice);
