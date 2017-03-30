@@ -1,7 +1,6 @@
 package com.ltc.strategy.tortoise.manager.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -9,6 +8,7 @@ import java.util.Set;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.util.CollectionUtils;
 
+import com.ltc.base.vo.ContractMetaVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.strategy.tortoise.manager.PortfolioHolder;
 import com.ltc.strategy.tortoise.service.PortfolioService;
@@ -79,6 +79,17 @@ public class PortfolioHolderImpl implements PortfolioHolder {
 		Set<PositionVO> positions = this.getPortfolio().getPositionSet();
 		for(PositionVO p: positions){
 			if(StringUtils.equals(p.getContract().getKey(), contract.getKey())){
+				return p;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public PositionVO getPositionByContractMeta(ContractMetaVO contractMeta) {
+		Set<PositionVO> positions = this.getPortfolio().getPositionSet();
+		for(PositionVO p: positions){
+			if(StringUtils.equals(p.getContract().getContractMeta().getSymbol(), contractMeta.getSymbol())){
 				return p;
 			}
 		}

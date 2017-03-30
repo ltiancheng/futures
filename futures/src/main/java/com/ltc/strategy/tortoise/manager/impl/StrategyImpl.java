@@ -51,11 +51,19 @@ public class StrategyImpl implements Strategy {
 	
 	public static final int OPEN_BAR_SIZE = 20;
 	public static final int CLOSE_BAR_SIZE = 10;
-	private static final int FORCE_SWITCH_DATE = 25;
 	
 	private PortfolioHolder portfolioHolder;
 	private RuleHolder ruleHolder;
 	private ContractHolder contractHolder;
+	private int forceSwitchDate;
+
+	public int getForceSwitchDate() {
+		return forceSwitchDate;
+	}
+
+	public void setForceSwitchDate(int forceSwitchDate) {
+		this.forceSwitchDate = forceSwitchDate;
+	}
 
 	public void setContractHolder(ContractHolder contractHolder) {
 		this.contractHolder = contractHolder;
@@ -157,7 +165,7 @@ public class StrategyImpl implements Strategy {
 		for(PositionVO p : positions){
 			List<RuleVO> rules = generateRulesOnContract(p, portfolio);
 			for(RuleVO r : rules){
-				ruleHolder.addRule(p.getContract().getKey(), r);
+				ruleHolder.addRule(r.getContract().getKey(), r);
 			}
 		}
 		logger.info("[StrategyImpl] portfolio initiated: "+portfolio.toString());
@@ -173,6 +181,7 @@ public class StrategyImpl implements Strategy {
 			// update position status.
 			// issue rules to close old position.
 			p.setStatus(PositionVO.EXPIRE);
+			this.portfolioHolder.saveCurrentStatus();
 			return closeOldPostion(p);
 		}
 		if(isTime2OpenNew(p)){
@@ -182,14 +191,11 @@ public class StrategyImpl implements Strategy {
 			BarVO currentNmBar = nextMainContract.getCurrentBar();
 			if(currentNmBar == null){
 				currentNmBar = this.contractHolder.getBarFromGw(nextMainContract);
+				nextMainContract.setCurrentBar(currentNmBar);
 			}
-			float priceGap = currentNmBar.getClosePrice() - contract.getCurrentBar().getClosePrice();
-			p.setAveragePrice(p.getAveragePrice()+priceGap);
-			p.setLastInPrice(p.getLastInPrice()+priceGap);
-			p.setTopPrice(0);
 //			p.setContract(nextMainContract);
 			// issue rules to open new position.
-			return openNewPosition(p, contract);
+			return openNewPosition(p, nextMainContract, currentNmBar);
 		}
 		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
 		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList);
@@ -208,13 +214,13 @@ public class StrategyImpl implements Strategy {
 		return false;
 	}
 
-	private List<RuleVO> openNewPosition(PositionVO p, ContractVO oldContract) {
+	private List<RuleVO> openNewPosition(PositionVO p, ContractVO newContract, BarVO currentNmBar) {
 		RuleVO rule = new RuleVO();
 		rule.setCondition(ConditionVO.TRUE_CONDITION);
-		rule.setContract(p.getContract());
+		rule.setContract(newContract);
 		CommandVO command = new CommandVO();
 		command.setHandPerUnit(p.getHandPerUnit());
-		command.setPrice(new BigDecimal(p.getContract().getCurrentBar().getClosePrice()));
+		command.setPrice(new BigDecimal(currentNmBar.getClosePrice()));
 		command.setPriceStyle(CommandVO.MARKET);
 		command.setUnits(p.getUnitCount());
 		if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
@@ -237,7 +243,11 @@ public class StrategyImpl implements Strategy {
 		} else {
 			command.setInstruction(CommandVO.CLOSE_SHORT);
 		}
-		command.setPrice(new BigDecimal(p.getContract().getCurrentBar().getClosePrice()));
+		BarVO currentBar = p.getContract().getCurrentBar();
+		if(currentBar == null){
+			currentBar = contractHolder.getBarFromGw(p.getContract());
+		}
+		command.setPrice(new BigDecimal(currentBar.getClosePrice()));
 		command.setPriceStyle(CommandVO.MARKET);
 		command.setUnits(p.getUnitCount());
 		rule.setCommand(command);
@@ -245,13 +255,17 @@ public class StrategyImpl implements Strategy {
 	}
 
 	private boolean isTime2CloseOld(PositionVO p) {
+		if(StringUtils.isBlank(p.getDirection()) || !StringUtils.equals(p.getStatus(), PositionVO.ACTIVE) 
+				|| this.contractHolder.getNextMainContract(p.getContract().getContractMeta().getSymbol()) == null){
+			return false;
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat(BaseConstant.PRID_FORMAT);
 		try {
 			Date expireDate = sdf.parse(p.getContract().getPrid());
 			Calendar c = Calendar.getInstance();
 			c.setTime(expireDate);
 			c.set(Calendar.DATE, 1);
-			c.add(Calendar.DATE, -StrategyImpl.FORCE_SWITCH_DATE);
+			c.add(Calendar.DATE, -forceSwitchDate);
 			Calendar now = Calendar.getInstance();
 			if(c.before(now)){
 				return true;
@@ -454,22 +468,33 @@ public class StrategyImpl implements Strategy {
 	public void ruleTriggered(RuleVO rule) {
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
 		PositionVO position = portfolioHolder.getPositionByContract(rule.getContract());
+		if(position == null && StringUtils.equals(rule.getContract().getStatus(), BaseConstant.NEXT_MAIN)){
+			position = portfolioHolder.getPositionByContractMeta(rule.getContract().getContractMeta());
+		}
 		this.updatePosition(position, portfolio, rule);
 		ruleHolder.clearContractRule(rule.getContract().getKey());
 		List<RuleVO> rules = this.generateRulesOnContract(position, portfolio);
 		for(RuleVO r: rules){
-			ruleHolder.addRule(position.getContract().getKey(), r);
+			ruleHolder.addRule(r.getContract().getKey(), r);
 		}
 	}
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, RuleVO rule) {
 		CommandVO command = rule.getCommand();
 		if(StringUtils.equals(position.getStatus(), PositionVO.EXPIRE)){
-			//Update position only update the status when force switch, generate rules will cover all the prices & contracts.
+			//Update position only update the status when force switch
 			position.setStatus(PositionVO.REFRESH);
 			this.portfolioHolder.saveCurrentStatus();
 		} else if(StringUtils.equals(position.getStatus(), PositionVO.REFRESH)) {
-			//Update position only update the status when force switch, generate rules will cover all the prices & contracts.
+			//Update position only update the status when force switch
+			ContractVO nmContract = rule.getContract();
+			ContractVO oldContract = position.getContract();
+			BarVO nmBar = this.getBarFromContract(nmContract);
+			BarVO oldBar = this.getBarFromContract(oldContract);
+			float priceGap = nmBar.getClosePrice() - oldBar.getClosePrice();
+			position.setAveragePrice(position.getAveragePrice()+priceGap);
+			position.setLastInPrice(position.getLastInPrice()+priceGap);
+			position.setTopPrice(0);
 			position.setStatus(PositionVO.ACTIVE);
 			this.doMainSwitch(position, position.getContract(), rule.getContract());
 		} else if(StringUtils.isEmpty(position.getDirection())){
@@ -519,6 +544,13 @@ public class StrategyImpl implements Strategy {
 					+", command.handPerUnit="+command.getHandPerUnit()); 
 			}
 		}
+	}
+
+	private BarVO getBarFromContract(ContractVO c) {
+		if(c.getCurrentBar() == null){
+			c.setCurrentBar(this.contractHolder.getBarFromGw(c));
+		}
+		return c.getCurrentBar();
 	}
 
 	private void updateCashWhenEmpty(PortfolioVO portfolio, PositionVO position, CommandVO command) {

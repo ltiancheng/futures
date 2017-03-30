@@ -74,6 +74,9 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 								rules.addAll(strategy.generateRulesOnContract(contract));
 							} else {
 								for(RuleVO rule : rules){
+									if(contract.getCurrentBar() == null){
+										contract.setCurrentBar(this.contractHolder.getBarFromGw(contract));
+									}
 									if(meetCondition(rule.getCondition(), contract)){
 										commandManager.executeCommand(contract, rule.getCommand(), strategy);
 										triggeredRules.add(rule);

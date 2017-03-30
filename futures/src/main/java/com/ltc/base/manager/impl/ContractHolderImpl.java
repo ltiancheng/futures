@@ -99,6 +99,12 @@ public class ContractHolderImpl implements ContractHolder {
 				return c;
 			}
 		}
+		List<ContractVO> nmContracts = this.getNextMainContractList();
+		for(ContractVO c: nmContracts){
+			if(StringUtils.equals(c.getKey(), contractKey)){
+				return c;
+			}
+		}
 		return null;
 	}
 	
