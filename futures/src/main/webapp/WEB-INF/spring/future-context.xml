@@ -37,6 +37,7 @@
     	<property name="contractHolder" ref="contractHolder" />
     	<property name="contractService" ref="contractService" />
     	<property name="marketAdapterManager" ref="marketAdapterManager"/>
+    	<property name="volThreshold"><value>1.15</value></property>
     	<property name="runTime">
     		<bean class="org.joda.time.LocalTime">
     			<constructor-arg index="0">
@@ -89,7 +90,7 @@
     	<property name="portfolioHolder" ref="portfolioHolder" />
     	<property name="contractHolder" ref="contractHolder" />
     	<property name="ruleHolder" ref="ruleHolder" />
-    	<property name="forceSwitchDate" value="25" />
+    	<property name="forceSwitchDate" value="45" />
     </bean>
     
     <bean id="portfolioHolder" class="com.ltc.strategy.tortoise.manager.impl.PortfolioHolderImpl">

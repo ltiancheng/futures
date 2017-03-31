@@ -27,7 +27,16 @@ public class MainSwitcher extends BaseStartupItem implements Runnable {
 	private ContractHolder contractHolder;
 	private ContractService contractService;
 	private MarketAdapterManager marketAdapterManager;
+	private float volThreshold;
 	
+	public float getVolThreshold() {
+		return volThreshold;
+	}
+
+	public void setVolThreshold(float volThreshold) {
+		this.volThreshold = volThreshold;
+	}
+
 	public void setContractService(ContractService contractService) {
 		this.contractService = contractService;
 	}
@@ -101,7 +110,7 @@ public class MainSwitcher extends BaseStartupItem implements Runnable {
 				nmc.setContractMeta(c.getContractMeta());
 				if(!StringUtils.equals(nmc.getKey(), c.getKey()) && nmc.getCurrentBar()!= null && c.getCurrentBar()!= null){
 					if(nmc.getCurrentBar().getVolume() > 0 && c.getCurrentBar().getVolume() > 0 &&
-						(double)nmc.getCurrentBar().getVolume()/c.getCurrentBar().getVolume() >= 1.2){
+						(double)nmc.getCurrentBar().getVolume()/c.getCurrentBar().getVolume() >= volThreshold){
 						this.contractService.saveNextMainContract(nmc);
 					}
 				}
