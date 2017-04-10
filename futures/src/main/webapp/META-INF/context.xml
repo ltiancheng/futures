@@ -4,6 +4,6 @@
                maxActive="50" maxIdle="30" maxWait="10000"
                username="root" password="root"
                driverClassName="com.mysql.jdbc.Driver"
-               url="jdbc:mysql://localhost:3306/futures"/>
+               url="jdbc:mysql://localhost:3306/futuresii?autoReconnect=true"/>
 
 </Context>

@@ -115,6 +115,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CThostFtdcMdSpi.cpp" />
+    <ClCompile Include="main.bak.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MdSpi.cpp" />
     <ClCompile Include="TdSpi.cpp" />
@@ -128,6 +130,7 @@
     <ClInclude Include="ThostFtdcUserApiDataType.h" />
     <ClInclude Include="ThostFtdcUserApiStruct.h" />
     <ClInclude Include="MdHolder.h" />
+    <ClInclude Include="MdCommander.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

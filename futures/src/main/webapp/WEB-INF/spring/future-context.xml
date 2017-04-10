@@ -41,10 +41,10 @@
     	<property name="runTime">
     		<bean class="org.joda.time.LocalTime">
     			<constructor-arg index="0">
-    				<value>15</value>
+    				<value>18</value>
     			</constructor-arg>
     			<constructor-arg index="1">
-    				<value>20</value>
+    				<value>59</value>
     			</constructor-arg>
     		</bean>
     	</property>

@@ -17,6 +17,4 @@ public:
 	void destroyHolder();
 	void startMdThread();
 };
-
-MdHolder * mdHolder = nullptr;
 #endif

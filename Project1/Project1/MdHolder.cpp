@@ -3,8 +3,6 @@
 #include "MdHolder.h"
 #include <iostream>
 
-#pragma comment(lib,"thostmduserapi.lib")
-
 void MdHolder::initHolder(){
 	if (this->mdApi != nullptr){
 		this->destroyHolder();
