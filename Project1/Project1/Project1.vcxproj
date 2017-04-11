@@ -118,6 +118,7 @@
     <ClCompile Include="CThostFtdcMdSpi.cpp" />
     <ClCompile Include="main.bak.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="MdCommander.cpp" />
     <ClCompile Include="MdSpi.cpp" />
     <ClCompile Include="TdSpi.cpp" />
     <ClCompile Include="MdHolder.cpp" />
