@@ -3,6 +3,7 @@
 
 #include "ThostFtdcMdApi.h"
 #include "ThostFtdcUserApiStruct.h"
+#include "Config.h"
 #include <string>
 
 using std::string;
@@ -11,8 +12,8 @@ class MdHolder {
 public:
 	CThostFtdcMdApi * mdApi;
 	CThostFtdcMdSpi * mdSpi;
-	char* serverUrl = "tcp://180.168.146.187:10031";
-	char* brokerId = "9999";
+	char* serverUrl = MD_SERVER_URL;
+	char* brokerId = MD_BROKER_ID;
 	void initHolder();
 	void destroyHolder();
 	void startMdThread();
