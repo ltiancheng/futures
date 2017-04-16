@@ -16,8 +16,12 @@ public:
 	char* brokerId = TD_BROKER_ID;
 	char* investorId = INVESTOR_ID;
 	char* investorPwd = INVESTOR_PWD;
+	string tradingDate;
 	void initHolder();
 	void destroyHolder();
 	void startTdThread();
+	static TdHolder* getInstance();
+private:
+	static TdHolder* instance;
 };
 #endif
