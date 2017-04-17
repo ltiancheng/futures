@@ -3,6 +3,7 @@
 #include "MdHolder.h"
 #include "GatewayManager.h"
 #include "Config.h"
+#include <sstream>
 #include <iostream>
 using namespace std;
 

@@ -4,6 +4,7 @@
 #include "GatewayManager.h"
 #include "Config.h"
 #include <iostream>
+#include <sstream>
 using namespace std;
 
 //链接成功自动登录
@@ -109,4 +110,57 @@ void CThostFtdcTraderSpi::OnRspQryTradingAccount(CThostFtdcTradingAccountField *
 		cout << "nRequestID: " << nRequestID << endl;
 		cout << "可用资金" << pTradingAccount->Available << endl;
 	}
+}
+
+void CThostFtdcTraderSpi::OnRspOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
+	sendErrOrder(pInputOrder, pRspInfo);
+}
+
+void CThostFtdcTraderSpi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo){
+	sendErrOrder(pInputOrder, pRspInfo);
+}
+
+void CThostFtdcTraderSpi::OnRtnOrder(CThostFtdcOrderField *pOrder){
+	//TODO:
+}
+
+void CThostFtdcTraderSpi::OnRtnTrade(CThostFtdcTradeField *pTrade){
+	//TODO:
+}
+
+void sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo){
+	if (0 != pRspInfo->ErrorID){
+		//error during order insert, send msg to queue
+		string message = mergeJson("inputOrder", getJsonFromInputOrder(pInputOrder), "rspInfo", getJsonFromRspInfo(pRspInfo));
+		GatewayManager* gm = GatewayManager::getInstance();
+		gm->sendTextMessage(message, TOPIC_TD);
+	}
+}
+
+string getJsonFromInputOrder(CThostFtdcInputOrderField *pInputOrder){
+	return "{BrokerID:" + string(pInputOrder->BrokerID) + ",InvestorID:" + string(pInputOrder->InvestorID) + ",InstrumentID:" + string(pInputOrder->InstrumentID) +
+	",OrderRef:" + string(pInputOrder->OrderRef) + ",UserID:" + string(pInputOrder->UserID) + ",OrderPriceType:" + stringify(pInputOrder->OrderPriceType) +
+	",Direction:" + stringify(pInputOrder->Direction) + ",CombOffsetFlag:" + string(pInputOrder->CombOffsetFlag) + ",CombHedgeFlag:" + string(pInputOrder->CombHedgeFlag) +
+	",LimitPrice:" + stringify(pInputOrder->LimitPrice) + ",VolumeTotalOriginal:" + stringify(pInputOrder->VolumeTotalOriginal) + ",TimeCondition:" + stringify(pInputOrder->TimeCondition) +
+	",GTDDate:" + string(pInputOrder->GTDDate) + ",VolumeCondition:" + stringify(pInputOrder->VolumeCondition) + ",MinVolume:" + stringify(pInputOrder->MinVolume) +
+	",ContingentCondition:" + stringify(pInputOrder->ContingentCondition) + ",StopPrice:" + stringify(pInputOrder->StopPrice) + ",ForceCloseReason:" + stringify(pInputOrder->ForceCloseReason) +
+	",IsAutoSuspend:" + stringify(pInputOrder->IsAutoSuspend) + ",BusinessUnit:" + string(pInputOrder->BusinessUnit) + ",RequestID:" + stringify(pInputOrder->RequestID) +
+	",UserForceClose:" + stringify(pInputOrder->UserForceClose) + ",IsSwapOrder:" + stringify(pInputOrder->IsSwapOrder) + ",ExchangeID:" + string(pInputOrder->ExchangeID) +
+	",InvestUnitID:" + string(pInputOrder->InvestUnitID) + ",AccountID:" + string(pInputOrder->AccountID) + ",CurrencyID:" + string(pInputOrder->CurrencyID) +
+	",ClientID:" + string(pInputOrder->ClientID) + ",IPAddress:" + string(pInputOrder->IPAddress) + ",MacAddress:" + string(pInputOrder->MacAddress) + "}";
+}
+
+string getJsonFromRspInfo(CThostFtdcRspInfoField *pRspInfo){
+	return "{ErrorID:" + stringify(pRspInfo->ErrorID) + ",ErrorMsg:" + string(pRspInfo->ErrorMsg)+"}";
+}
+
+string mergeJson(string name1, string json1, string name2, string json2){
+	return "{" + name1 + ":" + json1 + "," + name2 + ":" + json2 + "}";
+}
+
+string stringify(double x)
+{
+	std::ostringstream o;
+	o << x;
+	return o.str();
 }
