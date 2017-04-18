@@ -37,6 +37,7 @@ public:
 	virtual ~MdCommander();
 	void close();
 	void registerSelf();
+	///收到的命令形式为：SUB/DRP M1705,MA1705,AL1709
 	virtual void onMessage(const Message* message);
 private:
 	MdHolder * mdHolder;

@@ -121,11 +121,13 @@ void CThostFtdcTraderSpi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputO
 }
 
 void CThostFtdcTraderSpi::OnRtnOrder(CThostFtdcOrderField *pOrder){
-	//TODO:
+	//do nothing, use onRtnTrade;
 }
 
 void CThostFtdcTraderSpi::OnRtnTrade(CThostFtdcTradeField *pTrade){
-	//TODO:
+	string message = getJsonFromTrade(pTrade);
+	GatewayManager* gm = GatewayManager::getInstance();
+	gm->sendTextMessage(message, TOPIC_TD);
 }
 
 void sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo){
@@ -133,8 +135,20 @@ void sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField
 		//error during order insert, send msg to queue
 		string message = mergeJson("inputOrder", getJsonFromInputOrder(pInputOrder), "rspInfo", getJsonFromRspInfo(pRspInfo));
 		GatewayManager* gm = GatewayManager::getInstance();
-		gm->sendTextMessage(message, TOPIC_TD);
+		gm->sendTextMessage(message, TOPIC_TD_ERR);
 	}
+}
+
+string getJsonFromTrade(CThostFtdcTradeField *pTrade){
+	return "{BrokerID:" + string(pTrade->BrokerID) + ",InvestorID:" + string(pTrade->InvestorID) + ",InstrumentID:" + string(pTrade->InstrumentID) +
+		",OrderRef:" + string(pTrade->OrderRef) + ",UserID:" + string(pTrade->UserID) + ",ExchangeID:" + string(pTrade->ExchangeID) + ",TradeID:" + string(pTrade->TradeID) +
+		",Direction:" + stringify(pTrade->Direction) + ",OrderSysID:" + string(pTrade->OrderSysID) + ",ParticipantID:" + string(pTrade->ParticipantID) +
+		",ClientID:" + string(pTrade->ClientID) + ",TradingRole:" + stringify(pTrade->TradingRole) + ",ExchangeInstID:" + string(pTrade->ExchangeInstID) +
+		",OffsetFlag:" + stringify(pTrade->OffsetFlag) + ",HedgeFlag:" + stringify(pTrade->HedgeFlag) + ",Price:" + stringify(pTrade->Price) + ",Volume:" + stringify(pTrade->Volume) +
+		",TradeDate:" + string(pTrade->TradeDate) + ",TradeTime:" + string(pTrade->TradeTime) + ",TradeType:" + stringify(pTrade->TradeType) + ",PriceSource:" + stringify(pTrade->PriceSource) +
+		",TraderID:" + string(pTrade->TraderID) + ",OrderLocalID:" + string(pTrade->OrderLocalID) + ",ClearingPartID:" + string(pTrade->ClearingPartID) +
+		",BusinessUnit:" + string(pTrade->BusinessUnit) + ",SequenceNo:" + stringify(pTrade->SequenceNo) + ",TradingDay:" + string(pTrade->TradingDay) +
+		",SettlementID:" + stringify(pTrade->SettlementID) + ",BrokerOrderSeq:" + stringify(pTrade->BrokerOrderSeq) + ",TradeSource:" + stringify(pTrade->TradeSource) + "}";
 }
 
 string getJsonFromInputOrder(CThostFtdcInputOrderField *pInputOrder){

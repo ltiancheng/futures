@@ -81,7 +81,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Guilin\git\futures\activemq-cpp-library-3.9.4\src\main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Tiancheng\git\futures\activemq-cpp-library-3.9.4\src\main;C:\Users\Guilin\git\futures\activemq-cpp-library-3.9.4\src\main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -123,6 +123,7 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MdCommander.cpp" />
     <ClCompile Include="MdSpi.cpp" />
+    <ClCompile Include="TdCommander.cpp" />
     <ClCompile Include="TdHolder.cpp" />
     <ClCompile Include="TdSpi.cpp" />
     <ClCompile Include="MdHolder.cpp" />
@@ -131,6 +132,7 @@
     <ClInclude Include="Config.h" />
     <ClInclude Include="GatewayManager.h" />
     <ClInclude Include="MdSpi.h" />
+    <ClInclude Include="TdCommander.h" />
     <ClInclude Include="TdHolder.h" />
     <ClInclude Include="TdSpi.h" />
     <ClInclude Include="ThostFtdcMdApi.h" />
