@@ -4,3 +4,5 @@
 **/*.sdf
 **/*.suo
 **/*.vcxproj
+**/*.opensdf
+**/*.vcxproj.user
