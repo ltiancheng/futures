@@ -18,19 +18,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="MdSpi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="TdSpi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MdHolder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="main.bak.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CThostFtdcMdSpi.cpp">
@@ -53,12 +44,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="MdSpi.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="TdSpi.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="ThostFtdcMdApi.h">
       <Filter>头文件\CTP_api</Filter>
     </ClInclude>

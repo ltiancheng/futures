@@ -119,22 +119,17 @@
     <ClCompile Include="CThostFtdcMdSpi.cpp" />
     <ClCompile Include="CThostFtdcTraderSpi.cpp" />
     <ClCompile Include="GatewayManager.cpp" />
-    <ClCompile Include="main.bak.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MdCommander.cpp" />
-    <ClCompile Include="MdSpi.cpp" />
     <ClCompile Include="TdCommander.cpp" />
     <ClCompile Include="TdHolder.cpp" />
-    <ClCompile Include="TdSpi.cpp" />
     <ClCompile Include="MdHolder.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Config.h" />
     <ClInclude Include="GatewayManager.h" />
-    <ClInclude Include="MdSpi.h" />
     <ClInclude Include="TdCommander.h" />
     <ClInclude Include="TdHolder.h" />
-    <ClInclude Include="TdSpi.h" />
     <ClInclude Include="ThostFtdcMdApi.h" />
     <ClInclude Include="ThostFtdcTraderApi.h" />
     <ClInclude Include="ThostFtdcUserApiDataType.h" />

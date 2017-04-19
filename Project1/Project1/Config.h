@@ -13,6 +13,7 @@
 #define INVESTOR_PWD "058089"
 #define TD_SERVER_URL "tcp://180.168.146.187:10030"
 #define TD_BROKER_ID "9999"
+#define QUEUE_TD_COMMAND "queue.trade.cmd"
 #define TOPIC_TD "topic.tradedata"
 #define TOPIC_TD_ERR "topic.trade.err"
 
