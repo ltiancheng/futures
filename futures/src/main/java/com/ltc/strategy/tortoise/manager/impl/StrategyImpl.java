@@ -178,11 +178,12 @@ public class StrategyImpl implements Strategy {
 			return new ArrayList<RuleVO>();
 		}
 		if(isTime2CloseOld(p)){
+			List<RuleVO> closeRules = closeOldPostion(p);
 			// update position status.
 			// issue rules to close old position.
 			p.setStatus(PositionVO.EXPIRE);
 			this.portfolioHolder.saveCurrentStatus();
-			return closeOldPostion(p);
+			return closeRules;
 		}
 		if(isTime2OpenNew(p)){
 			// update contracts
