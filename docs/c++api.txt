@@ -1,0 +1,24 @@
+C:\LTC\Apache\cppunit\include
+C:\LTC\Apache\apr\include
+C:\LTC\Apache\apr-iconv\include
+C:\LTC\Apache\apr-util\include
+
+C:\LTC\Apache\lib
+
+
+API:
+BROKER_URL "tcp://localhost:61618"
+QUEUE_MD_COMMAND "queue.maketdata.cmd"
+	sample: SUB/DRP A1709,M1710,RB1705
+
+QUEUE_TD_COMMAND "queue.trade.cmd"
+	sample: OS/OL/CS/CL,4,A1709,3715,M/L(开空/开多/平空/平多,合约数量,合约标识,价格,市/限价)
+
+TOPIC_MD "topic.marketdata"
+	sample: CThostFtdcDepthMarketDataField(json格式)
+
+TOPIC_TD "topic.tradedata"
+	sample: CThostFtdcTradeField(json格式)
+
+TOPIC_TD_ERR "topic.trade.err"
+	sample: {inputOrder:{CThostFtdcInputOrderField(json格式)}, rspInfo:{CThostFtdcRspInfoField(json格式)}}
