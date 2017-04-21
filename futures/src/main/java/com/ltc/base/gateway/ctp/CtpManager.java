@@ -6,6 +6,7 @@ import java.util.Properties;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
 
+import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
 
 public interface CtpManager {
@@ -15,4 +16,6 @@ public interface CtpManager {
 	void registerTopicListener(MessageListener listener, String topicName, String messageSelector) throws JMSException;
 	void registContracts(List<ContractVO> contractList);
 	void registerMarketListener(MessageListener listener);
+	void sendTradeCommand(ContractVO contract, CommandVO command);
+	void registerCommandListener(MessageListener succCommandListener, MessageListener errCommandListener);
 }

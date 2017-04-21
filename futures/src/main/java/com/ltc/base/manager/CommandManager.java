@@ -7,4 +7,6 @@ public interface CommandManager {
 
 	void executeCommand(ContractVO contract, CommandVO command, Strategy callbackStrategy);
 
+	void initCommandListener();
+
 }

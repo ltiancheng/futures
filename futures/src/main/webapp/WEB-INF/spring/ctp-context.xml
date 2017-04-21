@@ -7,11 +7,13 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd
         http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd ">
-
     <bean id="ctpManager" class="com.ltc.base.gateway.ctp.impl.CtpManagerImpl">
     	<property name="jmsTemplate" ref="jmsTemplate"/>
     	<property name="mdCommandQueue" value="${md.command.queue}"/>
+    	<property name="tdCommandQueue" value="${td.command.queue}"/>
     	<property name="mdDataTopic" value="${md.data.topic}"/>
+    	<property name="tdDataTopic" value="${td.data.topic}"/>
+    	<property name="tdErrorTopic" value="${td.error.topic}"/>
     	<property name="defaultReplyQueue"><value>${default.reply.queue}</value></property>
     </bean>
     
@@ -21,15 +23,15 @@
     </bean>
     
     <bean id="connectionFactory" class="org.springframework.jms.connection.CachingConnectionFactory">
-    	<constructor-arg><bean ref="amqConnectionFactory"/></constructor-arg>
+    	<constructor-arg index="0" ref="amqConnectionFactory"/>
     </bean>
     
     <bean id="amqConnectionFactory" class="org.apache.activemq.ActiveMQConnectionFactory">
-    	<constructor-arg><value>${broker.url}</value></constructor-arg>
+    	<constructor-arg index="0"><value>${broker.url}</value></constructor-arg>
     </bean>
     
     <bean id="defaultReplyQueue" class="org.apache.activemq.command.ActiveMQQueue">
-    	<constructor-arg><value>${default.reply.queue}</value></constructor-arg>
+    	<constructor-arg index="0"><value>${default.reply.queue}</value></constructor-arg>
     </bean>
     
 </beans>

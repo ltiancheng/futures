@@ -35,6 +35,7 @@ public class StrategyImpl implements Strategy {
 
 	private static Logger logger = LoggerFactory.getLogger(StrategyImpl.class);
 	private static Logger portfolioLogger = LoggerFactory.getLogger("Portfolio");
+	private static Logger commandLogger = LoggerFactory.getLogger("COMMAND");
 	
 	/**
 	 * Strategy Content:
@@ -465,19 +466,10 @@ public class StrategyImpl implements Strategy {
 		return ruleList;
 	}
 
+	//move below logic to command finished function;
 	@Override
 	public void ruleTriggered(RuleVO rule) {
-		PortfolioVO portfolio = portfolioHolder.getPortfolio();
-		PositionVO position = portfolioHolder.getPositionByContract(rule.getContract());
-		if(position == null && StringUtils.equals(rule.getContract().getStatus(), BaseConstant.NEXT_MAIN)){
-			position = portfolioHolder.getPositionByContractMeta(rule.getContract().getContractMeta());
-		}
-		this.updatePosition(position, portfolio, rule);
-		ruleHolder.clearContractRule(rule.getContract().getKey());
-		List<RuleVO> rules = this.generateRulesOnContract(position, portfolio);
-		for(RuleVO r: rules){
-			ruleHolder.addRule(r.getContract().getKey(), r);
-		}
+		rule.setTriggered(true);
 	}
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, RuleVO rule) {
@@ -506,19 +498,19 @@ public class StrategyImpl implements Strategy {
 			}
 			position.setUnitCount(command.getUnits());
 			position.setHandPerUnit(command.getHandPerUnit());
-			if(command.isDone()){
-				position.setLastInPrice(command.getDealPrice().floatValue());
-			} else {
-				position.setLastInPrice(command.getPrice().floatValue());
-			}
+//			if(command.isDone()){
+			position.setLastInPrice(command.getDealPrice().floatValue());
+//			} else {
+//				position.setLastInPrice(command.getPrice().floatValue());
+//			}
 			position.setAveragePrice(position.getLastInPrice());
 		} else if(inSameDirection(position.getDirection(), command.getInstruction())){
 			if(position.getHandPerUnit() == command.getHandPerUnit()){
-				if(command.isDone()){
-					position.setLastInPrice(command.getDealPrice().floatValue());
-				} else {
-					position.setLastInPrice(command.getPrice().floatValue());
-				}
+//				if(command.isDone()){
+				position.setLastInPrice(command.getDealPrice().floatValue());
+//				} else {
+//					position.setLastInPrice(command.getPrice().floatValue());
+//				}
 				position.setAveragePrice((position.getLastInPrice()*command.getUnits()+
 						position.getAveragePrice()*position.getUnitCount())/(position.getUnitCount()+command.getUnits()));
 				position.setUnitCount(position.getUnitCount()+command.getUnits());
@@ -581,8 +573,24 @@ public class StrategyImpl implements Strategy {
 	}
 
 	@Override
-	public void onCommand(ContractVO contract, CommandVO command) {
-		//do nothing.
+	public void onCommand(ContractVO inputContract, CommandVO command) {
+		PortfolioVO portfolio = portfolioHolder.getPortfolio();
+		ContractVO contract = contractHolder.getContractByKey(inputContract.getKey());
+		PositionVO position = portfolioHolder.getPositionByContract(contract);
+		if(position == null && StringUtils.equals(contract.getStatus(), BaseConstant.NEXT_MAIN)){
+			position = portfolioHolder.getPositionByContractMeta(contract.getContractMeta());
+		}
+		RuleVO rule = new RuleVO();
+		rule.setCommand(command);
+		rule.setContract(contract);
+		this.updatePosition(position, portfolio, rule);
+		ruleHolder.clearContractRule(contract.getKey());
+		List<RuleVO> rules = this.generateRulesOnContract(position, portfolio);
+		for(RuleVO r: rules){
+			ruleHolder.addRule(r.getContract().getKey(), r);
+		}
+		commandLogger.info("command finished: "+command.getInstruction()+" "
+				+command.getHandPerUnit()*command.getUnits()+" "+contract.getKey()+" at "+command.getDealPrice());
 	}
 
 	@Override
@@ -627,6 +635,20 @@ public class StrategyImpl implements Strategy {
 					}
 				}
 			}
+		}
+	}
+
+	@Override
+	public void onCommandFailed(ContractVO contract, CommandVO command) {
+		List<RuleVO> rules = ruleHolder.getRuleMap().get(contract.getKey());
+		if(CollectionUtils.isNotEmpty(rules)){
+			rules.forEach(r -> {
+				if(r.isTriggered()){
+					r.setTriggered(false);
+				}
+			});
+		} else {
+			logger.warn("rule is empty when command failed: {}", contract.getKey());
 		}
 	}
 

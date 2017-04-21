@@ -23,4 +23,6 @@ public interface Strategy {
 	void refreshStopLossEquity();
 
 	void updateTopPrice();
+
+	void onCommandFailed(ContractVO contract, CommandVO command);
 }

@@ -10,6 +10,15 @@ public class RuleVO {
 	private ConditionVO condition;
 	private CommandVO command;
 	private ContractVO contract;
+	private boolean triggered = false;
+
+	public boolean isTriggered() {
+		return triggered;
+	}
+
+	public void setTriggered(boolean triggered) {
+		this.triggered = triggered;
+	}
 
 	public ContractVO getContract() {
 		return contract;

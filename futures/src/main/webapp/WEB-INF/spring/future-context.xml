@@ -135,8 +135,9 @@
     </bean>
     
     <!-- implemented object of command manager -->
-    <bean id="commandManager" class="com.ltc.base.manager.impl.CommandManagerImpl">
-    	<property name="commandAdapter" ref="mockCommandAdapter" />
+    <bean id="commandManager" class="com.ltc.base.manager.impl.CommandManagerImpl" init-method="initCommandListener">
+    	<property name="commandAdapter" ref="ctpCommandAdapter" />
+    	<property name="strategy" ref="tortoise"/>
     </bean>
     
     <!-- implemented object of Strategy runner -->
@@ -198,6 +199,9 @@
     
     <!-- TODO: To be implmented. -->
     <bean id="ctpAdapter" class="com.ltc.base.gateway.impl.CtpAdapterImpl"/>
+    <bean id="ctpCommandAdapter" class="com.ltc.base.gateway.impl.CtpCommandAdapterImpl">
+    	<property name="ctpManager" ref="ctpManager"/>
+    </bean>
     <bean id="hexunAdapter" class="com.ltc.base.gateway.impl.HexunAdapterImpl">
     	<property name="timeManager" ref="timeManager"/>
     </bean>

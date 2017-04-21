@@ -72,13 +72,12 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 							List<RuleVO> rules = entry.getValue();
 							if(CollectionUtils.isEmpty(rules)){
 								rules.addAll(strategy.generateRulesOnContract(contract));
-							} else {
+							} else if(!hasTriggeredRules(rules)) {
 								for(RuleVO rule : rules){
 									if(contract.getCurrentBar() == null){
 										contract.setCurrentBar(this.contractHolder.getBarFromGw(contract));
 									}
 									if(meetCondition(rule.getCondition(), contract)){
-										//TODO: to be updated
 										commandManager.executeCommand(contract, rule.getCommand(), strategy);
 										triggeredRules.add(rule);
 										break;
@@ -88,7 +87,6 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 						}
 					}
 					for(RuleVO rule: triggeredRules){
-						//TODO: to be updated
 						strategy.ruleTriggered(rule);
 					}
 				} else {
@@ -98,6 +96,15 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 				logger.error("error caught", e);
 			}
 		}
+	}
+
+	private boolean hasTriggeredRules(List<RuleVO> rules) {
+		for(RuleVO r: rules){
+			if(r.isTriggered()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean meetCondition(ConditionVO condition, ContractVO contract) {

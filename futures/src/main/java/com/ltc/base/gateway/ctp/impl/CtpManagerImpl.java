@@ -26,6 +26,7 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.ltc.base.gateway.ctp.CtpManager;
+import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
 
 public class CtpManagerImpl implements CtpManager {
@@ -40,7 +41,22 @@ public class CtpManagerImpl implements CtpManager {
 	private String defaultReplyQueue;
 	private String mdCommandQueue;
 	private String mdDataTopic;
+	private String tdCommandQueue;
+	private String tdDataTopic;
+	private String tdErrorTopic;
 	
+	public void setTdDataTopic(String tdDataTopic) {
+		this.tdDataTopic = tdDataTopic;
+	}
+
+	public void setTdErrorTopic(String tdErrorTopic) {
+		this.tdErrorTopic = tdErrorTopic;
+	}
+
+	public void setTdCommandQueue(String tdCommandQueue) {
+		this.tdCommandQueue = tdCommandQueue;
+	}
+
 	public void setMdDataTopic(String mdDataTopic) {
 		this.mdDataTopic = mdDataTopic;
 	}
@@ -181,6 +197,45 @@ public class CtpManagerImpl implements CtpManager {
 				}
 			}
 		}
+	}
+
+	@Override
+	public void sendTradeCommand(ContractVO contract, CommandVO command) {
+		String commandLine = String.join(SEPERATOR, command.getInstruction(), 
+				String.valueOf(command.getHandPerUnit()*command.getUnits()), contract.getKey(), 
+				command.getPrice().toString(), command.getPriceStyle());
+		this.sendToQueue(commandLine, this.tdCommandQueue, null);
+	}
+
+	@Override
+	public void registerCommandListener(MessageListener succCommandListener, MessageListener errCommandListener) {
+		while(true){
+			try {
+				this.registerTopicListener(succCommandListener, this.tdDataTopic, null);
+				break;
+			} catch (JMSException e) {
+				logger.warn("register command listener failed, retrying in 30 secs", e);
+				try {
+					Thread.sleep(30*1000);
+				} catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
+				}
+			}
+		}
+		while(true){
+			try {
+				this.registerTopicListener(errCommandListener, this.tdErrorTopic, null);
+				break;
+			} catch (JMSException e) {
+				logger.warn("register error command listener failed, retrying in 30 secs", e);
+				try {
+					Thread.sleep(30*1000);
+				} catch (InterruptedException e1) {
+					logger.error(e1.getMessage(), e1);
+				}
+			}
+		}
+		
 	}
 
 }

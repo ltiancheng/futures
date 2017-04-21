@@ -6,3 +6,5 @@
 **/*.vcxproj
 **/*.opensdf
 **/*.vcxproj.user
+**/.classpath
+**/.settings/*
