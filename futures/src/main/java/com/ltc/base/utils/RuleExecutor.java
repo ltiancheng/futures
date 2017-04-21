@@ -78,6 +78,7 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 										contract.setCurrentBar(this.contractHolder.getBarFromGw(contract));
 									}
 									if(meetCondition(rule.getCondition(), contract)){
+										//TODO: to be updated
 										commandManager.executeCommand(contract, rule.getCommand(), strategy);
 										triggeredRules.add(rule);
 										break;
@@ -87,6 +88,7 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 						}
 					}
 					for(RuleVO rule: triggeredRules){
+						//TODO: to be updated
 						strategy.ruleTriggered(rule);
 					}
 				} else {

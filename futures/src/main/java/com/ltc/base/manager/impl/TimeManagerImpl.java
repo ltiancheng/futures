@@ -2,13 +2,20 @@ package com.ltc.base.manager.impl;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.ltc.base.manager.TimeManager;
 
 public class TimeManagerImpl implements TimeManager {
+	
+	private static Logger logger = LoggerFactory.getLogger(TimeManagerImpl.class);
 
 //	private List<String> holidays;
 	private LocalTime barOpenTime;
@@ -85,7 +92,7 @@ public class TimeManagerImpl implements TimeManager {
 			return false;
 		}
 		LocalTime lt = LocalTime.fromCalendarFields(now);
-		if(lt.isBefore(this.barOpenTime) && lt.isAfter(this.barCloseTime)){
+		if(lt.isBefore(this.barOpenTime) && lt.isAfter(this.barCloseTime.withFieldAdded(DurationFieldType.hours(), 1))){
 			//market is closed;
 			if(lastRefreshTime != null && lastRefreshTime.after(new LocalDate().toDate())){
 				return false;
@@ -100,6 +107,10 @@ public class TimeManagerImpl implements TimeManager {
 	//wait on next working day till the time input.
 	@Override
 	public void waitTillNextWorkingDay(LocalTime runTime) throws InterruptedException {
+		Thread.sleep(calcNextWorkingTimeGap(runTime));
+	}
+	
+	private long calcNextWorkingTimeGap(LocalTime runTime){
 		Calendar currentDate = Calendar.getInstance();
 		Calendar nextRun = Calendar.getInstance();
 		nextRun.set(Calendar.HOUR_OF_DAY, runTime.getHourOfDay());
@@ -123,8 +134,24 @@ public class TimeManagerImpl implements TimeManager {
 				nextRun.add(Calendar.DATE, 1);
 			}
 		}
-		long millis = nextRun.getTimeInMillis() - currentDate.getTimeInMillis();
-		Thread.sleep(millis);
+		return nextRun.getTimeInMillis() - currentDate.getTimeInMillis();
+	}
+
+	@Override
+	public void waitTillNextWorkingDay(List<LocalTime> runTimes) throws InterruptedException {
+		long shortMillis = -1;
+		for(LocalTime lt : runTimes){
+			long timeGap = calcNextWorkingTimeGap(lt);
+			if(shortMillis < 0 || shortMillis > timeGap){
+				shortMillis = timeGap;
+			}
+		}
+		if(shortMillis > 0){
+			Thread.sleep(shortMillis);
+		} else {
+			logger.error("minus time gap: " + shortMillis);
+			this.waitTillNextRound();
+		}
 	}
 	
 }

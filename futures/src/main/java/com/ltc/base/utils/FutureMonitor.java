@@ -2,6 +2,7 @@ package com.ltc.base.utils;
 
 import java.util.List;
 
+import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -25,7 +26,12 @@ public class FutureMonitor extends BaseStartupItem implements Runnable {
 	private ContractHolder contractHolder;
 	private TimeManager timeManager;
 	private MarketAdapterManager marketAdapterManager;
+	private List<LocalTime> runTimes;
 	
+	public void setRunTimes(List<LocalTime> runTimes) {
+		this.runTimes = runTimes;
+	}
+
 	public void setTimeManager(TimeManager timeManager) {
 		this.timeManager = timeManager;
 	}
@@ -49,18 +55,21 @@ public class FutureMonitor extends BaseStartupItem implements Runnable {
 	@Override
 	public void run() {
 		logger.info("[FutureMonitor] started");
+		this.marketAdapterManager.initContractListener();
 		while(true){
 			try {
-				timeManager.waitTillNextRound();
 				List<ContractVO> contractList = contractHolder.getActiveContractList();
+				List<ContractVO> nmContracts = contractHolder.getNextMainContractList();
 				if(!CollectionUtils.isEmpty(contractList)){
-					for(ContractVO c : contractList){
-						//monitor contract and update contract bar info.
-						this.marketAdapterManager.updateCurrentBarInfo(c);
-					}
+					//regist contract market listener.
+					this.marketAdapterManager.registContracts(contractList);
 				} else {
 					logger.error("contract list is empty!");
 				}
+				if(!CollectionUtils.isEmpty(nmContracts)){
+					this.marketAdapterManager.registContracts(nmContracts);
+				}
+				timeManager.waitTillNextWorkingDay(runTimes);
 			} catch (Exception e) {
 				logger.error("error caught", e);
 			}

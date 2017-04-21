@@ -12,7 +12,7 @@
 		<property name="locations">
 			<list>
 				<value>classpath:properties/futures.properties</value>
-				<value>classpath:properties/jdbc.properties</value>
+				<value>classpath:properties/host.properties</value>
 			</list>
 		</property>
 		<property name="ignoreUnresolvablePlaceholders" value="true" />
@@ -61,6 +61,26 @@
     	<property name="contractHolder" ref="contractHolder"/>
     	<property name="marketAdapterManager" ref="marketAdapterManager"/>
     	<property name="timeManager" ref="timeManager"/>
+    	<property name="runTimes">
+    		<list>
+    			<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>8</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>57</value>
+	    			</constructor-arg>
+	    		</bean>
+	    		<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>20</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>57</value>
+	    			</constructor-arg>
+	    		</bean>
+    		</list>
+    	</property>
     </bean>
     
     <!-- save strategy status every (10) mins. after bar close, save the bar into history DB. -->
@@ -146,11 +166,13 @@
     		<value>30</value>
     	</property>
     	<property name="contractAdapter" ref="hexunAdapter"/>
+    	<property name="ctpManager" ref="ctpManager"/>
+    	<property name="contractHolder" ref="contractHolder"/>
     </bean>
     
     <bean id="timeManager" class="com.ltc.base.manager.impl.TimeManagerImpl">
     	<property name="sleepMillis">
-    		<value>10000</value>
+    		<value>500</value>
     	</property>
     	<property name="barOpenTime">
     		<bean class="org.joda.time.LocalTime">

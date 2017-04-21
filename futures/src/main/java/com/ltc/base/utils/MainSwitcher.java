@@ -1,7 +1,6 @@
 package com.ltc.base.utils;
 
 import java.text.ParseException;
-import java.util.Calendar;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -77,11 +76,7 @@ public class MainSwitcher extends BaseStartupItem implements Runnable {
 			} catch (InterruptedException e) {
 				logger.error("sleep interrupted!", e);
 			}
-			Calendar now = Calendar.getInstance();
-			if(now.get(Calendar.DAY_OF_WEEK) == Calendar.TUESDAY ||
-					now.get(Calendar.DAY_OF_WEEK) == Calendar.THURSDAY){
-				doMainScan();
-			}
+			doMainScan();
 			doMainSwitch();
 		}
 	}

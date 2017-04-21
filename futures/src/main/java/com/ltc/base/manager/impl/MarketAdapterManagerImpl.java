@@ -4,8 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,13 +13,22 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageListener;
+import javax.jms.TextMessage;
+
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ltc.base.gateway.ContractAdapter;
+import com.ltc.base.gateway.ctp.CtpManager;
+import com.ltc.base.gateway.ctp.vo.CThostFtdcDepthMarketDataField;
 import com.ltc.base.helpers.BaseConstant;
+import com.ltc.base.helpers.BaseUtils;
+import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.MarketAdapterManager;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.ContractVO;
@@ -40,7 +47,17 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 	private int threadCount;
 	private ContractAdapter contractAdapter;
 	private Map<String, Lock> contractLockMap;
-	
+	private CtpManager ctpManager;
+	private ContractHolder contractHolder;
+
+	public void setContractHolder(ContractHolder contractHolder) {
+		this.contractHolder = contractHolder;
+	}
+
+	public void setCtpManager(CtpManager ctpManager) {
+		this.ctpManager = ctpManager;
+	}
+
 	private Lock getLock(String key){
 		if(contractLockMap == null){
 			contractLockMap = new HashMap<String, Lock>();
@@ -138,6 +155,36 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 		BarVO bar = contractAdapter.getCurrentBar(c);
 		c.setCurrentBar(bar);
 		return c;
+	}
+
+	@Override
+	public void registContracts(List<ContractVO> contractList) {
+		this.ctpManager.registContracts(contractList);
+	}
+
+	@Override
+	public void initContractListener() {
+		MessageListener listener = new MessageListener() {
+			@Override
+			public void onMessage(Message message) {
+				if(message instanceof TextMessage){
+					try {
+						String json = ((TextMessage) message).getText();
+						CThostFtdcDepthMarketDataField deepMd = BaseUtils.json2Obj(json, CThostFtdcDepthMarketDataField.class);
+						if(deepMd != null && StringUtils.isNotBlank(deepMd.InstrumentID)){
+							BarVO bar = deepMd.toBar();
+							ContractVO contract = contractHolder.getContractByKey(deepMd.InstrumentID.toUpperCase());
+							bar.setContract(contract);
+							contract.setCurrentBar(bar);
+						}
+					} catch (JMSException e) {
+						logger.error(e.getMessage(), e);
+					}
+					
+				}
+			}
+		};
+		this.ctpManager.registerMarketListener(listener);
 	}
 	
 }
