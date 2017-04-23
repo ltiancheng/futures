@@ -14,7 +14,7 @@ public interface Strategy {
 
 	void ruleTriggered(RuleVO rule);
 
-	void onCommand(ContractVO contract, CommandVO command);
+	void onCommand(String contractKey, CommandVO command);
 	
 	List<RuleVO> generateRulesOnContract(ContractVO contract);
 
@@ -24,5 +24,5 @@ public interface Strategy {
 
 	void updateTopPrice();
 
-	void onCommandFailed(ContractVO contract, CommandVO command);
+	void onCommandFailed(String contractKey, CommandVO command);
 }

@@ -22,19 +22,16 @@ public class MockCommandAdapterImpl implements CommandAdapter {
 
 	@Override
 	public void initCommandListener(MessageListener succCommandListener, MessageListener errCommandListener) {
-		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
 	public FullCommandVO parseToFullCommand(String textStr) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public FullCommandVO parseToFailedFullCommand(String textStr) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

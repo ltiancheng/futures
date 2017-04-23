@@ -10,13 +10,11 @@ public class CtpAdapterImpl implements ContractAdapter {
 
 	@Override
 	public BarVO getCurrentBar(ContractVO c) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<BarVO> getBarHist(ContractVO c, int barSize) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

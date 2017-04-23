@@ -573,9 +573,9 @@ public class StrategyImpl implements Strategy {
 	}
 
 	@Override
-	public void onCommand(ContractVO inputContract, CommandVO command) {
+	public void onCommand(String contractKey, CommandVO command) {
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
-		ContractVO contract = contractHolder.getContractByKey(inputContract.getKey());
+		ContractVO contract = contractHolder.getContractByKey(contractKey);
 		PositionVO position = portfolioHolder.getPositionByContract(contract);
 		if(position == null && StringUtils.equals(contract.getStatus(), BaseConstant.NEXT_MAIN)){
 			position = portfolioHolder.getPositionByContractMeta(contract.getContractMeta());
@@ -639,8 +639,8 @@ public class StrategyImpl implements Strategy {
 	}
 
 	@Override
-	public void onCommandFailed(ContractVO contract, CommandVO command) {
-		List<RuleVO> rules = ruleHolder.getRuleMap().get(contract.getKey());
+	public void onCommandFailed(String contractKey, CommandVO command) {
+		List<RuleVO> rules = ruleHolder.getRuleMap().get(contractKey);
 		if(CollectionUtils.isNotEmpty(rules)){
 			rules.forEach(r -> {
 				if(r.isTriggered()){
@@ -648,7 +648,7 @@ public class StrategyImpl implements Strategy {
 				}
 			});
 		} else {
-			logger.warn("rule is empty when command failed: {}", contract.getKey());
+			logger.warn("rule is empty when command failed: {}", contractKey);
 		}
 	}
 

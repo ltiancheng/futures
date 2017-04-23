@@ -8,6 +8,7 @@ import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +53,8 @@ public class CommandManagerImpl implements CommandManager {
 					try {
 						textStr = ((TextMessage) msg).getText();
 						FullCommandVO fullCmd= commandAdapter.parseToFullCommand(textStr);
-						if(fullCmd != null && fullCmd.getContract() != null && fullCmd.getCommand() != null){
-							strategy.onCommand(fullCmd.getContract(), fullCmd.getCommand());
+						if(fullCmd != null && StringUtils.isNotBlank(fullCmd.getContractKey())&& fullCmd.getCommand() != null){
+							strategy.onCommand(fullCmd.getContractKey(), fullCmd.getCommand());
 						}
 					} catch (JMSException e) {
 						logger.error(e.getMessage(), e);
@@ -72,8 +73,8 @@ public class CommandManagerImpl implements CommandManager {
 						textStr = ((TextMessage) msg).getText();
 						logger.warn("[CommandManagerImpl] command failed: {}", textStr);
 						FullCommandVO fullCmd= commandAdapter.parseToFailedFullCommand(textStr);
-						if(fullCmd != null && fullCmd.getContract() != null){
-							strategy.onCommandFailed(fullCmd.getContract(), fullCmd.getCommand());
+						if(fullCmd != null && StringUtils.isNotBlank(fullCmd.getContractKey())){
+							strategy.onCommandFailed(fullCmd.getContractKey(), fullCmd.getCommand());
 						}
 					} catch (JMSException e) {
 						logger.error(e.getMessage(), e);
