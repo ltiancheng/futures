@@ -81,7 +81,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\Tiancheng\git\futures\activemq-cpp-library-3.9.4\src\main;C:\Users\Guilin\git\futures\activemq-cpp-library-3.9.4\src\main;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Tiancheng\git\futures\activemq-cpp-library-3.9.4\src\main;C:\Users\Guilin\git\futures\activemq-cpp-library-3.9.4\src\main;C:\LTC\Apps\APR\apr\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

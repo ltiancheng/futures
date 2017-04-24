@@ -7,12 +7,12 @@
 using namespace std;
 
 GatewayManager* GatewayManager::instance = nullptr;
-GatewayManager::GatewayManager(const std::string& brokerURIint, bool sessionTransacted, int waitMillis){
-	this->connection = NULL;
-	this->session = NULL;
-	this->waitMillis = waitMillis;
-	this->brokerURI = brokerURI;
-	this->sessionTransacted = sessionTransacted;
+GatewayManager::GatewayManager(const std::string& brokerURIint, bool sessionTransacted, int waitMillis):
+	connection(NULL),
+	session(NULL),
+	waitMillis(waitMillis),
+	brokerURI(brokerURIint),
+	sessionTransacted(sessionTransacted){
 }
 
 GatewayManager::GatewayManager(const GatewayManager& holder){}

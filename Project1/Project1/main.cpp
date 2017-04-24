@@ -34,9 +34,16 @@ void startTd(void *para){
 	tdHolder->startTdThread();
 }
 
+class Test{
+public:
+	static void test(const std::string& brokerURI){
+		cout << brokerURI << endl;
+	}
+};
+
 int main(int argc, char *argv[]){
 	///start holders/apis;
-	HANDLE mdThread;
+	/*HANDLE mdThread;
 	HANDLE tdThread;
 	mdHolder = new MdHolder();
 	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
@@ -51,5 +58,8 @@ int main(int argc, char *argv[]){
 
 	WaitForSingleObject(mdThread, INFINITE);
 	std::cout << "Error: MD Thread ends\n";
-	return 0;
+	return 0;*/
+	std::string broker ="failover:(tcp://localhost:61618)";
+	Test::test(broker);
+	ConnectionFactory::createCMSConnectionFactory(broker);
 }
