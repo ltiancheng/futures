@@ -24,9 +24,6 @@
     <ClCompile Include="main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CThostFtdcMdSpi.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="MdCommander.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -36,10 +33,13 @@
     <ClCompile Include="TdHolder.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="CThostFtdcTraderSpi.cpp">
+    <ClCompile Include="TdCommander.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="TdCommander.cpp">
+    <ClCompile Include="MyMdSpi.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="MyTdSpi.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -72,6 +72,12 @@
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="TdCommander.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyMdSpi.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="MyTdSpi.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>

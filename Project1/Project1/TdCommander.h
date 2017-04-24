@@ -26,10 +26,6 @@
 #include <iostream>
 #include <memory>
 
-using namespace cms;
-using namespace decaf::lang;
-using namespace decaf::util::concurrent;
-
 ///从queue读取有关Trade的命令(目前只有提交订单)，并且执行
 class TdCommander : public MessageListener{
 public:
@@ -45,6 +41,7 @@ private:
 	bool useTopic;
 	std::string destStr;
 	void cleanup();
+	char ** getContractArray(string& command, const char& seperator, int& count);
 };
 
 #endif

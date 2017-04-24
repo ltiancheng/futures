@@ -3,12 +3,13 @@
 #include "TdHolder.h"
 #include <iostream>
 
+TdHolder* TdHolder::instance = nullptr;
 void TdHolder::initHolder(){
 	if (this->tdApi != nullptr){
 		this->destroyHolder();
 	}
 	tdApi = CThostFtdcTraderApi::CreateFtdcTraderApi("./tdfiles");
-	tdSpi = new CThostFtdcTraderSpi();
+	tdSpi = new MyTdSpi();
 	tdApi->RegisterSpi(tdSpi);
 	tdApi->SubscribePublicTopic(THOST_TERT_RESTART);
 	tdApi->SubscribePrivateTopic(THOST_TERT_QUICK);
@@ -17,13 +18,8 @@ void TdHolder::initHolder(){
 	std::cout << "init tdApi\n";
 }
 
-TdHolder* TdHolder::getInstance(){
-	if (instance == nullptr){
-		instance = new TdHolder();
-		instance->initHolder();
-	}
-	return instance;
-}
+TdHolder::TdHolder(){}
+TdHolder::TdHolder(const TdHolder& holder){}
 
 void TdHolder::destroyHolder(){
 	if (this->tdApi != nullptr){

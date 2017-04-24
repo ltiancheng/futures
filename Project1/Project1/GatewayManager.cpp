@@ -6,13 +6,16 @@
 #include <stdio.h>
 using namespace std;
 
-GatewayManager::GatewayManager(const std::string& brokerURIint, bool sessionTransacted=false, int waitMillis = 30000){
+GatewayManager* GatewayManager::instance = nullptr;
+GatewayManager::GatewayManager(const std::string& brokerURIint, bool sessionTransacted, int waitMillis){
 	this->connection = NULL;
 	this->session = NULL;
 	this->waitMillis = waitMillis;
 	this->brokerURI = brokerURI;
 	this->sessionTransacted = sessionTransacted;
 }
+
+GatewayManager::GatewayManager(const GatewayManager& holder){}
 
 GatewayManager::~GatewayManager(){
 	cleanup();
@@ -75,15 +78,7 @@ void GatewayManager::initConnection(){
 	}
 }
 
-GatewayManager* GatewayManager::getInstance(){
-	if (instance == nullptr){
-		instance = new GatewayManager(BROKER_URL);
-		instance->initConnection();
-	}
-	return instance;
-}
-
-void GatewayManager::registerListener(MessageListener* listener, const string& destStr, bool useTopic = false){
+void GatewayManager::registerListener(MessageListener* listener, const string& destStr, bool useTopic){
 	
 	// Create the destination (Topic or Queue)
 	Destination * destination = this->getDestionation(destStr, useTopic);
@@ -94,7 +89,7 @@ void GatewayManager::registerListener(MessageListener* listener, const string& d
 	consumer->setMessageListener(listener);
 }
 
-Destination* GatewayManager::getDestionation(const string& destStr, bool useTopic = false){
+Destination* GatewayManager::getDestionation(const string& destStr, bool useTopic){
 	map<string, Destination*>::iterator dest = this->destinationMap.find(destStr);
 	if (dest != destinationMap.end()){
 		return dest->second;
@@ -112,7 +107,7 @@ Destination* GatewayManager::getDestionation(const string& destStr, bool useTopi
 	}
 }
 
-MessageProducer* GatewayManager::getProducer(const string& destStr, bool useTopic = false){
+MessageProducer* GatewayManager::getProducer(const string& destStr, bool useTopic){
 	map<string, MessageProducer*>::iterator dest = this->producerMap.find(destStr);
 	if (dest != producerMap.end()){
 		return dest->second;
@@ -126,7 +121,7 @@ MessageProducer* GatewayManager::getProducer(const string& destStr, bool useTopi
 	}
 }
 
-void GatewayManager::sendTextMessage(const string& message, const string& destStr, bool useTopic = false){
+void GatewayManager::sendTextMessage(const string& message, const string& destStr, bool useTopic){
 	// Create a MessageProducer from the Session to the Topic or Queue
 	MessageProducer* producer = this->getProducer(destStr, useTopic);
 	std::auto_ptr<TextMessage> jmsMsg(session->createTextMessage(message));

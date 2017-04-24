@@ -8,7 +8,7 @@ void MdHolder::initHolder(){
 		this->destroyHolder();
 	}
 	CThostFtdcMdApi *mdapi = CThostFtdcMdApi::CreateFtdcMdApi("./mdfiles");
-	CThostFtdcMdSpi *mdspi = new CThostFtdcMdSpi();
+	MyMdSpi *mdspi = new MyMdSpi();
 	mdapi->RegisterSpi(mdspi);
 	mdapi->RegisterFront(serverUrl);
 	mdapi->Init();

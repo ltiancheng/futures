@@ -11,6 +11,12 @@
 
 #pragma comment(lib,"thostmduserapi.lib")
 #pragma comment(lib,"thosttraderapi.lib")
+#pragma comment(lib,"activemq-cpp.lib")
+#pragma comment(lib,"apr-1.lib")
+#pragma comment(lib,"aprapp-1.lib")
+#pragma comment(lib,"cppunit_dll.lib")
+#pragma comment(lib,"libapr-1.lib")
+#pragma comment(lib,"libaprapp-1.lib")
 
 MdHolder * mdHolder = nullptr;
 TdHolder * tdHolder = nullptr;
@@ -33,12 +39,11 @@ int main(int argc, char *argv[]){
 	HANDLE mdThread;
 	HANDLE tdThread;
 	mdHolder = new MdHolder();
-	tdHolder = TdHolder::getInstance();
 	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
 	tdThread = (HANDLE)_beginthread(startTd, 0, NULL);
 	///start command listeners;
-	gatewayManager = GatewayManager::getInstance();
-
+	gatewayManager = &GatewayManager::getInstance();
+	tdHolder = &TdHolder::getInstance();
 	mdCommander = new MdCommander(mdHolder, gatewayManager, QUEUE_MD_COMMAND);
 	mdCommander->registerSelf();
 	tdCommander = new TdCommander(tdHolder, gatewayManager, QUEUE_TD_COMMAND);

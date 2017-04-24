@@ -5,9 +5,10 @@
 #include <iostream>
 #include "Config.h"
 #include <sstream>
+#include <cms/MessageListener.h>
 using namespace std;
 
-MdCommander::MdCommander(MdHolder * mdHolder, GatewayManager * gatewayManager, const std::string& destStr, bool useTopic = false){
+MdCommander::MdCommander(MdHolder * mdHolder, GatewayManager * gatewayManager, const std::string& destStr, bool useTopic){
 	this->mdHolder = mdHolder;
 	this->useTopic = useTopic;
 	this->destStr = destStr;
@@ -64,7 +65,7 @@ void MdCommander::onMessage(const Message* message) {
 	}
 }
 
-char ** getContractArray(string& contracts, const char& seperator, int& count){
+char ** MdCommander::getContractArray(string& contracts, const char& seperator, int& count){
 	count = std::count(contracts.begin(), contracts.end(), seperator) + 1;
 	char ** contractArray = new char*[count];
 	std::istringstream ssin(contracts);

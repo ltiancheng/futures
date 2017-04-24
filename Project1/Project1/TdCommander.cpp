@@ -7,7 +7,7 @@
 #include <sstream>
 using namespace std;
 
-TdCommander::TdCommander(TdHolder * tdHolder, GatewayManager * gatewayManager, const std::string& destStr, bool useTopic = false){
+TdCommander::TdCommander(TdHolder * tdHolder, GatewayManager * gatewayManager, const std::string& destStr, bool useTopic){
 	this->tdHolder = tdHolder;
 	this->useTopic = useTopic;
 	this->destStr = destStr;
@@ -91,7 +91,7 @@ void TdCommander::onMessage(const Message* message) {
 	}
 }
 
-char ** getContractArray(string& command, const char& seperator, int& count){
+char ** TdCommander::getContractArray(string& command, const char& seperator, int& count){
 	count = std::count(command.begin(), command.end(), seperator) + 1;
 	char ** commandArray = new char*[count];
 	std::istringstream ssin(command);

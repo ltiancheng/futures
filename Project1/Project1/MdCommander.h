@@ -45,6 +45,7 @@ private:
 	bool useTopic;
 	std::string destStr;
 	void cleanup();
+	char ** getContractArray(string& contracts, const char& seperator, int& count);
 };
 
 #endif
