@@ -34,32 +34,28 @@ void startTd(void *para){
 	tdHolder->startTdThread();
 }
 
-class Test{
-public:
-	static void test(const std::string& brokerURI){
-		cout << brokerURI << endl;
-	}
-};
+//int main(int argc, char *argv[]){
+//	///start holders/apis;
+//	HANDLE mdThread;
+//	HANDLE tdThread;
+//	mdHolder = new MdHolder();
+//	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
+//	tdThread = (HANDLE)_beginthread(startTd, 0, NULL);
+//	///start command listeners;
+//	gatewayManager = &GatewayManager::getInstance();
+//	tdHolder = &TdHolder::getInstance();
+//	mdCommander = new MdCommander(mdHolder, gatewayManager, QUEUE_MD_COMMAND);
+//	mdCommander->registerSelf();
+//	tdCommander = new TdCommander(tdHolder, gatewayManager, QUEUE_TD_COMMAND);
+//	tdCommander->registerSelf();
+//
+//	WaitForSingleObject(mdThread, INFINITE);
+//	std::cout << "Error: MD Thread ends\n";
+//	return 0;
+//}
 
-int main(int argc, char *argv[]){
-	///start holders/apis;
-	/*HANDLE mdThread;
-	HANDLE tdThread;
-	mdHolder = new MdHolder();
-	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
-	tdThread = (HANDLE)_beginthread(startTd, 0, NULL);
-	///start command listeners;
-	gatewayManager = &GatewayManager::getInstance();
-	tdHolder = &TdHolder::getInstance();
-	mdCommander = new MdCommander(mdHolder, gatewayManager, QUEUE_MD_COMMAND);
-	mdCommander->registerSelf();
-	tdCommander = new TdCommander(tdHolder, gatewayManager, QUEUE_TD_COMMAND);
-	tdCommander->registerSelf();
-
-	WaitForSingleObject(mdThread, INFINITE);
-	std::cout << "Error: MD Thread ends\n";
-	return 0;*/
-	std::string broker ="failover:(tcp://localhost:61618)";
-	Test::test(broker);
+int main(int argc, char* argv[]){
+	activemq::library::ActiveMQCPP::initializeLibrary();
+	std::string broker = "failover:(tcp://localhost:61618)";
 	ConnectionFactory::createCMSConnectionFactory(broker);
 }
