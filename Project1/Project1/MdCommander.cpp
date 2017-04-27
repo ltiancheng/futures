@@ -47,14 +47,14 @@ void MdCommander::onMessage(const Message* message) {
 			int count = 0;
 			char ** contractArray = getContractArray(contracts, SEPERATER, count);
 			this->mdHolder->mdApi->SubscribeMarketData(contractArray, count);
-			delete contractArray;
+			//delete contractArray;
 		}
 		else if (text.find(COMMAND_UNSUBSCRIBE) == 0){
 			string contracts = text.substr(strlen(COMMAND_UNSUBSCRIBE) + 1);
 			int count = 0;
 			char ** contractArray = getContractArray(contracts, SEPERATER, count);
 			this->mdHolder->mdApi->UnSubscribeMarketData(contractArray, count);
-			delete contractArray;
+			//delete contractArray;
 		}
 		else {
 			printf("un-recornized command\n");

@@ -4,6 +4,8 @@ import java.io.Serializable;
 
 import org.apache.commons.lang.StringUtils;
 
+import com.ltc.base.helpers.ContractConfig;
+
 public class ContractVO implements Serializable {
 	@Override
 	public String toString() {
@@ -69,5 +71,13 @@ public class ContractVO implements Serializable {
 		} else {
 			return (this.getContractMeta().getSymbol()+this.prid).hashCode();
 		}
+	}
+
+	public String getCtpKey() {
+		String prd = this.prid;
+		if(StringUtils.equals(ContractConfig.ZHENGZHOU_MARKET, ContractConfig.getPrefix(contractMeta.getSymbol()))){
+			prd = prd.substring(1);
+		}
+		return (this.contractMeta.getCtpSymbol() + prd);
 	}
 }

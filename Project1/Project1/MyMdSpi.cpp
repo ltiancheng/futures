@@ -18,9 +18,18 @@ MyMdSpi::~MyMdSpi()
 {
 }
 
+MyMdSpi::MyMdSpi(CThostFtdcMdApi* api){
+	this->mdApi = api;
+}
+
 ///once front connected, print message only;
 void MyMdSpi::OnFrontConnected(){
 	std::cout << "front end connected!\n";
+	CThostFtdcReqUserLoginField* loginField = new CThostFtdcReqUserLoginField();
+	strcpy(loginField->BrokerID, MD_BROKER_ID);
+	strcpy(loginField->UserID, INVESTOR_ID);
+	strcpy(loginField->Password, INVESTOR_PWD);
+	this->mdApi->ReqUserLogin(loginField, 1000);
 }
 
 ///once front dis-connected, print the reason only, system will auto-reconnect;
@@ -57,7 +66,7 @@ void MyMdSpi::OnHeartBeatWarning(int nTimeLapse){
 }
 
 void MyMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-	std::cout << "user login response\n CZCE Time:\t" << pRspUserLogin->CZCETime << endl;
+	std::cout << "md user login response\n CZCE Time:\t" << pRspUserLogin->CZCETime << endl;
 	std::cout << "DCE Time:\t" << pRspUserLogin->DCETime << endl;
 	std::cout << "FFEX Time:\t" << pRspUserLogin->FFEXTime << endl;
 	std::cout << "INE Time:\t" << pRspUserLogin->INETime << endl;
@@ -73,19 +82,20 @@ void MyMdSpi::OnRspError(CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool 
 }
 
 void MyMdSpi::OnRspSubMarketData(CThostFtdcSpecificInstrumentField *pSpecificInstrument, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-	std::cout << "market data reach\n instrument:\t" << pSpecificInstrument->InstrumentID << endl;
+	//std::cout << "market data subscribed\n instrument:\t" << pSpecificInstrument->InstrumentID << endl;
 }
 
 void MyMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketData) {
-	string message = "{TradingDay:" + string(pDepthMarketData->TradingDay) + ",InstrumentID:" + string(pDepthMarketData->InstrumentID) + ",ExchangeID:" + string(pDepthMarketData->ExchangeID) +
-		",ExchangeInstID:" + string(pDepthMarketData->ExchangeInstID) + ",LastPrice:" + stringify(pDepthMarketData->LastPrice) +
+	//std::cout << "deep market data reach\n instrument:\t" << pDepthMarketData->InstrumentID << endl;
+	string message = "{TradingDay:" + stringify(pDepthMarketData->TradingDay) + ",InstrumentID:" + stringify(pDepthMarketData->InstrumentID) + ",ExchangeID:" + stringify(pDepthMarketData->ExchangeID) +
+		",ExchangeInstID:" + stringify(pDepthMarketData->ExchangeInstID) + ",LastPrice:" + stringify(pDepthMarketData->LastPrice) +
 		",PreSettlementPrice:" + stringify(pDepthMarketData->PreSettlementPrice) + ",PreClosePrice:" + stringify(pDepthMarketData->PreClosePrice) +
 		",PreOpenInterest:" + stringify(pDepthMarketData->PreOpenInterest) + ",OpenPrice:" + stringify(pDepthMarketData->OpenPrice) +
 		",HighestPrice:" + stringify(pDepthMarketData->HighestPrice) + ",LowestPrice:" + stringify(pDepthMarketData->LowestPrice) +
 		",Volume:" + stringify(pDepthMarketData->Volume) + ",Turnover:" + stringify(pDepthMarketData->Turnover) + ",OpenInterest:" + stringify(pDepthMarketData->OpenInterest) +
 		",ClosePrice:" + stringify(pDepthMarketData->ClosePrice) + ",SettlementPrice:" + stringify(pDepthMarketData->SettlementPrice) +
 		",UpperLimitPrice:" + stringify(pDepthMarketData->UpperLimitPrice) + ",LowerLimitPrice:" + stringify(pDepthMarketData->LowerLimitPrice) +
-		",PreDelta:" + stringify(pDepthMarketData->PreDelta) + ",CurrDelta:" + stringify(pDepthMarketData->CurrDelta) + ",UpdateTime:" + string(pDepthMarketData->UpdateTime) +
+		",PreDelta:" + stringify(pDepthMarketData->PreDelta) + ",CurrDelta:" + stringify(pDepthMarketData->CurrDelta) + ",UpdateTime:" + stringify(pDepthMarketData->UpdateTime) +
 		",UpdateMillisec:" + stringify(pDepthMarketData->UpdateMillisec) + ",BidPrice1:" + stringify(pDepthMarketData->BidPrice1) + ",BidVolume1:" + stringify(pDepthMarketData->BidVolume1) +
 		",AskPrice1:" + stringify(pDepthMarketData->AskPrice1) + ",AskVolume1:" + stringify(pDepthMarketData->AskVolume1) + ",BidPrice2:" + stringify(pDepthMarketData->BidPrice2) +
 		",BidVolume2:" + stringify(pDepthMarketData->BidVolume2) + ",AskPrice2:" + stringify(pDepthMarketData->AskPrice2) + ",AskVolume2:" + stringify(pDepthMarketData->AskVolume2) +
@@ -93,14 +103,25 @@ void MyMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketD
 		",AskVolume3:" + stringify(pDepthMarketData->AskVolume3) + ",BidPrice4:" + stringify(pDepthMarketData->BidPrice4) + ",BidVolume4:" + stringify(pDepthMarketData->BidVolume4) +
 		",AskPrice4:" + stringify(pDepthMarketData->AskPrice4) + ",AskVolume4:" + stringify(pDepthMarketData->AskVolume4) + ",BidPrice5:" + stringify(pDepthMarketData->BidPrice5) +
 		",BidVolume5:" + stringify(pDepthMarketData->BidVolume5) + ",AskPrice5:" + stringify(pDepthMarketData->AskPrice5) + ",AskVolume5:" + stringify(pDepthMarketData->AskVolume5) +
-		",AveragePrice:" + stringify(pDepthMarketData->AveragePrice) + ",ActionDay:" + string(pDepthMarketData->ActionDay) + "}";
+		",AveragePrice:" + stringify(pDepthMarketData->AveragePrice) + ",ActionDay:" + stringify(pDepthMarketData->ActionDay) + "}";
 	GatewayManager* gm = &GatewayManager::getInstance();
-	gm->sendTextMessage(message, TOPIC_MD);
+	gm->sendTextMessage(message, TOPIC_MD, true);
 }
 
 string MyMdSpi::stringify(double x)
 {
-	ostringstream o;
-	o << x;
-	return o.str();
+	std::ostringstream o;
+	o << fixed << x;
+	string result = o.str();
+	if (result.length() == 0){
+		return "0";
+	}
+	else {
+		return result;
+	}
+}
+
+string MyMdSpi::stringify(char* x)
+{
+	return "\"" + string(x) + "\"";
 }

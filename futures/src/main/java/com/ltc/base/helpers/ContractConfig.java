@@ -4,6 +4,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ContractConfig {
+	public static String ZHENGZHOU_MARKET = "CZCE";
+	public static String DALIAN_MARKET = "DCE";
+	public static String SHANGHAI_MARKET = "SHFE";
+	public static String ZHONGJIN_MARKET = "CFFEX";
+	
 	private static Map<String, String> PREFIX_MAP = new HashMap<String, String>();
 	static {
 		//DCE   ¥Û¡¨

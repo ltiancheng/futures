@@ -14,8 +14,8 @@ void TdHolder::initHolder(){
 	tdApi->SubscribePublicTopic(THOST_TERT_RESTART);
 	tdApi->SubscribePrivateTopic(THOST_TERT_QUICK);
 	tdApi->RegisterFront(serverUrl);
-	tdApi->Init();
 	std::cout << "init tdApi\n";
+	tdApi->Init();
 }
 
 TdHolder::TdHolder(){}

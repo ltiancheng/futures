@@ -7,11 +7,15 @@ public class ContractMetaVO implements Serializable {
 	private long id;
 	private String description;
 	private String symbol;
+	private String ctpSymbol;
 //	private int handValue;
 	private float leverage = 0.1f;	//levelRate is default to 10%
 	private int pointValue;
 	private float atr;	//ATR 250
 	
+	public void setCtpSymbol(String ctpSymbol) {
+		this.ctpSymbol = ctpSymbol;
+	}
 	public float getLeverage() {
 		return leverage;
 	}
@@ -53,5 +57,8 @@ public class ContractMetaVO implements Serializable {
 	}
 	public void setPointValue(int pointValue) {
 		this.pointValue = pointValue;
+	}
+	public String getCtpSymbol() {
+		return this.ctpSymbol;
 	}
 }

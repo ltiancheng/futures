@@ -173,7 +173,7 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 						CThostFtdcDepthMarketDataField deepMd = BaseUtils.json2Obj(json, CThostFtdcDepthMarketDataField.class);
 						if(deepMd != null && StringUtils.isNotBlank(deepMd.InstrumentID)){
 							BarVO bar = deepMd.toBar();
-							ContractVO contract = contractHolder.getContractByKey(deepMd.InstrumentID.toUpperCase());
+							ContractVO contract = contractHolder.getContractByKey(BaseUtils.ctpKey2Key(deepMd.InstrumentID));
 							bar.setContract(contract);
 							contract.setCurrentBar(bar);
 						}

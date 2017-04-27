@@ -1,6 +1,8 @@
 package com.ltc.base.gateway.ctp.vo;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import com.ltc.base.gateway.ctp.helper.CtpHelper;
+import com.ltc.base.helpers.BaseUtils;
 import com.ltc.base.vo.BarVO;
 
 public class CThostFtdcDepthMarketDataField {
@@ -45,6 +47,7 @@ public class CThostFtdcDepthMarketDataField {
 	/// 今虚实度
 	public double CurrDelta;
 	/// 最后修改时间
+	@JsonRawValue
 	public String UpdateTime;
 	/// 最后修改毫秒
 	public int UpdateMillisec;
@@ -94,13 +97,13 @@ public class CThostFtdcDepthMarketDataField {
 	public String ActionDay;
 	public BarVO toBar() {
 		BarVO bar = new BarVO();
-		bar.setAmount((long) Turnover);
+		bar.setClosePrice(BaseUtils.getTrueValue(LastPrice, 0));
+		bar.setAmount((long) BaseUtils.getTrueValue(Turnover, 0));
 		bar.setBarDate(CtpHelper.parseDate(TradingDay+UpdateTime));
-		bar.setClosePrice(LastPrice);
-		bar.setHighPrice(HighestPrice);
-		bar.setLowPrice(LowestPrice);
-		bar.setOpenPrice(OpenPrice);
-		bar.setVolume(Volume);
+		bar.setHighPrice(BaseUtils.getTrueValue(HighestPrice, bar.getClosePrice()));
+		bar.setLowPrice(BaseUtils.getTrueValue(LowestPrice, bar.getClosePrice()));
+		bar.setOpenPrice(BaseUtils.getTrueValue(OpenPrice, bar.getClosePrice()));
+		bar.setVolume((long) BaseUtils.getTrueValue(Volume, 0));
 		return bar;
 	}
 }

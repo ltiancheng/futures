@@ -8,7 +8,7 @@ void MdHolder::initHolder(){
 		this->destroyHolder();
 	}
 	CThostFtdcMdApi *mdapi = CThostFtdcMdApi::CreateFtdcMdApi("./mdfiles");
-	MyMdSpi *mdspi = new MyMdSpi();
+	MyMdSpi *mdspi = new MyMdSpi(mdapi);
 	mdapi->RegisterSpi(mdspi);
 	mdapi->RegisterFront(serverUrl);
 	mdapi->Init();
@@ -26,4 +26,5 @@ void MdHolder::destroyHolder(){
 void MdHolder::startMdThread(){
 	std::cout << "starting md api join thread\n";
 	this->mdApi->Join();
+	std::cout << "md api joined\n";
 }

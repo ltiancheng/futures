@@ -19,6 +19,7 @@ private:
 	string getJsonFromRspInfo(CThostFtdcRspInfoField *pRspInfo);
 	string mergeJson(string name1, string json1, string name2, string json2);
 	string stringify(double x);
+	string stringify(char* x);
 public:
 	MyTdSpi();
 	~MyTdSpi();

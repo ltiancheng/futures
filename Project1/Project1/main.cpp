@@ -8,10 +8,12 @@
 #include <iostream>
 #include "process.h"
 #include "Windows.h"
+#include "stdlib.h"
 
 #pragma comment(lib,"thostmduserapi.lib")
 #pragma comment(lib,"thosttraderapi.lib")
-#pragma comment(lib,"activemq-cpp.lib")
+//#pragma comment(lib,"activemq-cpp.lib")
+#pragma comment(lib,"activemq-cppd.lib")
 #pragma comment(lib,"apr-1.lib")
 #pragma comment(lib,"aprapp-1.lib")
 #pragma comment(lib,"cppunit_dll.lib")
@@ -30,32 +32,29 @@ void startMd(void *para){
 }
 
 void startTd(void *para){
-	tdHolder->initHolder();
 	tdHolder->startTdThread();
 }
 
-//int main(int argc, char *argv[]){
-//	///start holders/apis;
-//	HANDLE mdThread;
-//	HANDLE tdThread;
-//	mdHolder = new MdHolder();
-//	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
-//	tdThread = (HANDLE)_beginthread(startTd, 0, NULL);
-//	///start command listeners;
-//	gatewayManager = &GatewayManager::getInstance();
-//	tdHolder = &TdHolder::getInstance();
-//	mdCommander = new MdCommander(mdHolder, gatewayManager, QUEUE_MD_COMMAND);
-//	mdCommander->registerSelf();
-//	tdCommander = new TdCommander(tdHolder, gatewayManager, QUEUE_TD_COMMAND);
-//	tdCommander->registerSelf();
-//
-//	WaitForSingleObject(mdThread, INFINITE);
-//	std::cout << "Error: MD Thread ends\n";
-//	return 0;
-//}
-
-int main(int argc, char* argv[]){
+int main(int argc, char *argv[]){
 	activemq::library::ActiveMQCPP::initializeLibrary();
-	std::string broker = "failover:(tcp://localhost:61618)";
-	ConnectionFactory::createCMSConnectionFactory(broker);
+	///start holders/apis;
+	HANDLE mdThread;
+	HANDLE tdThread;
+	mdHolder = new MdHolder();
+	tdHolder = &TdHolder::getInstance();
+	mdThread = (HANDLE)_beginthread(startMd, 0, NULL);
+	tdThread = (HANDLE)_beginthread(startTd, 0, NULL);
+
+	///start command listeners;
+	gatewayManager = &GatewayManager::getInstance();
+	//tdHolder = &TdHolder::getInstance();
+	mdCommander = new MdCommander(mdHolder, gatewayManager, QUEUE_MD_COMMAND);
+	mdCommander->registerSelf();
+	tdCommander = new TdCommander(tdHolder, gatewayManager, QUEUE_TD_COMMAND);
+	tdCommander->registerSelf();
+
+	WaitForSingleObject(mdThread, INFINITE);
+	std::cout << "Error: MD Thread ends\n";
+	system("pause");
+	return 0;
 }

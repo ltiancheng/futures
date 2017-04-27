@@ -125,6 +125,5 @@ void GatewayManager::sendTextMessage(const string& message, const string& destSt
 	// Create a MessageProducer from the Session to the Topic or Queue
 	MessageProducer* producer = this->getProducer(destStr, useTopic);
 	std::auto_ptr<TextMessage> jmsMsg(session->createTextMessage(message));
-	printf("Sent message %s\n", message);
 	producer->send(jmsMsg.get());
 }

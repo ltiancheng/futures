@@ -53,12 +53,12 @@
 	<aop:config>
 	    <aop:pointcut id="allDaoMethods"
 	        expression="execution(* com.ltc.**.dao.**.*(..))" />
-	    <aop:pointcut id="allManageMethods"
-	        expression="execution(* com.ltc.**.manager.**.*(..))" />
+	    <!-- <aop:pointcut id="allManageMethods"
+	        expression="execution(* com.ltc.**.manager.**.*(..))" /> -->
 	    <aop:pointcut id="allServiceMethods"
 	        expression="execution(* com.ltc.**.service.**.*(..))" />
 	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allDaoMethods" />
-	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allManageMethods" />
+	    <!-- <aop:advisor advice-ref="txAdvice" pointcut-ref="allManageMethods" /> -->
 	    <aop:advisor advice-ref="txAdvice" pointcut-ref="allServiceMethods" />
 	    
 	</aop:config>

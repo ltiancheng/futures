@@ -25,7 +25,7 @@ void MyTdSpi::OnFrontConnected(){
 	CThostFtdcReqUserLoginField * loginField = new CThostFtdcReqUserLoginField();
 	strcpy_s(loginField->BrokerID, TD_BROKER_ID);
 	strcpy_s(loginField->UserID, INVESTOR_ID);
-	strcpy_s(loginField->Password, INVESTOR_ID);
+	strcpy_s(loginField->Password, INVESTOR_PWD);
 	TdHolder::getInstance().tdApi->ReqUserLogin(loginField, 0);
 }
 
@@ -47,16 +47,16 @@ void MyTdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 	cout << "--------------------------------------------" << endl << endl;
 
 	//查询是否已经做了确认
-	CThostFtdcQrySettlementInfoConfirmField *isConfirm = new CThostFtdcQrySettlementInfoConfirmField();
-	strcpy(isConfirm->BrokerID, TD_BROKER_ID);
-	strcpy(isConfirm->InvestorID, INVESTOR_ID);
-	holder->tdApi->ReqQrySettlementInfoConfirm(isConfirm, 0);
+	CThostFtdcQrySettlementInfoConfirmField isConfirm = {0};
+	strcpy(isConfirm.BrokerID, TD_BROKER_ID);
+	strcpy(isConfirm.InvestorID, INVESTOR_ID);
+	holder->tdApi->ReqQrySettlementInfoConfirm(&isConfirm, 1000);
 }
 
 //请求查询结算信息确认响应
 void MyTdSpi::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm,
 	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-	if (pRspInfo == nullptr || pRspInfo->ErrorID == 0){
+	if (pSettlementInfoConfirm != NULL && (pRspInfo == nullptr || pRspInfo->ErrorID == 0)){
 		TdHolder * holder = &TdHolder::getInstance();
 		cout << pSettlementInfoConfirm->ConfirmDate << endl;
 		cout << pSettlementInfoConfirm->ConfirmTime << endl;
@@ -138,7 +138,7 @@ void MyTdSpi::OnRtnOrder(CThostFtdcOrderField *pOrder){
 void MyTdSpi::OnRtnTrade(CThostFtdcTradeField *pTrade){
 	string message = getJsonFromTrade(pTrade);
 	GatewayManager* gm = &GatewayManager::getInstance();
-	gm->sendTextMessage(message, TOPIC_TD);
+	gm->sendTextMessage(message, TOPIC_TD, true);
 }
 
 void MyTdSpi::sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo){
@@ -146,37 +146,37 @@ void MyTdSpi::sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRsp
 		//error during order insert, send msg to queue
 		string message = mergeJson("inputOrder", getJsonFromInputOrder(pInputOrder), "rspInfo", getJsonFromRspInfo(pRspInfo));
 		GatewayManager* gm = &GatewayManager::getInstance();
-		gm->sendTextMessage(message, TOPIC_TD_ERR);
+		gm->sendTextMessage(message, TOPIC_TD_ERR, true);
 	}
 }
 
 string MyTdSpi::getJsonFromTrade(CThostFtdcTradeField *pTrade){
-	return "{BrokerID:" + string(pTrade->BrokerID) + ",InvestorID:" + string(pTrade->InvestorID) + ",InstrumentID:" + string(pTrade->InstrumentID) +
-		",OrderRef:" + string(pTrade->OrderRef) + ",UserID:" + string(pTrade->UserID) + ",ExchangeID:" + string(pTrade->ExchangeID) + ",TradeID:" + string(pTrade->TradeID) +
-		",Direction:" + stringify(pTrade->Direction) + ",OrderSysID:" + string(pTrade->OrderSysID) + ",ParticipantID:" + string(pTrade->ParticipantID) +
-		",ClientID:" + string(pTrade->ClientID) + ",TradingRole:" + stringify(pTrade->TradingRole) + ",ExchangeInstID:" + string(pTrade->ExchangeInstID) +
+	return "{BrokerID:" + stringify(pTrade->BrokerID) + ",InvestorID:" + stringify(pTrade->InvestorID) + ",InstrumentID:" + stringify(pTrade->InstrumentID) +
+		",OrderRef:" + stringify(pTrade->OrderRef) + ",UserID:" + stringify(pTrade->UserID) + ",ExchangeID:" + stringify(pTrade->ExchangeID) + ",TradeID:" + stringify(pTrade->TradeID) +
+		",Direction:" + stringify(pTrade->Direction) + ",OrderSysID:" + stringify(pTrade->OrderSysID) + ",ParticipantID:" + stringify(pTrade->ParticipantID) +
+		",ClientID:" + stringify(pTrade->ClientID) + ",TradingRole:" + stringify(pTrade->TradingRole) + ",ExchangeInstID:" + stringify(pTrade->ExchangeInstID) +
 		",OffsetFlag:" + stringify(pTrade->OffsetFlag) + ",HedgeFlag:" + stringify(pTrade->HedgeFlag) + ",Price:" + stringify(pTrade->Price) + ",Volume:" + stringify(pTrade->Volume) +
-		",TradeDate:" + string(pTrade->TradeDate) + ",TradeTime:" + string(pTrade->TradeTime) + ",TradeType:" + stringify(pTrade->TradeType) + ",PriceSource:" + stringify(pTrade->PriceSource) +
-		",TraderID:" + string(pTrade->TraderID) + ",OrderLocalID:" + string(pTrade->OrderLocalID) + ",ClearingPartID:" + string(pTrade->ClearingPartID) +
-		",BusinessUnit:" + string(pTrade->BusinessUnit) + ",SequenceNo:" + stringify(pTrade->SequenceNo) + ",TradingDay:" + string(pTrade->TradingDay) +
+		",TradeDate:" + stringify(pTrade->TradeDate) + ",TradeTime:" + stringify(pTrade->TradeTime) + ",TradeType:" + stringify(pTrade->TradeType) + ",PriceSource:" + stringify(pTrade->PriceSource) +
+		",TraderID:" + stringify(pTrade->TraderID) + ",OrderLocalID:" + stringify(pTrade->OrderLocalID) + ",ClearingPartID:" + stringify(pTrade->ClearingPartID) +
+		",BusinessUnit:" + stringify(pTrade->BusinessUnit) + ",SequenceNo:" + stringify(pTrade->SequenceNo) + ",TradingDay:" + stringify(pTrade->TradingDay) +
 		",SettlementID:" + stringify(pTrade->SettlementID) + ",BrokerOrderSeq:" + stringify(pTrade->BrokerOrderSeq) + ",TradeSource:" + stringify(pTrade->TradeSource) + "}";
 }
 
 string MyTdSpi::getJsonFromInputOrder(CThostFtdcInputOrderField *pInputOrder){
-	return "{BrokerID:" + string(pInputOrder->BrokerID) + ",InvestorID:" + string(pInputOrder->InvestorID) + ",InstrumentID:" + string(pInputOrder->InstrumentID) +
-		",OrderRef:" + string(pInputOrder->OrderRef) + ",UserID:" + string(pInputOrder->UserID) + ",OrderPriceType:" + stringify(pInputOrder->OrderPriceType) +
-		",Direction:" + stringify(pInputOrder->Direction) + ",CombOffsetFlag:" + string(pInputOrder->CombOffsetFlag) + ",CombHedgeFlag:" + string(pInputOrder->CombHedgeFlag) +
+	return "{BrokerID:" + stringify(pInputOrder->BrokerID) + ",InvestorID:" + stringify(pInputOrder->InvestorID) + ",InstrumentID:" + stringify(pInputOrder->InstrumentID) +
+		",OrderRef:" + stringify(pInputOrder->OrderRef) + ",UserID:" + stringify(pInputOrder->UserID) + ",OrderPriceType:" + stringify(pInputOrder->OrderPriceType) +
+		",Direction:" + stringify(pInputOrder->Direction) + ",CombOffsetFlag:" + stringify(pInputOrder->CombOffsetFlag) + ",CombHedgeFlag:" + stringify(pInputOrder->CombHedgeFlag) +
 		",LimitPrice:" + stringify(pInputOrder->LimitPrice) + ",VolumeTotalOriginal:" + stringify(pInputOrder->VolumeTotalOriginal) + ",TimeCondition:" + stringify(pInputOrder->TimeCondition) +
-		",GTDDate:" + string(pInputOrder->GTDDate) + ",VolumeCondition:" + stringify(pInputOrder->VolumeCondition) + ",MinVolume:" + stringify(pInputOrder->MinVolume) +
+		",GTDDate:" + stringify(pInputOrder->GTDDate) + ",VolumeCondition:" + stringify(pInputOrder->VolumeCondition) + ",MinVolume:" + stringify(pInputOrder->MinVolume) +
 		",ContingentCondition:" + stringify(pInputOrder->ContingentCondition) + ",StopPrice:" + stringify(pInputOrder->StopPrice) + ",ForceCloseReason:" + stringify(pInputOrder->ForceCloseReason) +
-		",IsAutoSuspend:" + stringify(pInputOrder->IsAutoSuspend) + ",BusinessUnit:" + string(pInputOrder->BusinessUnit) + ",RequestID:" + stringify(pInputOrder->RequestID) +
-		",UserForceClose:" + stringify(pInputOrder->UserForceClose) + ",IsSwapOrder:" + stringify(pInputOrder->IsSwapOrder) + ",ExchangeID:" + string(pInputOrder->ExchangeID) +
-		",InvestUnitID:" + string(pInputOrder->InvestUnitID) + ",AccountID:" + string(pInputOrder->AccountID) + ",CurrencyID:" + string(pInputOrder->CurrencyID) +
-		",ClientID:" + string(pInputOrder->ClientID) + ",IPAddress:" + string(pInputOrder->IPAddress) + ",MacAddress:" + string(pInputOrder->MacAddress) + "}";
+		",IsAutoSuspend:" + stringify(pInputOrder->IsAutoSuspend) + ",BusinessUnit:" + stringify(pInputOrder->BusinessUnit) + ",RequestID:" + stringify(pInputOrder->RequestID) +
+		",UserForceClose:" + stringify(pInputOrder->UserForceClose) + ",IsSwapOrder:" + stringify(pInputOrder->IsSwapOrder) + ",ExchangeID:" + stringify(pInputOrder->ExchangeID) +
+		",InvestUnitID:" + stringify(pInputOrder->InvestUnitID) + ",AccountID:" + stringify(pInputOrder->AccountID) + ",CurrencyID:" + stringify(pInputOrder->CurrencyID) +
+		",ClientID:" + stringify(pInputOrder->ClientID) + ",IPAddress:" + stringify(pInputOrder->IPAddress) + ",MacAddress:" + stringify(pInputOrder->MacAddress) + "}";
 }
 
 string MyTdSpi::getJsonFromRspInfo(CThostFtdcRspInfoField *pRspInfo){
-	return "{ErrorID:" + stringify(pRspInfo->ErrorID) + ",ErrorMsg:" + string(pRspInfo->ErrorMsg) + "}";
+	return "{ErrorID:" + stringify(pRspInfo->ErrorID) + ",ErrorMsg:" + stringify(pRspInfo->ErrorMsg) + "}";
 }
 
 string MyTdSpi::mergeJson(string name1, string json1, string name2, string json2){
@@ -186,6 +186,17 @@ string MyTdSpi::mergeJson(string name1, string json1, string name2, string json2
 string MyTdSpi::stringify(double x)
 {
 	std::ostringstream o;
-	o << x;
-	return o.str();
+	o << fixed << x;
+	string result = o.str();
+	if (result.length() == 0){
+		return "0";
+	}
+	else {
+		return result;
+	}
+}
+
+string MyTdSpi::stringify(char* x)
+{
+	return "\""+string(x)+"\"";
 }

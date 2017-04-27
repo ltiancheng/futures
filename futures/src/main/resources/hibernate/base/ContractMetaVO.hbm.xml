@@ -8,6 +8,9 @@
             <column name="SYMBOL" />
             <generator class="assigned" />
         </id>
+        <property name="ctpSymbol" type="string">
+            <column name="CTP_SYMBOL" />
+        </property>
         <property name="description" type="string">
             <column name="DESC" length="8"/>
         </property>

@@ -177,7 +177,7 @@ public class CtpManagerImpl implements CtpManager {
 		command.append(contractList.stream().map(new Function<ContractVO, String>(){
 			@Override
 			public String apply(ContractVO c) {
-				return c.getKey();
+				return c.getCtpKey();
 			}}).collect(Collectors.joining(SEPERATOR)));
 		sendToQueue(command.toString(), this.mdCommandQueue, null);
 	}
