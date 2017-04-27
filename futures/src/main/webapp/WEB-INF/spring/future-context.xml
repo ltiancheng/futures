@@ -188,7 +188,7 @@
     	<property name="barCloseTime">
     		<bean class="org.joda.time.LocalTime">
     			<constructor-arg index="0">
-    				<value>16</value>
+    				<value>15</value>
     			</constructor-arg>
     			<constructor-arg index="1">
     				<value>0</value>
