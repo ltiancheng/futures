@@ -4,6 +4,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 public class BarVO implements Serializable {
+	@Override
+	public String toString() {
+		return String.valueOf(closePrice);
+	}
 	private static final long serialVersionUID = 1L;
 	
 	private ContractVO contract;
@@ -12,10 +16,24 @@ public class BarVO implements Serializable {
 	private float openPrice;
 	private float highPrice;
 	private float lowPrice;
+	private float topPrice;
+	private float bottomPrice;
 	private long volume;	//成交量
 	private Date barDate;
 	private long amount;	//成交额
 	
+	public float getTopPrice() {
+		return topPrice;
+	}
+	public void setTopPrice(float topPrice) {
+		this.topPrice = topPrice;
+	}
+	public float getBottomPrice() {
+		return bottomPrice;
+	}
+	public void setBottomPrice(float bottomPrice) {
+		this.bottomPrice = bottomPrice;
+	}
 	public long getAmount() {
 		return amount;
 	}

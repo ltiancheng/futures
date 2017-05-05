@@ -3,7 +3,7 @@ package com.ltc.base.dao.impl;
 import java.util.Arrays;
 import java.util.List;
 
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 
 import com.ltc.base.dao.ContractDAO;
 import com.ltc.base.helpers.BaseConstant;
@@ -16,7 +16,7 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 	@Override
 	public List<ContractVO> getActiveContractList() {
 		String hql = "From ContractVO where status=:status";
-		List<ContractVO> contractList = this.getSession().createQuery(hql)
+		List<ContractVO> contractList = this.currentSession().createQuery(hql)
 				.setParameter("status", BaseConstant.ACTIVE).list();
 		logger.debug("[ContractDAOImpl] get fresh active contract list: "
 				+Arrays.toString(contractList.toArray(new ContractVO[0])));
@@ -26,13 +26,13 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 	@SuppressWarnings("unchecked")
 	@Override
 	public List<ContractMetaVO> getContractMetaList() {
-		return this.getSession().createCriteria(ContractMetaVO.class).list();
+		return this.currentSession().createCriteria(ContractMetaVO.class).list();
 	}
 
 	@Override
 	public ContractVO getNextMainContract(ContractVO c) {
 		String hql = "From ContractVO where contractMeta=:contractMeta and status=:status";
-		ContractVO nmc = (ContractVO) this.getSession().createQuery(hql)
+		ContractVO nmc = (ContractVO) this.currentSession().createQuery(hql)
 				.setParameter("contractMeta", c.getContractMeta())
 				.setParameter("status", BaseConstant.NEXT_MAIN)
 				.uniqueResult();
@@ -41,24 +41,24 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 
 	@Override
 	public void saveContract(ContractVO nmc) {
-		this.getSession().saveOrUpdate(nmc);
+		this.currentSession().saveOrUpdate(nmc);
 	}
 
 	@Override
 	public void mainSwitch(ContractVO currentC, ContractVO newC) {
-		ContractVO dbContract = (ContractVO) this.getSession().load(ContractVO.class, currentC);
-		ContractVO dbNewContract = (ContractVO) this.getSession().load(ContractVO.class, newC);
+		ContractVO dbContract = (ContractVO) this.currentSession().load(ContractVO.class, currentC);
+		ContractVO dbNewContract = (ContractVO) this.currentSession().load(ContractVO.class, newC);
 		if(dbContract != null){
 			dbContract.setStatus(currentC.getStatus());
-			this.getSession().saveOrUpdate(dbContract);
+			this.currentSession().saveOrUpdate(dbContract);
 		} else {
-			this.getSession().saveOrUpdate(currentC);
+			this.currentSession().saveOrUpdate(currentC);
 		}
 		if(dbNewContract != null){
 			dbNewContract.setStatus(newC.getStatus());
-			this.getSession().saveOrUpdate(dbNewContract);
+			this.currentSession().saveOrUpdate(dbNewContract);
 		} else {
-			this.getSession().saveOrUpdate(newC);
+			this.currentSession().saveOrUpdate(newC);
 		}
 	}
 
@@ -66,7 +66,7 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 	@Override
 	public List<ContractVO> getNextMainContractList() {
 		String hql = "From ContractVO where status=:status";
-		List<ContractVO> nmc = (List<ContractVO>) this.getSession().createQuery(hql)
+		List<ContractVO> nmc = (List<ContractVO>) this.currentSession().createQuery(hql)
 				.setParameter("status", BaseConstant.NEXT_MAIN).list();
 		return nmc;
 	}

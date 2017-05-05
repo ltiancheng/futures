@@ -25,8 +25,10 @@
     			<ref bean="futureMonitor"/>
     			<ref bean="futurePersistance"/>
     			<ref bean="tortoiseRunner"/>
+    			<ref bean="tortoiseShortTermRunner"/>
     			<ref bean="ruleExecutor"/>
     			<ref bean="mainSwitcher"/>
+    			<ref bean="commandCleaner"/>
     		</list>
     	</property>
     </bean>
@@ -48,6 +50,47 @@
     			</constructor-arg>
     		</bean>
     	</property>
+    </bean>
+    
+    <bean id="commandCleaner" class="com.ltc.base.utils.CommandCleaner">
+    	<property name="strategy" ref="tortoise"/>
+    	<property name="timeManager" ref="timeManager"/>
+    	<property name="runTimes">
+	    	<list>
+	   			<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>9</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>0</value>
+	    			</constructor-arg>
+	    		</bean>
+	    		<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>10</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>30</value>
+	    			</constructor-arg>
+	    		</bean>
+	    		<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>13</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>30</value>
+	    			</constructor-arg>
+	    		</bean>
+	    		<bean class="org.joda.time.LocalTime">
+	    			<constructor-arg index="0">
+	    				<value>21</value>
+	    			</constructor-arg>
+	    			<constructor-arg index="1">
+	    				<value>0</value>
+	    			</constructor-arg>
+	    		</bean>
+	   		</list>
+   		</property>
     </bean>
     
     <!-- update full futures from network and insert into local Holder. runs every (0.5) second.
@@ -153,6 +196,14 @@
     				<value>10</value>
     			</constructor-arg>
     		</bean>
+    	</property>
+    </bean>
+    
+    <bean id="tortoiseShortTermRunner" class="com.ltc.strategy.tortoise.utils.StrategyShortTermRunner">
+    	<property name="strategy" ref="tortoise"/>
+    	<property name="timeManager" ref="timeManager"/>
+    	<property name="minutesGap">
+    		<value>1</value>
     	</property>
     </bean>
     

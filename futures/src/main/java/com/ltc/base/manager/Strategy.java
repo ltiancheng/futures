@@ -5,6 +5,7 @@ import java.util.List;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.base.vo.RuleVO;
+import com.ltc.strategy.tortoise.vo.PositionVO;
 
 public interface Strategy {
 
@@ -25,4 +26,8 @@ public interface Strategy {
 	void updateTopPrice();
 
 	void onCommandFailed(String contractKey, CommandVO command);
+
+	void onPositionChance2Run(PositionVO position);
+
+	void clearOutstandingCommands(int mINUTE_GAP);
 }

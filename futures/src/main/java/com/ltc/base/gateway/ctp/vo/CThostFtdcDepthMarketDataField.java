@@ -104,6 +104,8 @@ public class CThostFtdcDepthMarketDataField {
 		bar.setLowPrice(BaseUtils.getTrueValue(LowestPrice, bar.getClosePrice()));
 		bar.setOpenPrice(BaseUtils.getTrueValue(OpenPrice, bar.getClosePrice()));
 		bar.setVolume((long) BaseUtils.getTrueValue(Volume, 0));
+		bar.setTopPrice(BaseUtils.getTrueValue(UpperLimitPrice, bar.getClosePrice()));
+		bar.setBottomPrice(BaseUtils.getTrueValue(LowerLimitPrice, bar.getClosePrice()));
 		return bar;
 	}
 }

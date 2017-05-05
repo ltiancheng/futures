@@ -1,7 +1,7 @@
 package com.ltc.strategy.tortoise.dao.impl;
 
 import org.hibernate.criterion.Restrictions;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate4.support.HibernateDaoSupport;
 
 import com.ltc.strategy.tortoise.dao.PortfolioDAO;
 import com.ltc.strategy.tortoise.vo.PortfolioVO;
@@ -20,13 +20,13 @@ public class PortfolioDAOImpl extends HibernateDaoSupport implements PortfolioDA
 
 	@Override
 	public PortfolioVO getPortfolio() {
-		return (PortfolioVO) this.getSession()
+		return (PortfolioVO) this.currentSession()
 				.createCriteria(PortfolioVO.class).add(Restrictions.eq("code", portfolioCode)).uniqueResult();
 	}
 
 	@Override
 	public void save(PortfolioVO portfolio) {
-		this.getSession().saveOrUpdate(portfolio);
+		this.currentSession().saveOrUpdate(portfolio);
 	}
 
 }

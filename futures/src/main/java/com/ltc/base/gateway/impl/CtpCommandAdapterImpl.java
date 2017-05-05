@@ -39,7 +39,7 @@ public class CtpCommandAdapterImpl implements CommandAdapter {
 		CThostFtdcTradeField rawClass = BaseUtils.json2Obj(textStr, CThostFtdcTradeField.class);
 		if(rawClass != null && rawClass.InstrumentID != null){
 			FullCommandVO fcvo = new FullCommandVO();
-			fcvo.setContractKey(rawClass.InstrumentID.toUpperCase());
+			fcvo.setContractKey(BaseUtils.ctpKey2Key(rawClass.InstrumentID));
 			CommandVO command = new CommandVO();
 			command.setDealPrice(new BigDecimal(rawClass.Price));
 			command.setDone(true);
@@ -52,13 +52,20 @@ public class CtpCommandAdapterImpl implements CommandAdapter {
 			return null;
 		}
 	}
+	
+	public static void main(String[] args){
+		CtpCommandAdapterImpl ca = new CtpCommandAdapterImpl();
+		String textStr = "{BrokerID:\"9999\",InvestorID:\"089058\",InstrumentID:\"MA709\",OrderRef:\"           1\",UserID:\"089058\",ExchangeID:\"CZCE\",TradeID:\"       13240\",Direction:49.000000,OrderSysID:\"       20111\",ParticipantID:\"9999\",ClientID:\"9999089038\",TradingRole:0.000000,ExchangeInstID:\"MA709\",OffsetFlag:48.000000,HedgeFlag:49.000000,Price:2277.000000,Volume:2.000000,TradeDate:\"20170504\",TradeTime:\"21:36:19\",TradeType:0.000000,PriceSource:0.000000,TraderID:\"9999cae\",OrderLocalID:\"        1616\",ClearingPartID:\"9999\",BusinessUnit:\"\",SequenceNo:2274.000000,TradingDay:\"20170505\",SettlementID:1.000000,BrokerOrderSeq:22571.000000,TradeSource:48.000000}";
+		FullCommandVO fm = ca.parseToFullCommand(textStr);
+		System.out.println(fm.getContractKey());
+	}
 
 	@Override
 	public FullCommandVO parseToFailedFullCommand(String textStr) {
 		TradeErrResp resp = BaseUtils.json2Obj(textStr, TradeErrResp.class);
 		if(resp != null && resp.inputOrder != null && resp.rspInfo != null && StringUtils.isNotBlank(resp.inputOrder.InstrumentID)){
 			FullCommandVO fcvo = new FullCommandVO();
-			fcvo.setContractKey(resp.inputOrder.InstrumentID.toUpperCase());
+			fcvo.setContractKey(BaseUtils.ctpKey2Key(resp.inputOrder.InstrumentID));
 			return fcvo;
 		} else {
 			return null;

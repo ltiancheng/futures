@@ -71,6 +71,11 @@ void MyMdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin, CThostF
 	std::cout << "FFEX Time:\t" << pRspUserLogin->FFEXTime << endl;
 	std::cout << "INE Time:\t" << pRspUserLogin->INETime << endl;
 	std::cout << "SHFE Time:\t" << pRspUserLogin->SHFETime << endl;
+	if (this->lastCount > 0){
+		//regist last contracts:
+		cout << "recovering from a disconnection, re-subscribing market data" << endl;
+		this->mdApi->SubscribeMarketData(this->lastContractArray, this->lastCount);
+	}
 }
 
 void MyMdSpi::OnRspUserLogout(CThostFtdcUserLogoutField *pUserLogout, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
@@ -109,6 +114,29 @@ void MyMdSpi::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField *pDepthMarketD
 }
 
 string MyMdSpi::stringify(double x)
+{
+	std::ostringstream o;
+	o << fixed << x;
+	string result = o.str();
+	if (result.length() == 0){
+		return "0";
+	}
+	else {
+		return result;
+	}
+}
+
+string MyMdSpi::stringify(char x)
+{
+	if (0 == x){
+		return "\"\"";
+	}
+	else {
+		return "\"" + string(1, x) + "\"";
+	}
+}
+
+string MyMdSpi::stringify(int x)
 {
 	std::ostringstream o;
 	o << fixed << x;

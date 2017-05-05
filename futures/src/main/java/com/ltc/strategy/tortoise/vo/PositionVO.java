@@ -2,13 +2,20 @@ package com.ltc.strategy.tortoise.vo;
 
 import java.io.Serializable;
 
+import com.ltc.base.manager.impl.ContractHolderImpl;
+import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.ContractVO;
 
 public class PositionVO implements Serializable {
 	@Override
 	public String toString() {
+		ContractVO c = ContractHolderImpl.getInstance().getContractByKey(contract.getKey());
+		BarVO bar = null;
+		if(c != null){
+			bar = c.getCurrentBar();
+		}
 		return contract.getKey()+" "+(direction==null?"E":direction)+" "+unitCount+" * "+handPerUnit+" lastInPrice: "+
-				lastInPrice+" averagePrice:"+averagePrice;
+				lastInPrice+" averagePrice: "+averagePrice+" price: "+bar;
 	}
 	private static final long serialVersionUID = 1L;
 	

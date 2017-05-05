@@ -46,6 +46,8 @@ void MdCommander::onMessage(const Message* message) {
 			string contracts = text.substr(strlen(COMMAND_SUBSCRIBE) + 1);
 			int count = 0;
 			char ** contractArray = getContractArray(contracts, SEPERATER, count);
+			this->mdHolder->mdSpi->lastContractArray = contractArray;
+			this->mdHolder->mdSpi->lastCount = count;
 			this->mdHolder->mdApi->SubscribeMarketData(contractArray, count);
 			//delete contractArray;
 		}

@@ -6,6 +6,7 @@
 #include "Config.h"
 #include <iostream>
 #include <sstream>
+#include <windows.h>
 using namespace std;
 
 
@@ -22,6 +23,7 @@ MyTdSpi::~MyTdSpi()
 void MyTdSpi::OnFrontConnected(){
 	cout << "Td连接成功" << endl;
 	cout << "请求登陆\n";
+	Sleep(5*1000);
 	CThostFtdcReqUserLoginField * loginField = new CThostFtdcReqUserLoginField();
 	strcpy_s(loginField->BrokerID, TD_BROKER_ID);
 	strcpy_s(loginField->UserID, INVESTOR_ID);
@@ -47,20 +49,26 @@ void MyTdSpi::OnRspUserLogin(CThostFtdcRspUserLoginField *pRspUserLogin,
 	cout << "--------------------------------------------" << endl << endl;
 
 	//查询是否已经做了确认
-	CThostFtdcQrySettlementInfoConfirmField isConfirm = {0};
-	strcpy(isConfirm.BrokerID, TD_BROKER_ID);
-	strcpy(isConfirm.InvestorID, INVESTOR_ID);
-	holder->tdApi->ReqQrySettlementInfoConfirm(&isConfirm, 1000);
+	Sleep(5 * 1000);
+	CThostFtdcQrySettlementInfoConfirmField *isConfirm = new CThostFtdcQrySettlementInfoConfirmField();
+	strcpy(isConfirm->BrokerID, TD_BROKER_ID);
+	strcpy(isConfirm->InvestorID, INVESTOR_ID);
+	cout << "结算信息查询 request" << endl;
+	holder->tdApi->ReqQrySettlementInfoConfirm(isConfirm, 1000);
 }
 
 //请求查询结算信息确认响应
 void MyTdSpi::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *pSettlementInfoConfirm,
 	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-	if (pSettlementInfoConfirm != NULL && (pRspInfo == nullptr || pRspInfo->ErrorID == 0)){
+	cout << "结算信息 response" << endl;
+	if (pRspInfo == nullptr || pRspInfo->ErrorID == 0){
 		TdHolder * holder = &TdHolder::getInstance();
-		cout << pSettlementInfoConfirm->ConfirmDate << endl;
-		cout << pSettlementInfoConfirm->ConfirmTime << endl;
-		string lastConfirmDate = pSettlementInfoConfirm->ConfirmDate;
+		string lastConfirmDate = "19700101";
+		if (pSettlementInfoConfirm != NULL){
+			cout << pSettlementInfoConfirm->ConfirmDate << endl;
+			cout << pSettlementInfoConfirm->ConfirmTime << endl;
+			lastConfirmDate = pSettlementInfoConfirm->ConfirmDate;
+		}
 		if (lastConfirmDate != TdHolder::getInstance().tradingDate){
 			//今天还没确定,第一次发送交易指令前，查询投资者结算结果
 			CThostFtdcQrySettlementInfoField *a = new CThostFtdcQrySettlementInfoField();
@@ -82,7 +90,10 @@ void MyTdSpi::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField
 //请求查询投资者结算结果响应
 void MyTdSpi::OnRspQrySettlementInfo(CThostFtdcSettlementInfoField *pSettlementInfo,
 	CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast){
-	cout << "settle content: " << endl << pSettlementInfo->Content << endl;
+	cout << "结算查询响应：" << endl;
+	if (pSettlementInfo != NULL){
+		cout << "settle content: " << endl << pSettlementInfo->Content << endl;
+	}
 	TdHolder * holder = &TdHolder::getInstance();
 	if (bIsLast == true){
 		//确认投资者结算结果
@@ -132,12 +143,16 @@ void MyTdSpi::OnErrRtnOrderInsert(CThostFtdcInputOrderField *pInputOrder, CThost
 }
 
 void MyTdSpi::OnRtnOrder(CThostFtdcOrderField *pOrder){
-	//do nothing, use onRtnTrade;
+	string message = getJsonFromOrder(pOrder);
+	GatewayManager* gm = &GatewayManager::getInstance();
+	cout << "on return order string: " << message << endl;
+	//gm->sendTextMessage(message, TOPIC_TD_ORDER, true);
 }
 
 void MyTdSpi::OnRtnTrade(CThostFtdcTradeField *pTrade){
 	string message = getJsonFromTrade(pTrade);
 	GatewayManager* gm = &GatewayManager::getInstance();
+	cout << "on return trade string: " << message << endl;
 	gm->sendTextMessage(message, TOPIC_TD, true);
 }
 
@@ -146,8 +161,30 @@ void MyTdSpi::sendErrOrder(CThostFtdcInputOrderField *pInputOrder, CThostFtdcRsp
 		//error during order insert, send msg to queue
 		string message = mergeJson("inputOrder", getJsonFromInputOrder(pInputOrder), "rspInfo", getJsonFromRspInfo(pRspInfo));
 		GatewayManager* gm = &GatewayManager::getInstance();
+		cout << "sending error order resp msg:" << endl;
+		cout << message << endl;
 		gm->sendTextMessage(message, TOPIC_TD_ERR, true);
 	}
+}
+
+string MyTdSpi::getJsonFromOrder(CThostFtdcOrderField *pOrder){
+	return "{BrokerID:" + stringify(pOrder->BrokerID) + ",InvestorID:" + stringify(pOrder->InvestorID) + ",InstrumentID:" + stringify(pOrder->InstrumentID) + ",OrderRef:" + stringify(pOrder->OrderRef) + 
+		",UserID:" + stringify(pOrder->UserID) + ",OrderPriceType:" + stringify(pOrder->OrderPriceType) + ",Direction:" + stringify(pOrder->Direction) + ",CombOffsetFlag:" + stringify(pOrder->CombOffsetFlag)
+		+ ",CombHedgeFlag:" + stringify(pOrder->CombHedgeFlag) + ",LimitPrice:" + stringify(pOrder->LimitPrice) + ",VolumeTotalOriginal:" + stringify(pOrder->VolumeTotalOriginal) + ",TimeCondition:"
+		+ stringify(pOrder->TimeCondition) + ",GTDDate:" + stringify(pOrder->GTDDate) + ",VolumeCondition:" + stringify(pOrder->VolumeCondition) + ",MinVolume:" + stringify(pOrder->MinVolume) + 
+		",ContingentCondition:" + stringify(pOrder->ContingentCondition) + ",StopPrice:" + stringify(pOrder->StopPrice) + ",ForceCloseReason:" + stringify(pOrder->ForceCloseReason) + ",IsAutoSuspend:"
+		+ stringify(pOrder->IsAutoSuspend) + ",BusinessUnit:" + stringify(pOrder->BusinessUnit) + ",RequestID:" + stringify(pOrder->RequestID) + ",OrderLocalID:" + stringify(pOrder->OrderLocalID) + 
+		",ExchangeID:" + stringify(pOrder->ExchangeID) + ",ParticipantID:" + stringify(pOrder->ParticipantID) + ",ClientID:" + stringify(pOrder->ClientID) + ",ExchangeInstID:" + stringify(pOrder->ExchangeInstID)
+		+ ",TraderID:" + stringify(pOrder->TraderID) + ",InstallID:" + stringify(pOrder->InstallID) + ",OrderSubmitStatus:" + stringify(pOrder->OrderSubmitStatus) + ",NotifySequence:" + 
+		stringify(pOrder->NotifySequence) + ",TradingDay:" + stringify(pOrder->TradingDay) + ",SettlementID:" + stringify(pOrder->SettlementID) + ",OrderSysID:" + stringify(pOrder->OrderSysID) +
+		",OrderSource:" + stringify(pOrder->OrderSource) + ",OrderStatus:" + stringify(pOrder->OrderStatus) + ",OrderType:" + stringify(pOrder->OrderType) + ",VolumeTraded:" + stringify(pOrder->VolumeTraded) + 
+		",VolumeTotal:" + stringify(pOrder->VolumeTotal) + ",InsertDate:" + stringify(pOrder->InsertDate) + ",InsertTime:" + stringify(pOrder->InsertTime) + ",ActiveTime:" + stringify(pOrder->ActiveTime) + 
+		",SuspendTime:" + stringify(pOrder->SuspendTime) + ",UpdateTime:" + stringify(pOrder->UpdateTime) + ",CancelTime:" + stringify(pOrder->CancelTime) + ",ActiveTraderID:" + stringify(pOrder->ActiveTraderID)
+		+ ",ClearingPartID:" + stringify(pOrder->ClearingPartID) + ",SequenceNo:" + stringify(pOrder->SequenceNo) + ",FrontID:" + stringify(pOrder->FrontID) + ",SessionID:" + stringify(pOrder->SessionID)
+		+ ",UserProductInfo:" + stringify(pOrder->UserProductInfo) + ",StatusMsg:" + stringify(pOrder->StatusMsg) + ",UserForceClose:" + stringify(pOrder->UserForceClose) + ",ActiveUserID:" + 
+		stringify(pOrder->ActiveUserID) + ",BrokerOrderSeq:" + stringify(pOrder->BrokerOrderSeq) + ",RelativeOrderSysID:" + stringify(pOrder->RelativeOrderSysID) + ",ZCETotalTradedVolume:" + 
+		stringify(pOrder->ZCETotalTradedVolume) + ",IsSwapOrder:" + stringify(pOrder->IsSwapOrder) + ",BranchID:" + stringify(pOrder->BranchID) + ",InvestUnitID:" + stringify(pOrder->InvestUnitID) +
+		",AccountID:" + stringify(pOrder->AccountID) + ",CurrencyID:" + stringify(pOrder->CurrencyID) + ",IPAddress:" + stringify(pOrder->IPAddress) + ",MacAddress:" + stringify(pOrder->MacAddress) + "}";
 }
 
 string MyTdSpi::getJsonFromTrade(CThostFtdcTradeField *pTrade){
@@ -193,6 +230,29 @@ string MyTdSpi::stringify(double x)
 	}
 	else {
 		return result;
+	}
+}
+
+string MyTdSpi::stringify(int x)
+{
+	std::ostringstream o;
+	o << fixed << x;
+	string result = o.str();
+	if (result.length() == 0){
+		return "0";
+	}
+	else {
+		return result;
+	}
+}
+
+string MyTdSpi::stringify(char x)
+{
+	if (0 == x){
+		return "\"\"";
+	}
+	else {
+		return "\"" + string(1, x) + "\"";
 	}
 }
 

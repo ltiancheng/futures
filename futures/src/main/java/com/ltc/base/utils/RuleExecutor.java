@@ -83,6 +83,9 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 										break;
 									}
 								}
+							} else if(hasOldRules(rules)) {
+								logger.info("triggered rules of {} is too old, cleaning & regenerating", contractKey);
+								rules.clear();
 							}
 						}
 					}
@@ -96,6 +99,15 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 				logger.error("error caught", e);
 			}
 		}
+	}
+
+	private boolean hasOldRules(List<RuleVO> rules) {
+		for(RuleVO r : rules){
+			if(r.isOld()){
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private boolean hasTriggeredRules(List<RuleVO> rules) {

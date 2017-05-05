@@ -1,10 +1,17 @@
-﻿生成启动时间为 2017/4/25 18:34:34。
-     1>项目“C:\Users\Tiancheng\git\futures\Project1\Project1\Project1.vcxproj”在节点 2 上(Build 个目标)。
+﻿生成启动时间为 2017/5/5 15:48:24。
+     1>项目“C:\Users\Tiancheng\git\futures\Project1\Project1\Project1.vcxproj”在节点 2 上(Rebuild 个目标)。
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\LTC\Apps\APR\apr\include /I"C:\Users\Tiancheng\git\futures\activemq-cpp-library-3.9.4\src\main" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt main.cpp
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\CL.exe /c /IC:\LTC\Apps\APR\apr\include /I"C:\Users\Tiancheng\git\futures\activemq-cpp-library-3.9.4\src\main" /Zi /nologo /W3 /WX- /sdl /O2 /Oi /GL /D _MBCS /Gm- /EHsc /MD /GS /Gy /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Release\\" /Fd"x64\Release\vc120.pdb" /Gd /TP /errorReport:prompt GatewayManager.cpp main.cpp MdCommander.cpp MyMdSpi.cpp MyTdSpi.cpp TdCommander.cpp TdHolder.cpp MdHolder.cpp
+         GatewayManager.cpp
          main.cpp
-     1>main.cpp(40): warning C4101: “mdThread”: 未引用的局部变量
-     1>main.cpp(41): warning C4101: “tdThread”: 未引用的局部变量
+         MdCommander.cpp
+     1>MdCommander.cpp(71): warning C4244: “=”: 从“__int64”转换到“int”，可能丢失数据
+         MyMdSpi.cpp
+         MyTdSpi.cpp
+         TdCommander.cpp
+     1>TdCommander.cpp(95): warning C4244: “=”: 从“__int64”转换到“int”，可能丢失数据
+         TdHolder.cpp
+         MdHolder.cpp
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Tiancheng\git\futures\Project1\x64\Release\Project1.exe" /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Tiancheng\git\futures\Project1\x64\Release\Project1.pdb" /OPT:REF /OPT:ICF /LTCG /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Tiancheng\git\futures\Project1\x64\Release\Project1.lib" /MACHINE:X64 x64\Release\GatewayManager.obj
          x64\Release\main.obj
@@ -17,8 +24,8 @@
          正在生成代码
          已完成代码的生成
          Project1.vcxproj -> C:\Users\Tiancheng\git\futures\Project1\x64\Release\Project1.exe
-     1>已完成生成项目“C:\Users\Tiancheng\git\futures\Project1\Project1\Project1.vcxproj”(Build 个目标)的操作。
+     1>已完成生成项目“C:\Users\Tiancheng\git\futures\Project1\Project1\Project1.vcxproj”(Rebuild 个目标)的操作。
 
 生成成功。
 
-已用时间 00:00:05.45
+已用时间 00:00:06.62

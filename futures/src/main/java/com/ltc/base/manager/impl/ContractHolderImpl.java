@@ -31,7 +31,15 @@ public class ContractHolderImpl implements ContractHolder {
 	private ContractAdapter contractAdapter;
 	private Map<String, List<BarVO>> barHistMap = new HashMap<String, List<BarVO>>();
 	private Date barHistRefreshTime;
-
+	private static ContractHolderImpl instance;
+	
+	public ContractHolderImpl(){
+		instance = this;
+	}
+	
+	public static ContractHolder getInstance(){
+		return instance;
+	}
 
 	public void setNextMainContractList(List<ContractVO> nextMainContractList) {
 		this.nextMainContractList = nextMainContractList;
@@ -64,7 +72,7 @@ public class ContractHolderImpl implements ContractHolder {
 		return this.activeContractList;
 	}
 	
-	public void refreshContractList(){
+	public synchronized void refreshContractList(){
 		if(needRefreshContract() || CollectionUtils.isEmpty(this.activeContractList)){
 			this.activeContractList = contractService.getActiveContractList();
 			this.nextMainContractList = contractService.getNextMainContractList();

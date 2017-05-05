@@ -245,7 +245,7 @@ public class StrategyImpl implements Strategy {
 		} else {
 			command.setInstruction(CommandVO.CLOSE_SHORT);
 		}
-		BarVO currentBar = p.getContract().getCurrentBar();
+		BarVO currentBar = contractHolder.getContractByKey(p.getContract().getKey()).getCurrentBar();
 		if(currentBar == null){
 			currentBar = contractHolder.getBarFromGw(p.getContract());
 		}
@@ -470,6 +470,7 @@ public class StrategyImpl implements Strategy {
 	@Override
 	public void ruleTriggered(RuleVO rule) {
 		rule.setTriggered(true);
+		rule.setTriggerTime(new Date());
 	}
 
 	private void updatePosition(PositionVO position, PortfolioVO portfolio, RuleVO rule) {
@@ -480,8 +481,8 @@ public class StrategyImpl implements Strategy {
 			this.portfolioHolder.saveCurrentStatus();
 		} else if(StringUtils.equals(position.getStatus(), PositionVO.REFRESH)) {
 			//Update position only update the status when force switch
-			ContractVO nmContract = rule.getContract();
-			ContractVO oldContract = position.getContract();
+			ContractVO nmContract = contractHolder.getContractByKey(rule.getContract().getKey());
+			ContractVO oldContract = contractHolder.getContractByKey(position.getContract().getKey());
 			BarVO nmBar = this.getBarFromContract(nmContract);
 			BarVO oldBar = this.getBarFromContract(oldContract);
 			float priceGap = nmBar.getClosePrice() - oldBar.getClosePrice();
@@ -613,25 +614,34 @@ public class StrategyImpl implements Strategy {
 		PortfolioVO portfolio = portfolioHolder.getPortfolio();
 		Set<PositionVO> positionSet = portfolio.getPositionSet();
 		for(PositionVO p: positionSet){
-			if(StringUtils.isNotBlank(p.getDirection())){
-				//fresh close equity
-				BarVO currentBar = p.getContract().getCurrentBar();
-				if(currentBar == null){
-					logger.warn("[StrategyImpl] current bar of " + p.getContract().getKey()+" is null, refecthing.");
-					currentBar = this.contractHolder.getBarFromGw(p.getContract());
-				}
-				float closePrice = currentBar.getClosePrice();
-				if(closePrice > 0){
-					if(p.getTopPrice() <= 0.1){
+			updatePositionTopPrice(p);
+		}
+	}
+	
+	@Override
+	public void onPositionChance2Run(PositionVO position){
+		updatePositionTopPrice(position);
+	}
+	
+	private void updatePositionTopPrice(PositionVO p){
+		if(StringUtils.isNotBlank(p.getDirection())){
+			//fresh close equity
+			BarVO currentBar =contractHolder.getContractByKey(p.getContract().getKey()).getCurrentBar();
+			if(currentBar == null){
+				logger.warn("[StrategyImpl] current bar of " + p.getContract().getKey()+" is null, refecthing.");
+				currentBar = this.contractHolder.getBarFromGw(p.getContract());
+			}
+			float closePrice = currentBar.getClosePrice();
+			if(closePrice > 0){
+				if(p.getTopPrice() <= 0.1){
+					p.setTopPrice(closePrice);
+				} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
+					if(closePrice > p.getTopPrice()){
 						p.setTopPrice(closePrice);
-					} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
-						if(closePrice > p.getTopPrice()){
-							p.setTopPrice(closePrice);
-						}
-					} else {
-						if(closePrice < p.getTopPrice()){
-							p.setTopPrice(closePrice);
-						}
+					}
+				} else {
+					if(closePrice < p.getTopPrice()){
+						p.setTopPrice(closePrice);
 					}
 				}
 			}
@@ -649,6 +659,33 @@ public class StrategyImpl implements Strategy {
 			});
 		} else {
 			logger.warn("rule is empty when command failed: {}", contractKey);
+		}
+	}
+
+	@Override
+	public void clearOutstandingCommands(int minuteGap) {
+		List<ContractVO> activeContracts = contractHolder.getActiveContractList();
+		List<ContractVO> nmContracts = contractHolder.getNextMainContractList();
+		for(ContractVO c : activeContracts){
+			clearOutstandingCommands(minuteGap, c.getKey());
+		}
+		for(ContractVO c : nmContracts){
+			clearOutstandingCommands(minuteGap, c.getKey());
+		}
+		
+	}
+
+	private void clearOutstandingCommands(int minuteGap, String key) {
+		List<RuleVO> rules = ruleHolder.getRuleMap().get(key);
+		if(CollectionUtils.isNotEmpty(rules)){
+			for(RuleVO r : rules){
+				if(r.isTriggered()){
+					if((System.currentTimeMillis()-r.getTriggerTime().getTime())/(60*1000) >= minuteGap){
+						logger.info("setting rule of {} to old rule, to be cleared soon", key);
+						r.setOld(true);
+					}
+				}
+			}
 		}
 	}
 

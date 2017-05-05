@@ -16,11 +16,15 @@ class MyMdSpi :
 private:
 	string stringify(double x);
 	string stringify(char* x);
+	string stringify(char x);
+	string stringify(int x);
 	CThostFtdcMdApi* mdApi;
 public:
 	MyMdSpi();
 	~MyMdSpi();
 	MyMdSpi(CThostFtdcMdApi* api);
+	char ** lastContractArray;
+	int lastCount = 0;
 public:
 	///当客户端与交易后台建立起通信连接时（还未登录前），该方法被调用。
 	virtual void OnFrontConnected();

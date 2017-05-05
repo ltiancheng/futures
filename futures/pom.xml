@@ -135,14 +135,14 @@
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>3.3.2.GA</version>
+			<version>4.1.2.Final</version>
 		</dependency>
 	
 		<!-- Hibernate library dependecy start -->
 		<dependency>
 		    <groupId>org.springframework</groupId>
-		    <artifactId>spring-hibernate3</artifactId>
-		    <version>2.0.5</version>
+		    <artifactId>spring-orm</artifactId>
+		    <version>${spring.version}</version>
 		</dependency>
 		
 		<dependency>

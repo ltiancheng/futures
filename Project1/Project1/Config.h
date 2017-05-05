@@ -12,11 +12,12 @@
 #define MD_BROKER_ID "9999"
 #define INVESTOR_ID "089058"
 #define INVESTOR_PWD "058089"
-#define TD_SERVER_URL "tcp://218.202.237.33 :10012"
+#define TD_SERVER_URL "tcp://180.168.146.187:10000"
 //#define TD_SERVER_URL "tcp://180.168.146.187:10011"
 #define TD_BROKER_ID "9999"
 #define QUEUE_TD_COMMAND "queue.trade.cmd"
 #define TOPIC_TD "topic.tradedata"
+#define TOPIC_TD_ORDER "topic.orderdata"
 #define TOPIC_TD_ERR "topic.trade.err"
 
 #define MARKET_PRICE "M"

@@ -1,5 +1,6 @@
 package com.ltc.base.gateway.ctp.impl;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,8 @@ import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.core.MessageCreator;
 
 import com.ltc.base.gateway.ctp.CtpManager;
+import com.ltc.base.manager.impl.ContractHolderImpl;
+import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
 
@@ -201,9 +204,22 @@ public class CtpManagerImpl implements CtpManager {
 
 	@Override
 	public void sendTradeCommand(ContractVO contract, CommandVO command) {
+		String priceStyle = command.getPriceStyle();
+		BigDecimal price = command.getPrice();
+		if(StringUtils.equals(priceStyle, CommandVO.MARKET)){
+			priceStyle = CommandVO.LIMIT;
+			BarVO currentBar = ContractHolderImpl.getInstance().getContractByKey(contract.getKey()).getCurrentBar();
+			if(currentBar != null){
+				if(StringUtils.equals(command.getInstruction(), CommandVO.OPEN_LONG) || StringUtils.equals(command.getInstruction(), CommandVO.CLOSE_SHORT)){
+					price = new BigDecimal(currentBar.getTopPrice());
+				} else {
+					price = new BigDecimal(currentBar.getBottomPrice());
+				}
+			}
+		}
 		String commandLine = String.join(SEPERATOR, command.getInstruction(), 
-				String.valueOf(command.getHandPerUnit()*command.getUnits()), contract.getKey(), 
-				command.getPrice().toString(), command.getPriceStyle());
+				String.valueOf(command.getHandPerUnit()*command.getUnits()), contract.getCtpKey(), 
+				price.toString(), priceStyle);
 		this.sendToQueue(commandLine, this.tdCommandQueue, null);
 	}
 

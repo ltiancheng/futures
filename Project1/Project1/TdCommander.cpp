@@ -44,13 +44,13 @@ void TdCommander::onMessage(const Message* message) {
 		}
 		printf("Contract Command Received: %s\n", text.c_str());
 		int count = 0;
-		char ** commandArray = getContractArray(text, SEPERATER, count);
+		char ** commandArray = getCommandArray(text, SEPERATER, count);
 
 		CThostFtdcInputOrderField *orderField = new CThostFtdcInputOrderField();
 		strcpy(orderField->BrokerID, TD_BROKER_ID);
 		strcpy(orderField->InvestorID, INVESTOR_ID);
 		strcpy(orderField->InstrumentID, commandArray[2]);
-		if (commandArray[4] == MARKET_PRICE){
+		if (0 == string(MARKET_PRICE).compare(commandArray[4])){
 			orderField->OrderPriceType = THOST_FTDC_OPT_AnyPrice;		//市价
 			orderField->LimitPrice = 0;									//价格
 		}
@@ -58,13 +58,13 @@ void TdCommander::onMessage(const Message* message) {
 			orderField->OrderPriceType = THOST_FTDC_OPT_LimitPrice;		//限价
 			orderField->LimitPrice = atof(commandArray[3]);
 		}
-		if (commandArray[0] == OPEN_LONG || commandArray[0] == CLOSE_SHORT){
+		if (0 == string(OPEN_LONG).compare(commandArray[0]) || 0 == string(CLOSE_SHORT).compare(commandArray[0])){
 			orderField->Direction = THOST_FTDC_D_Buy;					//买 
 		}
 		else{
 			orderField->Direction = THOST_FTDC_D_Sell;					//卖
 		}
-		if (commandArray[0] == OPEN_LONG || commandArray[0] == OPEN_SHORT){
+		if (0 == string(OPEN_LONG).compare(commandArray[0]) || 0 == string(OPEN_SHORT).compare(commandArray[0])){
 			orderField->CombOffsetFlag[0] = THOST_FTDC_OF_Open;				//开仓
 		}
 		else{
@@ -91,7 +91,7 @@ void TdCommander::onMessage(const Message* message) {
 	}
 }
 
-char ** TdCommander::getContractArray(string& command, const char& seperator, int& count){
+char ** TdCommander::getCommandArray(string& command, const char& seperator, int& count){
 	count = std::count(command.begin(), command.end(), seperator) + 1;
 	char ** commandArray = new char*[count];
 	std::istringstream ssin(command);
