@@ -174,8 +174,12 @@ public class MarketAdapterManagerImpl implements MarketAdapterManager {
 						if(deepMd != null && StringUtils.isNotBlank(deepMd.InstrumentID)){
 							BarVO bar = deepMd.toBar();
 							ContractVO contract = contractHolder.getContractByKey(BaseUtils.ctpKey2Key(deepMd.InstrumentID));
-							bar.setContract(contract);
-							contract.setCurrentBar(bar);
+							if(contract != null){
+								bar.setContract(contract);
+								contract.setCurrentBar(bar);
+							} else {
+								logger.error("[MarketAdapterManager] contract not found for key: {}", BaseUtils.ctpKey2Key(deepMd.InstrumentID));
+							}
 						}
 					} catch (JMSException e) {
 						logger.error(e.getMessage(), e);
