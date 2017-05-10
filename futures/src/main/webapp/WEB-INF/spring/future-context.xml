@@ -62,7 +62,7 @@
 	    				<value>9</value>
 	    			</constructor-arg>
 	    			<constructor-arg index="1">
-	    				<value>0</value>
+	    				<value>5</value>
 	    			</constructor-arg>
 	    		</bean>
 	    		<bean class="org.joda.time.LocalTime">
@@ -70,7 +70,7 @@
 	    				<value>10</value>
 	    			</constructor-arg>
 	    			<constructor-arg index="1">
-	    				<value>30</value>
+	    				<value>35</value>
 	    			</constructor-arg>
 	    		</bean>
 	    		<bean class="org.joda.time.LocalTime">
@@ -78,7 +78,7 @@
 	    				<value>13</value>
 	    			</constructor-arg>
 	    			<constructor-arg index="1">
-	    				<value>30</value>
+	    				<value>35</value>
 	    			</constructor-arg>
 	    		</bean>
 	    		<bean class="org.joda.time.LocalTime">
@@ -86,7 +86,7 @@
 	    				<value>21</value>
 	    			</constructor-arg>
 	    			<constructor-arg index="1">
-	    				<value>0</value>
+	    				<value>5</value>
 	    			</constructor-arg>
 	    		</bean>
 	   		</list>

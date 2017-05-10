@@ -78,7 +78,12 @@ public class MainSwitcher extends BaseStartupItem implements Runnable {
 			}
 			doMainScan();
 			doMainSwitch();
+			doMainForceSwitch();
 		}
+	}
+
+	private void doMainForceSwitch() {
+		strategy.startForceSwitch();
 	}
 
 	private void doMainSwitch() {

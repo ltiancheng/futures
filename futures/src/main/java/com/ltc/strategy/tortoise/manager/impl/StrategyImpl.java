@@ -180,10 +180,6 @@ public class StrategyImpl implements Strategy {
 		}
 		if(isTime2CloseOld(p)){
 			List<RuleVO> closeRules = closeOldPostion(p);
-			// update position status.
-			// issue rules to close old position.
-			p.setStatus(PositionVO.EXPIRE);
-			this.portfolioHolder.saveCurrentStatus();
 			return closeRules;
 		}
 		if(isTime2OpenNew(p)){
@@ -211,6 +207,13 @@ public class StrategyImpl implements Strategy {
 	
 	private boolean isTime2OpenNew(PositionVO p) {
 		if(StringUtils.equals(p.getStatus(), PositionVO.REFRESH)){
+			return true;
+		}
+		return false;
+	}
+	
+	private boolean isTime2CloseOld(PositionVO p) {
+		if(StringUtils.equals(p.getStatus(), PositionVO.EXPIRE)){
 			return true;
 		}
 		return false;
@@ -256,7 +259,7 @@ public class StrategyImpl implements Strategy {
 		return Arrays.asList(new RuleVO[]{rule});
 	}
 
-	private boolean isTime2CloseOld(PositionVO p) {
+	private boolean isPositionOld(PositionVO p) {
 		if(StringUtils.isBlank(p.getDirection()) || !StringUtils.equals(p.getStatus(), PositionVO.ACTIVE) 
 				|| this.contractHolder.getNextMainContract(p.getContract().getContractMeta().getSymbol()) == null){
 			return false;
@@ -685,6 +688,19 @@ public class StrategyImpl implements Strategy {
 						r.setOld(true);
 					}
 				}
+			}
+		}
+	}
+
+	@Override
+	public void startForceSwitch() {
+		Set<PositionVO> positions = portfolioHolder.getPortfolio().getPositionSet();
+		for(PositionVO p: positions){
+			if(this.isPositionOld(p)){
+				// update position status.
+				// issue rules to close old position.
+				p.setStatus(PositionVO.EXPIRE);
+				this.portfolioHolder.saveCurrentStatus();
 			}
 		}
 	}

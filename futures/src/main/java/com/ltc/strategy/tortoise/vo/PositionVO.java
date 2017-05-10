@@ -22,8 +22,8 @@ public class PositionVO implements Serializable {
 	public static final String LONG = "L";
 	public static final String SHORT = "S";
 	public static final String ACTIVE = "A";
-	public static final String EXPIRE = "E";
-	public static final String REFRESH = "R";
+	public static final String EXPIRE = "E";	//command to close old contracts issued, to be executed
+	public static final String REFRESH = "R";	//command to close old contracts done, to open new contracts
 	
 	private ContractVO contract;
 	private String direction = "";		//"L" for Long; "S" for Short

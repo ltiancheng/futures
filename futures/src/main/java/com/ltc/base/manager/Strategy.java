@@ -30,4 +30,6 @@ public interface Strategy {
 	void onPositionChance2Run(PositionVO position);
 
 	void clearOutstandingCommands(int mINUTE_GAP);
+
+	void startForceSwitch();
 }
