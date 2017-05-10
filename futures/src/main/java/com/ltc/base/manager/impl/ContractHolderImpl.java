@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
@@ -31,8 +32,17 @@ public class ContractHolderImpl implements ContractHolder {
 	private ContractAdapter contractAdapter;
 	private Map<String, List<BarVO>> barHistMap = new HashMap<String, List<BarVO>>();
 	private Date barHistRefreshTime;
+	private List<LocalTime[]> barHistRefreshInterval;
 	private static ContractHolderImpl instance;
 	
+	public List<LocalTime[]> getBarHistRefreshInterval() {
+		return barHistRefreshInterval;
+	}
+
+	public void setBarHistRefreshInterval(List<LocalTime[]> barHistRefreshInterval) {
+		this.barHistRefreshInterval = barHistRefreshInterval;
+	}
+
 	public ContractHolderImpl(){
 		instance = this;
 	}
@@ -95,7 +105,7 @@ public class ContractHolderImpl implements ContractHolder {
 	}
 	
 	private boolean needRefreshBarHist() {
-		return this.timeManager.needRefreshBeforeOpen(this.barHistRefreshTime);
+		return !this.timeManager.isTimeInIntervals(this.barHistRefreshTime, barHistRefreshInterval);
 	}
 
 	@Override
@@ -147,6 +157,7 @@ public class ContractHolderImpl implements ContractHolder {
 
 	private Map<String, List<BarVO>> getBarHistMap() {
 		if(CollectionUtils.isEmpty(this.barHistMap) || needRefreshBarHist()){
+			logger.debug("[ContractHolder] refreshing bar hist...");
 			List<ContractVO> allContracts = new ArrayList<ContractVO>();
 			allContracts.addAll(this.getActiveContractList());
 			allContracts.addAll(this.getNextMainContractList());
@@ -154,6 +165,7 @@ public class ContractHolderImpl implements ContractHolder {
 				String key = c.getKey();
 				List<BarVO> barHist = this.contractAdapter.getBarHist(c, DEFAULT_BAR_SIZE);
 				this.barHistMap.put(key, barHist);
+				logger.debug("[ContractHolder] getting bar hist of contract: {}, latest bar date is: {}", key, barHist.get(0).getBarDate());
 			}
 			this.barHistRefreshTime = new Date();
 			return this.barHistMap;

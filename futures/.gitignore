@@ -1,1 +1,3 @@
 /bin/
+/target/
+**/global.logger.dir_IS_UNDEFINED/**

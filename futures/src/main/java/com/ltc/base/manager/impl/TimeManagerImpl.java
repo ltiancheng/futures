@@ -1,10 +1,12 @@
 package com.ltc.base.manager.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ArrayUtils;
 import org.joda.time.DurationFieldType;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
@@ -94,7 +96,7 @@ public class TimeManagerImpl implements TimeManager {
 		LocalTime lt = LocalTime.fromCalendarFields(now);
 		if(lt.isBefore(this.barOpenTime) && lt.isAfter(this.barCloseTime.withFieldAdded(DurationFieldType.hours(), 1))){
 			//market is closed;
-			if(lastRefreshTime != null && lastRefreshTime.after(new LocalDate().toDate())){
+			if(lastRefreshTime != null && lastRefreshTime.after(new LocalDate().toLocalDateTime(barCloseTime).toDate())){
 				return false;
 			} else {
 				return true;
@@ -152,6 +154,34 @@ public class TimeManagerImpl implements TimeManager {
 			logger.error("minus time gap: " + shortMillis);
 			this.waitTillNextRound();
 		}
+	}
+
+	@Override
+	public boolean isTimeInIntervals(Date instantTime, List<LocalTime[]> timeIntervals) {
+		if(CollectionUtils.isEmpty(timeIntervals)){
+			logger.error("[isTimeInIntervals] empty time interval, returning true");
+		}
+		long instant = LocalTime.fromDateFields(instantTime).getMillisOfDay();
+		for(LocalTime[] times: timeIntervals){
+			if(!ArrayUtils.isEmpty(times)){
+				if(times.length == 1){
+					if(instant>= times[0].getMillisOfDay()){
+						return true;
+					}
+				} else if(times.length == 2){
+					if(times[1].isAfter(times[0])){
+						if(instant >= times[0].getMillisOfDay() && instant <= times[1].getMillisOfDay()){
+							return true;
+						}
+					} else {
+						if(instant >= times[0].getMillisOfDay() || instant <= times[1].getMillisOfDay()){
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
 	}
 	
 }

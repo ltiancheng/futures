@@ -12,8 +12,8 @@
 
 #pragma comment(lib,"thostmduserapi.lib")
 #pragma comment(lib,"thosttraderapi.lib")
-//#pragma comment(lib,"activemq-cpp.lib")
-#pragma comment(lib,"activemq-cppd.lib")
+#pragma comment(lib,"activemq-cpp.lib")
+//#pragma comment(lib,"activemq-cppd.lib")
 #pragma comment(lib,"apr-1.lib")
 #pragma comment(lib,"aprapp-1.lib")
 #pragma comment(lib,"cppunit_dll.lib")

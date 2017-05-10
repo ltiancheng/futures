@@ -21,4 +21,6 @@ public interface TimeManager {
 
 	void waitTillNextWorkingDay(List<LocalTime> runTimes) throws InterruptedException;
 
+	boolean isTimeInIntervals(Date instantTime, List<LocalTime[]> timeIntervals);
+
 }

@@ -210,7 +210,47 @@
     <bean id="contractHolder" class="com.ltc.base.manager.impl.ContractHolderImpl">
     	<property name="contractService" ref="contractService"/>
     	<property name="timeManager" ref="timeManager"/>
-    	<property name="contractAdapter" ref="hexunAdapter"/> 
+    	<property name="contractAdapter" ref="hexunAdapter"/>
+    	<property name="barHistRefreshInterval">
+    		<list>
+    			<array>
+    				<bean class="org.joda.time.LocalTime">
+		    			<constructor-arg index="0">
+		    				<value>9</value>
+		    			</constructor-arg>
+		    			<constructor-arg index="1">
+		    				<value>0</value>
+		    			</constructor-arg>
+		    		</bean>
+		    		<bean class="org.joda.time.LocalTime">
+		    			<constructor-arg index="0">
+		    				<value>15</value>
+		    			</constructor-arg>
+		    			<constructor-arg index="1">
+		    				<value>0</value>
+		    			</constructor-arg>
+		    		</bean>
+    			</array>
+    			<array>
+    				<bean class="org.joda.time.LocalTime">
+		    			<constructor-arg index="0">
+		    				<value>21</value>
+		    			</constructor-arg>
+		    			<constructor-arg index="1">
+		    				<value>0</value>
+		    			</constructor-arg>
+		    		</bean>
+		    		<bean class="org.joda.time.LocalTime">
+		    			<constructor-arg index="0">
+		    				<value>2</value>
+		    			</constructor-arg>
+		    			<constructor-arg index="1">
+		    				<value>30</value>
+		    			</constructor-arg>
+		    		</bean>
+    			</array>
+    		</list>
+    	</property> 
     </bean>
     
     <bean id="marketAdapterManager" class="com.ltc.base.manager.impl.MarketAdapterManagerImpl">
@@ -248,7 +288,6 @@
     	</property>
     </bean>
     
-    <!-- TODO: To be implmented. -->
     <bean id="ctpAdapter" class="com.ltc.base.gateway.impl.CtpAdapterImpl"/>
     <bean id="ctpCommandAdapter" class="com.ltc.base.gateway.impl.CtpCommandAdapterImpl">
     	<property name="ctpManager" ref="ctpManager"/>

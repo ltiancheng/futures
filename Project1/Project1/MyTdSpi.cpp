@@ -69,6 +69,7 @@ void MyTdSpi::OnRspQrySettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField
 			cout << pSettlementInfoConfirm->ConfirmTime << endl;
 			lastConfirmDate = pSettlementInfoConfirm->ConfirmDate;
 		}
+		Sleep(5 * 1000);
 		if (lastConfirmDate != TdHolder::getInstance().tradingDate){
 			//今天还没确定,第一次发送交易指令前，查询投资者结算结果
 			CThostFtdcQrySettlementInfoField *a = new CThostFtdcQrySettlementInfoField();
@@ -97,6 +98,7 @@ void MyTdSpi::OnRspQrySettlementInfo(CThostFtdcSettlementInfoField *pSettlementI
 	TdHolder * holder = &TdHolder::getInstance();
 	if (bIsLast == true){
 		//确认投资者结算结果
+		Sleep(5 * 1000);
 		CThostFtdcSettlementInfoConfirmField *a = new CThostFtdcSettlementInfoConfirmField();
 		strcpy_s(a->BrokerID, TD_BROKER_ID);
 		strcpy_s(a->InvestorID, INVESTOR_ID);
@@ -118,6 +120,7 @@ void MyTdSpi::OnRspSettlementInfoConfirm(CThostFtdcSettlementInfoConfirmField *p
 		<< "确定日期：" << pSettlementInfoConfirm->ConfirmDate << endl
 		<< "确定时间：" << pSettlementInfoConfirm->ConfirmTime << endl;
 
+	Sleep(5 * 1000);
 	CThostFtdcQryTradingAccountField *account = new CThostFtdcQryTradingAccountField();
 	strcpy_s(account->BrokerID, TD_BROKER_ID);
 	strcpy_s(account->InvestorID, INVESTOR_ID);
