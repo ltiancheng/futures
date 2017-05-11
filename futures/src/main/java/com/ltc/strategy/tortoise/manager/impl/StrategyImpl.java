@@ -700,6 +700,7 @@ public class StrategyImpl implements Strategy {
 				// update position status.
 				// issue rules to close old position.
 				p.setStatus(PositionVO.EXPIRE);
+				this.ruleHolder.clearContractRule(p.getContract().getKey());
 				this.portfolioHolder.saveCurrentStatus();
 			}
 		}
