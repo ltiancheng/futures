@@ -99,7 +99,7 @@ public class CThostFtdcDepthMarketDataField {
 		BarVO bar = new BarVO();
 		bar.setClosePrice(BaseUtils.getTrueValue(LastPrice, 0));
 		bar.setAmount((long) BaseUtils.getTrueValue(Turnover, 0));
-		bar.setBarDate(CtpHelper.parseDate(TradingDay+UpdateTime));
+		bar.setBarDate(CtpHelper.parseDateTime(TradingDay, UpdateTime));
 		bar.setHighPrice(BaseUtils.getTrueValue(HighestPrice, bar.getClosePrice()));
 		bar.setLowPrice(BaseUtils.getTrueValue(LowestPrice, bar.getClosePrice()));
 		bar.setOpenPrice(BaseUtils.getTrueValue(OpenPrice, bar.getClosePrice()));

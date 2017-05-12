@@ -32,11 +32,6 @@ public class TestRunner extends BaseStartupItem implements Runnable {
 		} catch (InterruptedException e) {
 			logger.error("sleep interrupted!", e);
 		}
-		doMainForceSwitch();
+		this.strategy.refreshStopLossEquity();
 	}
-
-	private void doMainForceSwitch() {
-		strategy.startForceSwitch();
-	}
-
 }

@@ -32,8 +32,18 @@ public class CtpHelper {
 	///本地强平
 	public static String THOST_FTDC_OF_LocalForceClose = "6";
 	
-	public static Date parseDate(String dateStr){
-		return parseDate(dateStr, DAY_FORMAT+TIME_FORMAT);
+	public static Date parseDateTime(String dateStr, String timeStr){
+		if(StringUtils.isBlank(dateStr)){
+			if(StringUtils.isNotBlank(timeStr)){
+				return parseDate(timeStr, TIME_FORMAT);
+			} else {
+				return null;
+			}
+		} else if(StringUtils.isBlank(timeStr)){
+			return parseDate(dateStr, DAY_FORMAT);
+		} else {
+			return parseDate(dateStr + timeStr, DAY_FORMAT+TIME_FORMAT); 
+		}
 	}
 	
 	public static Date parseDate(String dateStr, String format) {

@@ -99,6 +99,10 @@ public class StrategyImpl implements Strategy {
 			if(StringUtils.isNotBlank(p.getDirection())){
 				//fresh close equity
 				List<RuleVO> rules = ruleMap.get(p.getContract().getKey());
+				if(CollectionUtils.isEmpty(rules)){
+					rules = this.generateRulesOnContract(p.getContract());
+					ruleMap.put(p.getContract().getKey(), rules);
+				}
 				if(!CollectionUtils.isEmpty(rules)){
 					float closePrice = 0;
 					for(RuleVO r : rules){
