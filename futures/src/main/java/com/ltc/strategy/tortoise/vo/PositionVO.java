@@ -1,6 +1,7 @@
 package com.ltc.strategy.tortoise.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import com.ltc.base.manager.impl.ContractHolderImpl;
 import com.ltc.base.vo.BarVO;
@@ -33,9 +34,16 @@ public class PositionVO implements Serializable {
 	private float averagePrice;
 	private float topPrice;
 	private String status;
+	private Date lastInDate;
 	private PortfolioVO portfolio;
 	private long id;
 	
+	public Date getLastInDate() {
+		return lastInDate;
+	}
+	public void setLastInDate(Date lastInDate) {
+		this.lastInDate = lastInDate;
+	}
 	public float getTopPrice() {
 		return topPrice;
 	}

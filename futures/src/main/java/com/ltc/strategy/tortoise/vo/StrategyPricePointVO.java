@@ -5,7 +5,14 @@ public class StrategyPricePointVO {
 	private float openShortPoint;		//Low 20
 	private float closeLongPoint;		//Low 10
 	private float closeShortPoint;		//High 10
+	private int passedBarsSinceLastIn;
 	
+	public int getPassedBarsSinceLastIn() {
+		return passedBarsSinceLastIn;
+	}
+	public void setPassedBarsSinceLastIn(int passedBarsSinceLastIn) {
+		this.passedBarsSinceLastIn = passedBarsSinceLastIn;
+	}
 	public float getOpenLongPoint() {
 		return openLongPoint;
 	}

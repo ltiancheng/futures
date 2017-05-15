@@ -1,8 +1,11 @@
 package com.ltc.strategy.tortoise.utils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +19,7 @@ public class StrategyUtils {
 	
 	private static Logger logger = LoggerFactory.getLogger(StrategyUtils.class);
 
-	public static StrategyPricePointVO getPricePoint(List<BarVO> barList) {
+	public static StrategyPricePointVO getPricePoint(List<BarVO> barList, Date lastIn) {
 		if(barList.size() < StrategyImpl.OPEN_BAR_SIZE){
 			logger.error("wrong bar list size: " + barList.size());
 		}
@@ -39,7 +42,21 @@ public class StrategyUtils {
 		ssp.setCloseShortPoint(closeShortPoint);
 		ssp.setOpenLongPoint(openLongPoint);
 		ssp.setOpenShortPoint(openShortPoint);
+		ssp.setPassedBarsSinceLastIn(getPassedBars(barList, lastIn));
 		return ssp;
+	}
+
+	private static int getPassedBars(List<BarVO> barList, Date lastIn) {
+		if(CollectionUtils.isEmpty(barList) || lastIn == null){
+			return 0;
+		}
+		for(int i = 0 ; i<barList.size() ; i++){
+			BarVO b = barList.get(i);
+			if(DateUtils.isSameDay(b.getBarDate(), lastIn)){
+				return i;
+			}
+		}
+		return barList.size();
 	}
 
 	public static boolean isFullPortfolio(PortfolioVO portfolio) {

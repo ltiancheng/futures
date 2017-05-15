@@ -158,6 +158,7 @@
     	<property name="contractHolder" ref="contractHolder" />
     	<property name="ruleHolder" ref="ruleHolder" />
     	<property name="forceSwitchDate" value="45" />
+    	<property name="days2Urge" value="20" />
     </bean>
     
     <bean id="portfolioHolder" class="com.ltc.strategy.tortoise.manager.impl.PortfolioHolderImpl">

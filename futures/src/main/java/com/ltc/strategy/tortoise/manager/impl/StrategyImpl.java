@@ -57,6 +57,15 @@ public class StrategyImpl implements Strategy {
 	private RuleHolder ruleHolder;
 	private ContractHolder contractHolder;
 	private int forceSwitchDate;
+	private int days2Urge;
+
+	public int getDays2Urge() {
+		return days2Urge;
+	}
+
+	public void setDays2Urge(int days2Urge) {
+		this.days2Urge = days2Urge;
+	}
 
 	public int getForceSwitchDate() {
 		return forceSwitchDate;
@@ -200,7 +209,7 @@ public class StrategyImpl implements Strategy {
 			return openNewPosition(p, nextMainContract, currentNmBar);
 		}
 		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
-		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList);
+		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList, p.getLastInDate());
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		if(!StrategyUtils.isFullPortfolio(portfolio)){
 			ruleList.addAll(generateOpenRules(p, spp));
@@ -305,6 +314,9 @@ public class StrategyImpl implements Strategy {
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
 			double clp = spp.getCloseLongPoint();
 			double slp = p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2;
+			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
+				slp += p.getContract().getContractMeta().getAtr() * 2;
+			}
 			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
 			if(topSlp > 0){
@@ -335,6 +347,9 @@ public class StrategyImpl implements Strategy {
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.SHORT)){
 			double csp = spp.getCloseShortPoint();
 			double slp = p.getLastInPrice() + p.getContract().getContractMeta().getAtr() * 2;
+			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
+				slp = slp - p.getContract().getContractMeta().getAtr() * 2;
+			}
 			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
 			if(topSlp > 0){
