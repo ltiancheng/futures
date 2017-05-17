@@ -523,6 +523,7 @@ public class StrategyImpl implements Strategy {
 			position.setHandPerUnit(command.getHandPerUnit());
 //			if(command.isDone()){
 			position.setLastInPrice(command.getDealPrice().floatValue());
+			position.setLastInDate(new Date());
 //			} else {
 //				position.setLastInPrice(command.getPrice().floatValue());
 //			}
@@ -531,6 +532,7 @@ public class StrategyImpl implements Strategy {
 			if(position.getHandPerUnit() == command.getHandPerUnit()){
 //				if(command.isDone()){
 				position.setLastInPrice(command.getDealPrice().floatValue());
+				position.setLastInDate(new Date());
 //				} else {
 //					position.setLastInPrice(command.getPrice().floatValue());
 //				}
@@ -552,6 +554,7 @@ public class StrategyImpl implements Strategy {
 					position.setLastInPrice(0);
 					position.setAveragePrice(0);
 					position.setTopPrice(0);
+					position.setLastInDate(null);
 				} else {
 					logger.error("behaviour not expected during SL, position.unitCount= "+position.getUnitCount());
 				}
