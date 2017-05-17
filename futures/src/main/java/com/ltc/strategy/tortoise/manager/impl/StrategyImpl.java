@@ -318,11 +318,11 @@ public class StrategyImpl implements Strategy {
 			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
 				slp += atr * 2;
 			}
-			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
+			/*double topSlp = this.getTopStopLossPrice(p);
 			if(topSlp > 0){
 				stp = Math.max(slp, topSlp);
-			}
+			}*/
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
 			} else if(currentBar.getClosePrice() >= atr * 2 + p.getLastInPrice()) {
@@ -351,11 +351,11 @@ public class StrategyImpl implements Strategy {
 			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
 				slp = slp - atr * 2;
 			}
-			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
+			/*double topSlp = this.getTopStopLossPrice(p);
 			if(topSlp > 0){
 				stp = Math.min(slp, topSlp);
-			}
+			}*/
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
 			} else if(currentBar.getClosePrice() <= p.getLastInPrice() - atr * 2) {
