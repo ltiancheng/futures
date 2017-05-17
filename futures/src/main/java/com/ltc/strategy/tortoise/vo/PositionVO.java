@@ -37,7 +37,14 @@ public class PositionVO implements Serializable {
 	private Date lastInDate;
 	private PortfolioVO portfolio;
 	private long id;
+	private Float atr;
 	
+	public Float getAtr() {
+		return atr;
+	}
+	public void setAtr(Float atr) {
+		this.atr = atr;
+	}
 	public Date getLastInDate() {
 		return lastInDate;
 	}

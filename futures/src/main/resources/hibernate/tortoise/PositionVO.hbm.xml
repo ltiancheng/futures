@@ -26,6 +26,9 @@
         <property name="topPrice" type="float">
             <column name="TOP_PRICE"/>
         </property>
+        <property name="atr" type="float">
+            <column name="ATR"/>
+        </property>
         <property name="lastInDate" type="date">
             <column name="LAST_IN_DATE"/>
         </property>

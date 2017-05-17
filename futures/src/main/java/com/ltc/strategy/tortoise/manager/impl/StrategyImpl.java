@@ -309,13 +309,14 @@ public class StrategyImpl implements Strategy {
 	private List<RuleVO> generateCloseRules(PositionVO p, StrategyPricePointVO spp) {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		BarVO currentBar = contractHolder.getContractByKey(p.getContract().getKey()).getCurrentBar();
+		float atr = StrategyUtils.getAtr(p);
 		if(p.getUnitCount() == 0){
 			return ruleList;
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
 			double clp = spp.getCloseLongPoint();
-			double slp = p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2;
+			double slp = p.getLastInPrice() - atr * 2;
 			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
-				slp += p.getContract().getContractMeta().getAtr() * 2;
+				slp += atr * 2;
 			}
 			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
@@ -324,8 +325,8 @@ public class StrategyImpl implements Strategy {
 			}
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
-			} else if(currentBar.getClosePrice() >= p.getContract().getContractMeta().getAtr() * 2 + p.getLastInPrice()) {
-				if((currentBar.getClosePrice() - p.getLastInPrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+			} else if(currentBar.getClosePrice() >= atr * 2 + p.getLastInPrice()) {
+				if((currentBar.getClosePrice() - p.getLastInPrice()) >= (atr * 2)){
 					stp = Math.max(clp, slp);
 				}
 			}
@@ -346,9 +347,9 @@ public class StrategyImpl implements Strategy {
 			ruleList.add(rule);
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.SHORT)){
 			double csp = spp.getCloseShortPoint();
-			double slp = p.getLastInPrice() + p.getContract().getContractMeta().getAtr() * 2;
+			double slp = p.getLastInPrice() + atr * 2;
 			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
-				slp = slp - p.getContract().getContractMeta().getAtr() * 2;
+				slp = slp - atr * 2;
 			}
 			double topSlp = this.getTopStopLossPrice(p);
 			double stp = slp;
@@ -357,8 +358,8 @@ public class StrategyImpl implements Strategy {
 			}
 			if(currentBar == null){
 				logger.warn("[StrategyImpl]current bar is null of "+p.getContract().getKey());
-			} else if(currentBar.getClosePrice() <= p.getLastInPrice() - p.getContract().getContractMeta().getAtr() * 2) {
-				if((p.getLastInPrice() - currentBar.getClosePrice()) >= (p.getContract().getContractMeta().getAtr() * 2)){
+			} else if(currentBar.getClosePrice() <= p.getLastInPrice() - atr * 2) {
+				if((p.getLastInPrice() - currentBar.getClosePrice()) >= (atr * 2)){
 					stp = Math.min(csp, slp);
 				}
 			}
@@ -390,7 +391,7 @@ public class StrategyImpl implements Strategy {
 			return -1;
 		}
 		float priceGap = Math.abs(p.getTopPrice() - p.getLastInPrice());
-		float atr = p.getContract().getContractMeta().getAtr();
+		float atr = StrategyUtils.getAtr(p);
 		int adjustAtr = (int) (Math.floor(priceGap/(atr*2)));
 		if(adjustAtr >= 1){
 			if(StringUtils.isBlank(p.getDirection())){
@@ -408,6 +409,7 @@ public class StrategyImpl implements Strategy {
 	
 	private List<RuleVO> generateOpenRules(PositionVO p, StrategyPricePointVO spp) {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
+		float atr = StrategyUtils.getAtr(p);
 		if(p.getUnitCount() == 0){
 			StrategyUtils.updateHandPerUnit(p, portfolioHolder.getPortfolio());
 			if(p.getHandPerUnit() != 0){
@@ -452,7 +454,7 @@ public class StrategyImpl implements Strategy {
 			if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
 				ConditionVO condition = new ConditionVO();
 				condition.setAboveCondition(true);
-				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() + p.getContract().getContractMeta().getAtr()));
+				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() + atr));
 				condition.setType(ConditionVO.PRICE_TYPE);
 				CommandVO command = new CommandVO();
 				command.setHandPerUnit(p.getHandPerUnit());
@@ -468,7 +470,7 @@ public class StrategyImpl implements Strategy {
 			} else if(StringUtils.equals(p.getDirection(), PositionVO.SHORT)){
 				ConditionVO condition = new ConditionVO();
 				condition.setAboveCondition(false);
-				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() - p.getContract().getContractMeta().getAtr()));
+				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() - atr));
 				condition.setType(ConditionVO.PRICE_TYPE);
 				CommandVO command = new CommandVO();
 				command.setHandPerUnit(p.getHandPerUnit());
@@ -524,6 +526,7 @@ public class StrategyImpl implements Strategy {
 //			if(command.isDone()){
 			position.setLastInPrice(command.getDealPrice().floatValue());
 			position.setLastInDate(new Date());
+			position.setAtr(position.getContract().getContractMeta().getAtr());
 //			} else {
 //				position.setLastInPrice(command.getPrice().floatValue());
 //			}
@@ -555,6 +558,7 @@ public class StrategyImpl implements Strategy {
 					position.setAveragePrice(0);
 					position.setTopPrice(0);
 					position.setLastInDate(null);
+					position.setAtr(null);
 				} else {
 					logger.error("behaviour not expected during SL, position.unitCount= "+position.getUnitCount());
 				}
