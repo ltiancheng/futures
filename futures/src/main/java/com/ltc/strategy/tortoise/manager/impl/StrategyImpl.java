@@ -178,8 +178,12 @@ public class StrategyImpl implements Strategy {
 		Set<PositionVO> positions = portfolio.getPositionSet();
 		for(PositionVO p : positions){
 			List<RuleVO> rules = generateRulesOnContract(p, portfolio);
-			for(RuleVO r : rules){
-				ruleHolder.addRule(r.getContract().getKey(), r);
+			if(CollectionUtils.isNotEmpty(rules)){
+				for(RuleVO r : rules){
+					ruleHolder.addRule(r.getContract().getKey(), r);
+				}
+			} else {
+				ruleHolder.addRule(p.getContract().getKey(), null);
 			}
 		}
 		logger.info("[StrategyImpl] portfolio initiated: "+portfolio.toString());
@@ -187,10 +191,10 @@ public class StrategyImpl implements Strategy {
 
 	private List<RuleVO> generateRulesOnContract(PositionVO p, PortfolioVO portfolio) {
 		ContractVO contract = contractHolder.getContractByKey(p.getContract().getKey());
-		if(contract.getCurrentBar() == null){
+		/*if(contract.getCurrentBar() == null){
 			logger.warn("[StrategyImpl] return empty rule list due to the null current bar of "+contract.getKey());
 			return new ArrayList<RuleVO>();
-		}
+		}*/
 		if(isTime2CloseOld(p)){
 			List<RuleVO> closeRules = closeOldPostion(p);
 			return closeRules;
@@ -521,8 +525,8 @@ public class StrategyImpl implements Strategy {
 			} else if(CommandVO.OPEN_SHORT.equals(command.getInstruction())){
 				position.setDirection(PositionVO.SHORT);
 			}
-			position.setUnitCount(command.getUnits());
-			position.setHandPerUnit(command.getHandPerUnit());
+			position.setUnitCount(position.getUnitCount()+1);
+//			position.setHandPerUnit(command.getHandPerUnit());
 //			if(command.isDone()){
 			position.setLastInPrice(command.getDealPrice().floatValue());
 			position.setLastInDate(new Date());

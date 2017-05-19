@@ -271,6 +271,9 @@
     	<property name="sleepMillis">
     		<value>500</value>
     	</property>
+    	<property name="nightCloseHour">
+    		<value>3</value>
+    	</property>
     	<property name="barOpenTime">
     		<bean class="org.joda.time.LocalTime">
     			<constructor-arg index="0">

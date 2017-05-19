@@ -51,10 +51,13 @@ public class RuleHolderImpl implements RuleHolder {
 			rl.add(rule);
 		} else {
 			List<RuleVO> rl = new ArrayList<RuleVO>();
-			rl.add(rule);
+			//if the rule is null, put an empty list here.
 			rm.put(contractKey, rl);
+			if(rule != null){
+				rl.add(rule);
+			}
 		}
-		logger.info("[RuleHolderImpl rule map refreshed: ]\\r\\n"+rm);
+		logger.info("[RuleHolderImpl rule map refreshed: ]"+rm);
 	}
 	
 	public static void main(String[] args){

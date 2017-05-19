@@ -1,6 +1,5 @@
 package com.ltc.base.manager.impl;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -23,7 +22,17 @@ public class TimeManagerImpl implements TimeManager {
 	private LocalTime barOpenTime;
 	private LocalTime barCloseTime;
 	private int sleepMillis;
+
+	private int nightCloseHour;
 	
+	public int getNightCloseHour() {
+		return nightCloseHour;
+	}
+
+	public void setNightCloseHour(int nightCloseHour) {
+		this.nightCloseHour = nightCloseHour;
+	}
+
 	public LocalTime getBarOpenTime() {
 		return barOpenTime;
 	}
@@ -55,7 +64,8 @@ public class TimeManagerImpl implements TimeManager {
 	public void waitTillNextRound() throws InterruptedException {
 		Calendar now = Calendar.getInstance();
 		int dayOfWeek = now.get(Calendar.DAY_OF_WEEK);
-		if(dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY){
+		int hour = now.get(Calendar.HOUR_OF_DAY);
+		if((dayOfWeek == Calendar.SATURDAY && hour > nightCloseHour) || dayOfWeek == Calendar.SUNDAY){
 			waitTillNextMonday(now, dayOfWeek);
 		} else {
 			LocalTime lt = LocalTime.fromCalendarFields(now);
