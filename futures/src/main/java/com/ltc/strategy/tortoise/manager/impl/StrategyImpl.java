@@ -58,6 +58,7 @@ public class StrategyImpl implements Strategy {
 	private ContractHolder contractHolder;
 	private int forceSwitchDate;
 	private int days2Urge;
+	private boolean loggedFull = false;
 
 	public int getDays2Urge() {
 		return days2Urge;
@@ -217,6 +218,9 @@ public class StrategyImpl implements Strategy {
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
 		if(!StrategyUtils.isFullPortfolio(portfolio)){
 			ruleList.addAll(generateOpenRules(p, spp));
+			loggedFull = false;
+		} else if(!loggedFull) {
+			logger.info("[StragetyImpl] full portfolio reached, no more new position opened!");
 		}
 		ruleList.addAll(generateCloseRules(p, spp));
 		return ruleList;

@@ -1,6 +1,5 @@
 package com.ltc.strategy.tortoise.utils;
 
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -8,8 +7,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.time.DateUtils;
-import org.joda.time.Instant;
-import org.joda.time.Interval;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +19,7 @@ import com.ltc.strategy.tortoise.vo.StrategyPricePointVO;
 public class StrategyUtils {
 	
 	private static Logger logger = LoggerFactory.getLogger(StrategyUtils.class);
+	private static boolean loggedFullRate = false;
 
 	public static StrategyPricePointVO getPricePoint(List<BarVO> barList, Date lastIn) {
 		if(barList.size() < StrategyImpl.OPEN_BAR_SIZE){
@@ -78,7 +76,12 @@ public class StrategyUtils {
 			totalLoss += p.getHandPerUnit()*p.getUnitCount()*getAtr(p)
 				*p.getContract().getContractMeta().getPointValue();
 		}
-		return totalLoss / portfolio.getCash() >= 0.1;
+		float fullRate = (float) (totalLoss / portfolio.getCash());
+		if(!loggedFullRate){
+			logger.info("[StrategyUtils] current full rate is: {}", fullRate);
+			loggedFullRate  = true;
+		}
+		return fullRate >= 0.1;
 	}
 	
 	public static Float getAtr(PositionVO p){
