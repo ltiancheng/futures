@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -17,12 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ltc.base.helpers.BaseConstant;
+import com.ltc.base.helpers.BaseUtils;
 import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.RuleHolder;
 import com.ltc.base.manager.Strategy;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ConditionVO;
+import com.ltc.base.vo.ContractMetaVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.base.vo.RuleVO;
 import com.ltc.strategy.tortoise.manager.PortfolioHolder;
@@ -36,6 +39,7 @@ public class StrategyImpl implements Strategy {
 	private static Logger logger = LoggerFactory.getLogger(StrategyImpl.class);
 	private static Logger portfolioLogger = LoggerFactory.getLogger("Portfolio");
 	private static Logger commandLogger = LoggerFactory.getLogger("COMMAND");
+	private static Logger alertLogger = LoggerFactory.getLogger("ALERT");
 	
 	/**
 	 * Strategy Content:
@@ -51,6 +55,7 @@ public class StrategyImpl implements Strategy {
 	 */
 	
 	public static final int OPEN_BAR_SIZE = 20;
+	public static final int ATR_BAR_SIZE = 20+1;
 	public static final int CLOSE_BAR_SIZE = 10;
 	
 	private PortfolioHolder portfolioHolder;
@@ -738,6 +743,63 @@ public class StrategyImpl implements Strategy {
 				this.portfolioHolder.saveCurrentStatus();
 			}
 		}
+	}
+
+	@Override
+	public void updateAtr() {
+		List<ContractVO> activeContracts = this.contractHolder.getActiveContractList();
+		List<ContractVO> mainContracts = activeContracts.stream().map(c -> {
+			ContractVO nmc = this.contractHolder.getNextMainContract(c.getContractMeta().getSymbol());
+			if(nmc == null){
+				return c;
+			} else {
+				return nmc;
+			}
+		}).collect(Collectors.toList());
+		for(ContractVO c : mainContracts){
+			if(need2RefreshAtr(c)){
+				refreshAtr(c.getContractMeta(), this.contractHolder.getBarHist(c, ATR_BAR_SIZE));
+			}
+		}
+	}
+
+	private void refreshAtr(ContractMetaVO contractMeta, List<BarVO> barHist) {
+		if(CollectionUtils.isEmpty(barHist) || barHist.size() < ATR_BAR_SIZE){
+			return;
+		} else {
+			float totalTR = 0;
+			for(int i = 0 ; i < ATR_BAR_SIZE-1 ; i++){
+				BarVO currentBar = barHist.get(i);
+				BarVO lastBar = barHist.get(i+1);
+				totalTR += calcTr(currentBar, lastBar);
+			}
+			float atr = totalTR/(ATR_BAR_SIZE-1);
+			if(Math.abs(atr - contractMeta.getAtr()) / contractMeta.getAtr() > 0.2){
+				alertLogger.warn("[StrategyImpl.refreshAtr] two atr of {} differs too much, old one is {}, new one is {}", contractMeta.getSymbol(), contractMeta.getAtr(), atr);
+			}
+			contractMeta.setAtr(atr);
+			contractMeta.setAtrUpdateDate(new Date());
+			this.contractHolder.saveContractMeta(contractMeta);
+		}
+	}
+
+	private float calcTr(BarVO currentBar, BarVO lastBar) {
+		return Math.max(currentBar.getHighPrice() - currentBar.getLowPrice(), Math.max(Math.abs(lastBar.getClosePrice() - currentBar.getHighPrice()), Math.abs(lastBar.getClosePrice() - currentBar.getLowPrice())));
+	}
+
+	private boolean need2RefreshAtr(ContractVO c) {
+		Date atrUpdDate = c.getContractMeta().getAtrUpdateDate();
+		if(atrUpdDate != null){
+			Calendar atrUpdCal = Calendar.getInstance();
+			atrUpdCal.setTime(atrUpdDate);
+			Calendar now = Calendar.getInstance();
+			BaseUtils.TrimCalendar(now);
+			now.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+			if(now.before(atrUpdCal) || now.equals(atrUpdCal)){
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

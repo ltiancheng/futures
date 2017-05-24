@@ -3,6 +3,7 @@ package com.ltc.base.manager;
 import java.util.List;
 
 import com.ltc.base.vo.BarVO;
+import com.ltc.base.vo.ContractMetaVO;
 import com.ltc.base.vo.ContractVO;
 
 public interface ContractHolder {
@@ -20,5 +21,7 @@ public interface ContractHolder {
 	List<ContractVO> getNextMainContractList();
 
 	BarVO getBarFromGw(ContractVO c);
+
+	void saveContractMeta(ContractMetaVO contractMeta);
 
 }

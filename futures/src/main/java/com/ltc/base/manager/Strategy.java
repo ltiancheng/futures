@@ -32,4 +32,6 @@ public interface Strategy {
 	void clearOutstandingCommands(int mINUTE_GAP);
 
 	void startForceSwitch();
+
+	void updateAtr();
 }

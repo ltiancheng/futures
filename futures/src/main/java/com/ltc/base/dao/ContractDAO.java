@@ -19,4 +19,6 @@ public interface ContractDAO {
 
 	List<ContractVO> getNextMainContractList();
 
+	void saveContractMeta(ContractMetaVO contractMeta);
+
 }

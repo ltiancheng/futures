@@ -71,4 +71,13 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 		return nmc;
 	}
 
+	@Override
+	public void saveContractMeta(ContractMetaVO contractMeta) {
+		String hql = "update ContractMetaVO set atr=:atr, atrUpdateDate=:atrUpdateDate where symbol=:symbol";
+		this.currentSession().createQuery(hql)
+			.setParameter("atr", contractMeta.getAtr())
+			.setParameter("atrUpdateDate", contractMeta.getAtrUpdateDate())
+			.setParameter("symbol", contractMeta.getSymbol()).executeUpdate();
+	}
+
 }

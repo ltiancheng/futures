@@ -32,6 +32,6 @@ public class TestRunner extends BaseStartupItem implements Runnable {
 		} catch (InterruptedException e) {
 			logger.error("sleep interrupted!", e);
 		}
-		this.strategy.refreshStopLossEquity();
+		this.strategy.updateAtr();
 	}
 }

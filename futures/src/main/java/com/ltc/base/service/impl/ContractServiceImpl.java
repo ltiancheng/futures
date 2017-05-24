@@ -51,4 +51,9 @@ public class ContractServiceImpl implements ContractService {
 		return contractDAO.getNextMainContractList();
 	}
 
+	@Override
+	public void saveContractMeta(ContractMetaVO contractMeta) {
+		contractDAO.saveContractMeta(contractMeta);
+	}
+
 }

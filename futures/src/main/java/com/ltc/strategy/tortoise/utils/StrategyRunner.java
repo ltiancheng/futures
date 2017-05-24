@@ -44,6 +44,7 @@ public class StrategyRunner extends BaseStartupItem implements Runnable {
 			}
 			this.strategy.refreshStopLossEquity();
 			this.strategy.updateTopPrice();
+			this.strategy.updateAtr();
 			this.strategy.saveStatus();
 		}
 	}

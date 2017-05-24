@@ -1,6 +1,7 @@
 package com.ltc.base.vo;
 
 import java.io.Serializable;
+import java.util.Date;
 
 public class ContractMetaVO implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -11,8 +12,15 @@ public class ContractMetaVO implements Serializable {
 //	private int handValue;
 	private float leverage = 0.1f;	//levelRate is default to 10%
 	private int pointValue;
-	private float atr;	//ATR 250
+	private float atr;	//ATR 20
+	private Date atrUpdateDate;
 	
+	public Date getAtrUpdateDate() {
+		return atrUpdateDate;
+	}
+	public void setAtrUpdateDate(Date atrUpdateDate) {
+		this.atrUpdateDate = atrUpdateDate;
+	}
 	public void setCtpSymbol(String ctpSymbol) {
 		this.ctpSymbol = ctpSymbol;
 	}

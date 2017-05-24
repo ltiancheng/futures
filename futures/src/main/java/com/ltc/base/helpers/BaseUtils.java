@@ -83,5 +83,12 @@ public class BaseUtils {
 		}
 		return currentYearStr;
 	}
+
+	public static void TrimCalendar(Calendar now) {
+		now.set(Calendar.HOUR_OF_DAY, 0);
+		now.set(Calendar.MINUTE, 0);
+		now.set(Calendar.SECOND, 0);
+		now.set(Calendar.MILLISECOND, 0);
+	}
 	
 }

@@ -67,7 +67,25 @@
 				<maxFileSize>10MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
+	</appender>
+	
+	<appender name="AlertAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>${global.logger.dir}/alert.log</file>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{yyyy-MM-dd HH:mm:ss} - %msg%n
+			</Pattern>
+		</encoder>
 
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<!-- rollover monthly -->
+			<fileNamePattern>${global.logger.dir}/alert.%d{yyyy-MM}.%i.log
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>10MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
 	</appender>
 	
 	<appender name="PortfolioAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -98,6 +116,11 @@
 	<logger name="COMMAND" level="${global.logger.level}"
 		additivity="false">
 		<appender-ref ref="CommandAppender" />
+	</logger>
+	
+	<logger name="ALERT" level="${global.logger.level}"
+		additivity="false">
+		<appender-ref ref="AlertAppender" />
 	</logger>
 	
 	<logger name="Portfolio" level="${global.logger.level}"

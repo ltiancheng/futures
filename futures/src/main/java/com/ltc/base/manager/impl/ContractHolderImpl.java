@@ -19,6 +19,7 @@ import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.TimeManager;
 import com.ltc.base.service.ContractService;
 import com.ltc.base.vo.BarVO;
+import com.ltc.base.vo.ContractMetaVO;
 import com.ltc.base.vo.ContractVO;
 
 public class ContractHolderImpl implements ContractHolder {
@@ -189,5 +190,10 @@ public class ContractHolderImpl implements ContractHolder {
 			cal.add(Calendar.WEEK_OF_MONTH, -1);
 			this.barHistRefreshTime = cal.getTime();
 		}
+	}
+
+	@Override
+	public void saveContractMeta(ContractMetaVO contractMeta) {
+		this.contractService.saveContractMeta(contractMeta);
 	}
 }
