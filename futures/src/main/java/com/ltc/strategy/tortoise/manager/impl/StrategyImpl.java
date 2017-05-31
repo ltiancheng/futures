@@ -560,24 +560,13 @@ public class StrategyImpl implements Strategy {
 					+", command.handPerUnit="+command.getHandPerUnit()); 
 			}
 		} else {
-			if(position.getHandPerUnit() == command.getHandPerUnit()){
-				position.setUnitCount(position.getUnitCount()-command.getUnits());
-				if(position.getUnitCount() == 0){
-					//fresh total cash(including margin)
-					this.updateCashWhenEmpty(portfolio, position, command);
-					
-					position.setDirection("");
-					position.setLastInPrice(0);
-					position.setAveragePrice(0);
-					position.setTopPrice(0);
-					position.setLastInDate(null);
-					position.setAtr(null);
-				} else {
-					logger.error("behaviour not expected during SL, position.unitCount= "+position.getUnitCount());
-				}
+			if(position.getHandPerUnit() * position.getUnitCount() == command.getHandPerUnit() * command.getUnits()){
+				//fresh total cash(including margin)
+				this.updateCashWhenEmpty(portfolio, position, command);
+				StrategyUtils.resetPosition(position);
 			} else {
-				logger.error("different hand per unit, position.handPerUnit="+position.getHandPerUnit()
-					+", command.handPerUnit="+command.getHandPerUnit()); 
+				logger.error("different hands, position.hands="+position.getHandPerUnit() * position.getUnitCount()
+					+", command.hands="+command.getHandPerUnit() * command.getUnits()); 
 			}
 		}
 	}

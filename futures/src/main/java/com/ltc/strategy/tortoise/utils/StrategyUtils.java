@@ -98,4 +98,14 @@ public class StrategyUtils {
 		p.setHandPerUnit(hand);
 	}
 
+	public static void resetPosition(PositionVO position) {
+		position.setUnitCount(0);
+		position.setDirection("");
+		position.setLastInPrice(0);
+		position.setAveragePrice(0);
+		position.setTopPrice(0);
+		position.setLastInDate(null);
+		position.setAtr(null);
+	}
+
 }
