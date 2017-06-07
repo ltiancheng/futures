@@ -1,5 +1,7 @@
 package com.ltc.strategy.tortoise.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -106,6 +108,21 @@ public class StrategyUtils {
 		position.setTopPrice(0);
 		position.setLastInDate(null);
 		position.setAtr(null);
+	}
+
+	public static BigDecimal trimPrice(BigDecimal price, boolean isTopPrice) {
+		if(isTopPrice){
+			return price.setScale(0, RoundingMode.FLOOR);
+		} else {
+			return price.setScale(0, RoundingMode.CEILING);
+		}
+	}
+	
+	public static void main(String[] args){
+		System.out.println(trimPrice(new BigDecimal(560.00), true));
+		System.out.println(trimPrice(new BigDecimal(560.00), true));
+		System.out.println(trimPrice(new BigDecimal(560.00), false));
+		System.out.println(trimPrice(new BigDecimal(560.00), false));
 	}
 
 }

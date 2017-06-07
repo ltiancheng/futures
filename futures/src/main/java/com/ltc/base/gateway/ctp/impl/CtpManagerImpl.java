@@ -31,6 +31,7 @@ import com.ltc.base.manager.impl.ContractHolderImpl;
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.CommandVO;
 import com.ltc.base.vo.ContractVO;
+import com.ltc.strategy.tortoise.utils.StrategyUtils;
 
 public class CtpManagerImpl implements CtpManager {
 
@@ -212,8 +213,10 @@ public class CtpManagerImpl implements CtpManager {
 			if(currentBar != null){
 				if(StringUtils.equals(command.getInstruction(), CommandVO.OPEN_LONG) || StringUtils.equals(command.getInstruction(), CommandVO.CLOSE_SHORT)){
 					price = new BigDecimal(currentBar.getTopPrice());
+					price = StrategyUtils.trimPrice(price, true);
 				} else {
 					price = new BigDecimal(currentBar.getBottomPrice());
+					price = StrategyUtils.trimPrice(price, false);
 				}
 			}
 		}
