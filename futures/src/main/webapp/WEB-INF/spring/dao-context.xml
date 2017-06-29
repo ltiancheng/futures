@@ -23,6 +23,10 @@
 	       <props>
 	         <prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
 	         <prop key="hibernate.show_sql">false</prop>
+	         <prop key="hibernate.dbcp.validationQuery">SELECT 1</prop>
+        	 <prop key="hibernate.dbcp.testWhileIdle">true</prop>
+        	 <prop key="hibernate.dbcp.testOnBorrow">true</prop> 
+			 <prop key="hibernate.dbcp.testOnReturn">true</prop> 
 	       </props>
 	    </property>
 	    <property name="mappingResources">
