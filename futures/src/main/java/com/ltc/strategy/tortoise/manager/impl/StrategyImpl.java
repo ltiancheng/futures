@@ -92,6 +92,8 @@ public class StrategyImpl implements Strategy {
 	public void setPortfolioHolder(PortfolioHolder portfolioHolder) {
 		this.portfolioHolder = portfolioHolder;
 	}
+	
+	private int count = 0;
 
 	@Override
 	public void saveStatus() {
@@ -101,7 +103,11 @@ public class StrategyImpl implements Strategy {
 			logger.warn("refreshPortoflio failed!", e);
 		}
 		portfolioHolder.saveCurrentStatus();
-		portfolioLogger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
+		count ++;
+		if(count >= 4){
+			portfolioLogger.info("[StrategyImpl] current portfolio: "+portfolioHolder.getPortfolio().toString());
+			count = 0;
+		}
 	}
 	
 	//refresh stop loss equity

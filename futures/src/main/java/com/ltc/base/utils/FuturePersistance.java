@@ -32,7 +32,7 @@ public class FuturePersistance extends BaseStartupItem implements Runnable {
 		new Thread(this).start();
 	}
 
-	//save the strategy status every {10} minutes;
+	//save the strategy status every {3} minutes;
 	@Override
 	public void run() {
 		logger.info("[FuturePersistance] started");

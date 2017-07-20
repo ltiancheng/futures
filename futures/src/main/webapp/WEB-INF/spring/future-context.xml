@@ -238,7 +238,7 @@
     <bean id="futurePersistance" class="com.ltc.base.utils.FuturePersistance">
     	<property name="strategy" ref="tortoise"/>
     	<property name="gapMinutes">
-    		<value>10</value>
+    		<value>3</value>
     	</property>
     	<property name="timeManager" ref="timeManager"/>
     </bean>
