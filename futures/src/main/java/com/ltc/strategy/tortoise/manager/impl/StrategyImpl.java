@@ -227,7 +227,7 @@ public class StrategyImpl implements Strategy {
 		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
 		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList, p.getLastInDate());
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
-		if(!StrategyUtils.isFullPortfolio(portfolio)){
+		if(!StrategyUtils.isFullPortfolio(portfolio, p)){
 			ruleList.addAll(generateOpenRules(p, spp));
 			loggedFull = false;
 		} else if(!loggedFull) {
@@ -333,10 +333,14 @@ public class StrategyImpl implements Strategy {
 			return ruleList;
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.LONG)) {
 			double clp = spp.getCloseLongPoint();
-			double slp = p.getLastInPrice() - atr * 2;
-			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
-				slp += atr * 2;
+			double actualPrice = p.getLastInPrice();
+			if(p.getUnitCount() == 1 && p.getTopPrice() >= actualPrice + atr/2){
+				actualPrice += atr/2;
 			}
+			double slp = actualPrice - atr * 2;
+			/*if(spp.getPassedBarsSinceLastIn() >= days2Urge){
+				slp += atr * 2;
+			}*/
 			double stp = slp;
 			double topSlp = this.getTopStopLossPrice(p);
 			if(topSlp > 0){
@@ -366,10 +370,14 @@ public class StrategyImpl implements Strategy {
 			ruleList.add(rule);
 		} else if(StringUtils.equals(p.getDirection(), PositionVO.SHORT)){
 			double csp = spp.getCloseShortPoint();
-			double slp = p.getLastInPrice() + atr * 2;
-			if(spp.getPassedBarsSinceLastIn() >= days2Urge){
-				slp = slp - atr * 2;
+			double actualPrice = p.getLastInPrice();
+			if(p.getUnitCount() == 1 && p.getTopPrice() <= actualPrice - atr/2){
+				actualPrice -= atr/2;
 			}
+			double slp = actualPrice + atr * 2;
+			/*if(spp.getPassedBarsSinceLastIn() >= days2Urge){
+				slp = slp - atr * 2;
+			}*/
 			double stp = slp;
 			double topSlp = this.getTopStopLossPrice(p);
 			if(topSlp > 0){
@@ -469,11 +477,15 @@ public class StrategyImpl implements Strategy {
 					ruleList.add(rule);
 				}
 			}
-		} else if(p.getUnitCount() == 1){
+		} else if(p.getUnitCount() >= 1 && p.getUnitCount() < 3){
 			if(StringUtils.equals(p.getDirection(), PositionVO.LONG)){
 				ConditionVO condition = new ConditionVO();
 				condition.setAboveCondition(true);
-				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() + atr));
+				if(p.getUnitCount() == 1){
+					condition.setTriggerValue(new BigDecimal(p.getLastInPrice() + atr));
+				} else if(p.getUnitCount() == 2){
+					condition.setTriggerValue(new BigDecimal(p.getLastInPrice() + atr/2));
+				}
 				condition.setType(ConditionVO.PRICE_TYPE);
 				CommandVO command = new CommandVO();
 				command.setHandPerUnit(p.getHandPerUnit());
@@ -489,7 +501,11 @@ public class StrategyImpl implements Strategy {
 			} else if(StringUtils.equals(p.getDirection(), PositionVO.SHORT)){
 				ConditionVO condition = new ConditionVO();
 				condition.setAboveCondition(false);
-				condition.setTriggerValue(new BigDecimal(p.getLastInPrice() - atr));
+				if(p.getUnitCount() == 1){
+					condition.setTriggerValue(new BigDecimal(p.getLastInPrice() - atr));
+				} else if(p.getUnitCount() == 2){
+					condition.setTriggerValue(new BigDecimal(p.getLastInPrice() - atr/2));
+				}
 				condition.setType(ConditionVO.PRICE_TYPE);
 				CommandVO command = new CommandVO();
 				command.setHandPerUnit(p.getHandPerUnit());

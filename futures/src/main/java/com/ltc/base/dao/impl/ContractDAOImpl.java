@@ -48,17 +48,25 @@ public class ContractDAOImpl extends HibernateDaoSupport implements ContractDAO 
 	public void mainSwitch(ContractVO currentC, ContractVO newC) {
 		ContractVO dbContract = (ContractVO) this.currentSession().load(ContractVO.class, currentC);
 		ContractVO dbNewContract = (ContractVO) this.currentSession().load(ContractVO.class, newC);
+		String hql = "update ContractVO set status=:status where symbol=:symbol and prid=:prid";
 		if(dbContract != null){
 			dbContract.setStatus(currentC.getStatus());
 			this.currentSession().saveOrUpdate(dbContract);
 		} else {
-			this.currentSession().saveOrUpdate(currentC);
+//			this.currentSession().saveOrUpdate(currentC);
+			this.currentSession().createQuery(hql)
+				.setParameter("status", currentC.getStatus())
+				.setParameter("symbol", currentC.getContractMeta().getSymbol())
+				.setParameter("prid", currentC.getPrid()).executeUpdate();
 		}
 		if(dbNewContract != null){
 			dbNewContract.setStatus(newC.getStatus());
 			this.currentSession().saveOrUpdate(dbNewContract);
 		} else {
-			this.currentSession().saveOrUpdate(newC);
+			this.currentSession().createQuery(hql)
+				.setParameter("status", newC.getStatus())
+				.setParameter("symbol", newC.getContractMeta().getSymbol())
+				.setParameter("prid", newC.getPrid()).executeUpdate();
 		}
 	}
 

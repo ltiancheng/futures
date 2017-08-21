@@ -35,6 +35,7 @@ public class ContractHolderImpl implements ContractHolder {
 	private Date barHistRefreshTime;
 	private List<LocalTime[]> barHistRefreshInterval;
 	private static ContractHolderImpl instance;
+	private Map<String, Integer> contractCodePriorityMap;
 	
 	public List<LocalTime[]> getBarHistRefreshInterval() {
 		return barHistRefreshInterval;
@@ -195,5 +196,17 @@ public class ContractHolderImpl implements ContractHolder {
 	@Override
 	public void saveContractMeta(ContractMetaVO contractMeta) {
 		this.contractService.saveContractMeta(contractMeta);
+	}
+
+	@Override
+	public Map<String, Integer> getContractCodePriorityMap() {
+		if(this.contractCodePriorityMap == null){
+			contractCodePriorityMap = new HashMap<String, Integer>();
+			List<ContractMetaVO> metas = this.contractService.getContractMetaList();
+			for(ContractMetaVO cmv : metas){
+				this.contractCodePriorityMap.put(cmv.getSymbol(), cmv.getPriority());
+			}
+		}
+		return this.contractCodePriorityMap;
 	}
 }

@@ -45,6 +45,7 @@ public class ContractConfig {
 		PREFIX_MAP.put("JR", "CZCE");
 		PREFIX_MAP.put("RI", "CZCE");
 		PREFIX_MAP.put("ZC", "CZCE");
+		PREFIX_MAP.put("CY", "CZCE");
 		
 		//SHFE    …œ∫£
 		PREFIX_MAP.put("AG", "SHFE2");

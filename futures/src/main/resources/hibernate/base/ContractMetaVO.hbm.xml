@@ -26,5 +26,11 @@
         <property name="atrUpdateDate" type="date">
             <column name="ATR_UPD_DATE"/>
         </property>
+        <property name="priority" type="int">
+            <column name="PRIORITY"/>
+        </property>
+        <many-to-one name="group" class="com.ltc.base.vo.GroupVO" fetch="select">
+            <column name="GROUP_ID" not-null="false" />
+        </many-to-one>
     </class>
 </hibernate-mapping>

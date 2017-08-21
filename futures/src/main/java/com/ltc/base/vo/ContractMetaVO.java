@@ -14,7 +14,21 @@ public class ContractMetaVO implements Serializable {
 	private int pointValue;
 	private float atr;	//ATR 20
 	private Date atrUpdateDate;
+	private GroupVO group;
+	private int priority;
 	
+	public GroupVO getGroup() {
+		return group;
+	}
+	public void setGroup(GroupVO group) {
+		this.group = group;
+	}
+	public int getPriority() {
+		return priority;
+	}
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
 	public Date getAtrUpdateDate() {
 		return atrUpdateDate;
 	}

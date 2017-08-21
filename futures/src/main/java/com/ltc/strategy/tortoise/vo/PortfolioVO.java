@@ -13,9 +13,16 @@ public class PortfolioVO implements Serializable {
 	private double cash;
 	private double stopLossEquity;
 	private double currentEquity;
+	private double virtualEquity;
 	private Set<PositionVO> positionSet;
 	private String code;
 	
+	public double getVirtualEquity() {
+		return virtualEquity;
+	}
+	public void setVirtualEquity(double virtualEquity) {
+		this.virtualEquity = virtualEquity;
+	}
 	public double getCurrentEquity() {
 		return currentEquity;
 	}

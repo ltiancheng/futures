@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+    <class name="com.ltc.base.vo.GroupVO" table="BASE_GROUP">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="assigned" />
+        </id>
+        <property name="desc" type="string">
+            <column name="DESC" />
+        </property>
+        <list name="contractMetas" table="BASE_CONTRACT_META"
+				inverse="true" lazy="true" cascade="save-update" fetch="select">
+            <key>
+                <column name="GROUP_ID" not-null="false" />
+            </key>
+            <list-index column="PRIORITY" />
+            <one-to-many class="com.ltc.base.vo.ContractMetaVO" />
+        </list>
+    </class>
+</hibernate-mapping>

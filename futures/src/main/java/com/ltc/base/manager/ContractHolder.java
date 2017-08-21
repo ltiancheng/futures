@@ -1,6 +1,7 @@
 package com.ltc.base.manager;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ltc.base.vo.BarVO;
 import com.ltc.base.vo.ContractMetaVO;
@@ -23,5 +24,7 @@ public interface ContractHolder {
 	BarVO getBarFromGw(ContractVO c);
 
 	void saveContractMeta(ContractMetaVO contractMeta);
+	
+	Map<String, Integer> getContractCodePriorityMap();
 
 }

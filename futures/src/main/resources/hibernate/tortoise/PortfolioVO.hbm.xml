@@ -11,6 +11,9 @@
         <property name="cash" type="double">
             <column name="CASH"/>
         </property>
+        <property name="virtualEquity" type="double">
+            <column name="VIRTUAL_EQUITY"/>
+        </property>
         <property name="stopLossEquity" type="double">
             <column name="STOP_LOSS_EQUITY" />
         </property>

@@ -16,6 +16,7 @@ import com.ltc.base.manager.TimeManager;
 import com.ltc.base.vo.ConditionVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.base.vo.RuleVO;
+import com.ltc.strategy.tortoise.utils.StrategyUtils;
 
 
 public class RuleExecutor extends BaseStartupItem implements Runnable {
@@ -65,11 +66,11 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 				Map<String, List<RuleVO>> ruleMap = ruleHolder.getRuleMap();
 				List<RuleVO> triggeredRules = new ArrayList<RuleVO>();
 				if(!CollectionUtils.isEmpty(ruleMap)){
-					for(Map.Entry<String, List<RuleVO>> entry: ruleMap.entrySet()){
-						String contractKey = entry.getKey();
+					List<String> sortedKeys = StrategyUtils.sortContractKeyByPriority(ruleMap.keySet(), contractHolder.getContractCodePriorityMap());
+					for(String contractKey : sortedKeys){
 						ContractVO contract = this.contractHolder.getContractByKey(contractKey);
 						if(contract != null){
-							List<RuleVO> rules = entry.getValue();
+							List<RuleVO> rules = ruleMap.get(contractKey);
 							if(CollectionUtils.isEmpty(rules)){
 								rules.addAll(strategy.generateRulesOnContract(contract));
 							} else if(!hasTriggeredRules(rules)) {

@@ -33,6 +33,7 @@
 			<list>
 		      <value>/hibernate/base/ContractMetaVO.hbm.xml</value>
 		      <value>/hibernate/base/ContractVO.hbm.xml</value>
+		      <value>/hibernate/base/GroupVO.hbm.xml</value>
 		      <value>/hibernate/tortoise/PortfolioVO.hbm.xml</value>
 		      <value>/hibernate/tortoise/PositionVO.hbm.xml</value>
 			</list>
