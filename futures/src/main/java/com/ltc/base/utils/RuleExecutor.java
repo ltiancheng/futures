@@ -92,13 +92,14 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 									}
 									if(meetCondition(rule.getCondition(), contract)){
 										PositionVO position = portfolioHolder.getPositionByContractMeta(contract.getContractMeta());
+										String dir = StrategyUtils.getOpenDirect(rule.getCommand().getInstruction());
+										boolean isCloseInstruct = StrategyUtils.isCloseInstruction(rule.getCommand().getInstruction());
 										if(!StringUtils.equals(position.getStatus(), BaseConstant.ACTIVE) 
-												|| !StrategyUtils.isFullPortfolio(portfolioHolder.getPortfolio(), position, StrategyUtils.getOpenDirect(rule.getCommand().getInstruction())) 
-												|| StrategyUtils.isCloseInstruction(rule.getCommand().getInstruction())){
+												|| !StrategyUtils.isFullPortfolioWithFiredCmd(portfolioHolder.getPortfolio(), position, dir, firedLongMap, firedShortMap) 
+												|| isCloseInstruct){
 											commandManager.executeCommand(contract, rule.getCommand(), strategy);
 											triggeredRules.add(rule);
-											if(StringUtils.equals(position.getStatus(), BaseConstant.ACTIVE) && !StrategyUtils.isCloseInstruction(rule.getCommand().getInstruction())){
-												String dir = StrategyUtils.getOpenDirect(rule.getCommand().getInstruction());
+											if(StringUtils.equals(position.getStatus(), BaseConstant.ACTIVE) && !isCloseInstruct){
 												if(StringUtils.equals(dir, PositionVO.LONG)){
 													updateGroupCount(contract, rule, firedLongMap);
 												} else if(StringUtils.equals(dir, PositionVO.SHORT)){
