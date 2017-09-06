@@ -1,13 +1,16 @@
 package com.ltc.base.utils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
 
+import com.ltc.base.helpers.BaseConstant;
 import com.ltc.base.manager.CommandManager;
 import com.ltc.base.manager.ContractHolder;
 import com.ltc.base.manager.RuleHolder;
@@ -16,7 +19,9 @@ import com.ltc.base.manager.TimeManager;
 import com.ltc.base.vo.ConditionVO;
 import com.ltc.base.vo.ContractVO;
 import com.ltc.base.vo.RuleVO;
+import com.ltc.strategy.tortoise.manager.PortfolioHolder;
 import com.ltc.strategy.tortoise.utils.StrategyUtils;
+import com.ltc.strategy.tortoise.vo.PositionVO;
 
 
 public class RuleExecutor extends BaseStartupItem implements Runnable {
@@ -28,7 +33,12 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 	private Strategy strategy;
 	private ContractHolder contractHolder;
 	private CommandManager commandManager;
+	private PortfolioHolder portfolioHolder;
 	
+	public void setPortfolioHolder(PortfolioHolder portfolioHolder) {
+		this.portfolioHolder = portfolioHolder;
+	}
+
 	public void setCommandManager(CommandManager commandManager) {
 		this.commandManager = commandManager;
 	}
@@ -65,6 +75,8 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 				timeManager.waitTillNextRound();
 				Map<String, List<RuleVO>> ruleMap = ruleHolder.getRuleMap();
 				List<RuleVO> triggeredRules = new ArrayList<RuleVO>();
+				Map<Integer, Integer> firedLongMap = new HashMap<Integer, Integer>();
+				Map<Integer, Integer> firedShortMap = new HashMap<Integer, Integer>();
 				if(!CollectionUtils.isEmpty(ruleMap)){
 					List<String> sortedKeys = StrategyUtils.sortContractKeyByPriority(ruleMap.keySet(), contractHolder.getContractCodePriorityMap());
 					for(String contractKey : sortedKeys){
@@ -79,9 +91,22 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 										contract.setCurrentBar(this.contractHolder.getBarFromGw(contract));
 									}
 									if(meetCondition(rule.getCondition(), contract)){
-										commandManager.executeCommand(contract, rule.getCommand(), strategy);
-										triggeredRules.add(rule);
-										break;
+										PositionVO position = portfolioHolder.getPositionByContractMeta(contract.getContractMeta());
+										if(!StringUtils.equals(position.getStatus(), BaseConstant.ACTIVE) 
+												|| !StrategyUtils.isFullPortfolio(portfolioHolder.getPortfolio(), position, StrategyUtils.getOpenDirect(rule.getCommand().getInstruction())) 
+												|| StrategyUtils.isCloseInstruction(rule.getCommand().getInstruction())){
+											commandManager.executeCommand(contract, rule.getCommand(), strategy);
+											triggeredRules.add(rule);
+											if(StringUtils.equals(position.getStatus(), BaseConstant.ACTIVE) && !StrategyUtils.isCloseInstruction(rule.getCommand().getInstruction())){
+												String dir = StrategyUtils.getOpenDirect(rule.getCommand().getInstruction());
+												if(StringUtils.equals(dir, PositionVO.LONG)){
+													updateGroupCount(contract, rule, firedLongMap);
+												} else if(StringUtils.equals(dir, PositionVO.SHORT)){
+													updateGroupCount(contract, rule, firedShortMap);
+												}
+											}
+											break;
+										}
 									}
 								}
 							} else if(hasOldRules(rules)) {
@@ -99,6 +124,15 @@ public class RuleExecutor extends BaseStartupItem implements Runnable {
 			} catch (Exception e) {
 				logger.error("error caught", e);
 			}
+		}
+	}
+
+	private void updateGroupCount(ContractVO contract, RuleVO rule, Map<Integer, Integer> firedMap) {
+		Integer count = firedMap.get(contract.getContractMeta().getGroup().getId());
+		if(count == null){
+			firedMap.put(contract.getContractMeta().getGroup().getId(), rule.getCommand().getUnits());
+		} else {
+			firedMap.put(contract.getContractMeta().getGroup().getId(), rule.getCommand().getUnits() + count);
 		}
 	}
 

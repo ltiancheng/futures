@@ -227,12 +227,12 @@ public class StrategyImpl implements Strategy {
 		List<BarVO> barList = contractHolder.getBarHist(contract, OPEN_BAR_SIZE);
 		StrategyPricePointVO spp = StrategyUtils.getPricePoint(barList, p.getLastInDate());
 		List<RuleVO> ruleList = new ArrayList<RuleVO>();
-		if(!StrategyUtils.isFullPortfolio(portfolio, p)){
-			ruleList.addAll(generateOpenRules(p, spp));
+		/*if(!StrategyUtils.isFullPortfolio(portfolio, p)){
 			loggedFull = false;
 		} else if(!loggedFull) {
 			logger.info("[StragetyImpl] full portfolio reached, no more new position opened!");
-		}
+		}*/
+		ruleList.addAll(generateOpenRules(p, spp));
 		ruleList.addAll(generateCloseRules(p, spp));
 		return ruleList;
 	}

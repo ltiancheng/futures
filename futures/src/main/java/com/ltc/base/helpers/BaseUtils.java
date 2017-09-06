@@ -1,6 +1,5 @@
 package com.ltc.base.helpers;
 
-import java.awt.datatransfer.StringSelection;
 import java.io.IOException;
 import java.util.Calendar;
 
@@ -12,7 +11,6 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ltc.base.gateway.ctp.vo.CThostFtdcDepthMarketDataField;
 
 public class BaseUtils {
 

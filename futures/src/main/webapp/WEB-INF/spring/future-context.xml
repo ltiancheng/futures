@@ -255,6 +255,7 @@
     	<property name="strategy" ref="tortoise" />
     	<property name="contractHolder" ref="contractHolder" />
     	<property name="commandManager" ref="commandManager" />
+    	<property name="portfolioHolder" ref="portfolioHolder" />
     </bean>
     
     <bean id="tortoise" class="com.ltc.strategy.tortoise.manager.impl.StrategyImpl">

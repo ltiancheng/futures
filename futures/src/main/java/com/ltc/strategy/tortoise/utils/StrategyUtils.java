@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ltc.base.vo.BarVO;
+import com.ltc.base.vo.CommandVO;
+import com.ltc.base.vo.RuleVO;
 import com.ltc.strategy.tortoise.manager.impl.StrategyImpl;
 import com.ltc.strategy.tortoise.vo.PortfolioVO;
 import com.ltc.strategy.tortoise.vo.PositionVO;
@@ -78,20 +80,12 @@ public class StrategyUtils {
 		}
 	}
 
-	public static boolean isFullPortfolio(PortfolioVO portfolio, PositionVO p) {
+	public static boolean isFullPortfolio(PortfolioVO portfolio, PositionVO p, String direction) {
 		//1. 6 units each group
 		//2. 15 units each direction
-		int groupUnitCount = 0;
-		int directUnitCount = 0;
-		int groupId = p.getContract().getContractMeta().getGroup().getId();
-		for(PositionVO pvo : portfolio.getPositionSet()){
-			if(StringUtils.equals(pvo.getDirection(), p.getDirection())){
-				directUnitCount += p.getUnitCount();
-				if(pvo.getContract().getContractMeta().getGroup().getId() == groupId){
-					groupUnitCount += p.getUnitCount();
-				}
-			}
-		}
+		int[] counts = countUnits(portfolio, p, direction);
+		int groupUnitCount = counts[0];
+		int directUnitCount = counts[1];
 		if(groupUnitCount < maxGroupUnit && directUnitCount < maxDirectUnit){
 			return false;
 		} else {
@@ -168,6 +162,63 @@ public class StrategyUtils {
 				return aP - bP;
 			}});
 		return sortedKeys;
+	}
+
+	public static boolean isCloseInstruction(String instruction) {
+		return StringUtils.equals(CommandVO.CLOSE_LONG, instruction) || StringUtils.equals(CommandVO.CLOSE_SHORT, instruction);
+	}
+
+	public static String getOpenDirect(String instruction) {
+		if(isCloseInstruction(instruction)){
+			return "";
+		} else {
+			if(StringUtils.equals(CommandVO.OPEN_LONG, instruction)){
+				return PositionVO.LONG;
+			} else if(StringUtils.equals(CommandVO.OPEN_SHORT, instruction)){
+				return PositionVO.SHORT;
+			}
+			return "";
+		}
+	}
+
+	public static boolean isFullPortfolioWithFiredCmd(PortfolioVO portfolio, PositionVO p, String direction,
+			Map<Integer, Integer> firedLongMap, Map<Integer, Integer> firedShortMap) {
+		int[] counts = countUnits(portfolio, p, direction);
+		int groupUnitCount = counts[0];
+		int directUnitCount = counts[1];
+		if(StringUtils.equals(direction, PositionVO.LONG)){
+			Integer count = firedLongMap.get(p.getContract().getContractMeta().getGroup().getId());
+			if(count != null){
+				groupUnitCount += count;
+			}
+			directUnitCount += firedLongMap.values().stream().collect(Collectors.summingInt(c -> Integer.valueOf(c)));
+		} else if(StringUtils.equals(direction, PositionVO.SHORT)){
+			Integer count = firedShortMap.get(p.getContract().getContractMeta().getGroup().getId());
+			if(count != null){
+				groupUnitCount += count;
+			}
+			directUnitCount += firedShortMap.values().stream().collect(Collectors.summingInt(c -> Integer.valueOf(c)));
+		}
+		if(groupUnitCount < maxGroupUnit && directUnitCount < maxDirectUnit){
+			return false;
+		} else {
+			return true;
+		}
+	}
+	
+	private static int[] countUnits(PortfolioVO portfolio, PositionVO p, String direction){
+		int groupUnitCount = 0;
+		int directUnitCount = 0;
+		int groupId = p.getContract().getContractMeta().getGroup().getId();
+		for(PositionVO pvo : portfolio.getPositionSet()){
+			if(StringUtils.equals(pvo.getDirection(), direction)){
+				directUnitCount += pvo.getUnitCount();
+				if(pvo.getContract().getContractMeta().getGroup().getId() == groupId){
+					groupUnitCount += pvo.getUnitCount();
+				}
+			}
+		}
+		return new int[] {groupUnitCount, directUnitCount};
 	}
 
 }
