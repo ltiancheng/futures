@@ -107,6 +107,9 @@ public class ContractHolderImpl implements ContractHolder {
 	}
 	
 	private boolean needRefreshBarHist() {
+		if(this.barHistRefreshTime == null){
+			return true;
+		}
 		return !this.timeManager.isTimeInIntervals(this.barHistRefreshTime, barHistRefreshInterval);
 	}
 
