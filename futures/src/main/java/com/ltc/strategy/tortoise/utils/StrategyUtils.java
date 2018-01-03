@@ -30,7 +30,7 @@ public class StrategyUtils {
 	private static Logger logger = LoggerFactory.getLogger(StrategyUtils.class);
 //	private static boolean loggedFullRate = false;
 	private static int maxGroupUnit = 6;
-	private static int maxDirectUnit = 15;
+	private static int maxDirectUnit = 30;
 
 	public static StrategyPricePointVO getPricePoint(List<BarVO> barList, Date lastIn) {
 		if(barList.size() < StrategyImpl.OPEN_BAR_SIZE){
